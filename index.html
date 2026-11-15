@@ -302,7 +302,7 @@ if(a==='del'||a==='del2'){const tb=a==='del2'?'meals':d.k,tn={meals:'meal_logs',
 if(x&&x.path)await sb.storage.from('meal-photos').remove([x.path]);S[tb]=S[tb].filter(y=>String(y.id)!==d.i);if(a==='del2')closeS();render();return toast('삭제했어요')}
 if(a==='qa'){const x=S.meals.find(y=>String(y.id)===d.i);if(!x)return;const r=await sb.from('meal_logs').insert({user_id:me.id,log_date:day,meal_type:guess(),name:x.n,calories:x.k,carb_g:x.c,protein_g:x.p,fat_g:x.f}).select().single();if(r.error)throw r.error;S.meals.push(mapMeal(r.data));render();return toast('저장했어요')}
 if(a==='cp'){const x=S.workouts.find(y=>String(y.id)===d.i);if(!x)return;const r=await sb.from('workout_logs').insert({user_id:me.id,log_date:day,kinds:x.y||[],categories:x.g||[],parts:x.b||[],main_exercise:x.n,calories:x.k,condition:x.c||null}).select().single();if(r.error)throw r.error;const nw=mapWork(r.data);nw.sets=[];nw.cardio=[];
-if((x.sets||[]).length){const q=await sb.from('workout_sets').insert(x.sets.map(s=>({workout_id:nw.id,user_id:me.id,exercise:s.n,set_no:s.no,weight_kg:s.w,reps:s.r,...(s.dn?{drop_no:s.dn}:{})})));if(!q.error)nw.sets=x.sets.map(s=>({...s}))}
+if((x.sets||[]).length){const q=await sb.from('workout_sets').insert(x.sets.map(s=>({workout_id:nw.id,user_id:me.id,exercise:s.n,set_no:s.no,weight_kg:s.w,reps:s.r,drop_no:s.dn||0})));if(!q.error)nw.sets=x.sets.map(s=>({...s}))}
 if((x.cardio||[]).length){const q=await sb.from('workout_cardio').insert(x.cardio.map(c=>({workout_id:nw.id,user_id:me.id,name:c.n,intensity:c.i||null,duration_min:c.t?+(c.t/60).toFixed(2):null,duration_sec:c.t||null,calories:c.k})));if(!q.error)nw.cardio=x.cardio.map(c=>({...c}))}
 S.workouts.push(nw);render();return toast('저장했어요')}
 if(a==='ddel'){const r=await sb.from('ddays').delete().eq('id',d.i);if(r.error)throw r.error;S.dday=S.dday.filter(y=>String(y.id)!==d.i);sheet('goal');render()}
@@ -382,9 +382,9 @@ return`<section class="card" id="wsb"><input id="wq" type="search" placeholder="
 function wUpdate(){wq=($('#wq')||{value:''}).value.trim();wf={p:gv('sp'),c:gv('sc')};const on=!!(wq||wf.p.length||wf.c.length),m=$('#main'),r=$('#wres');if(m)m.classList.toggle('wsearching',on);if(r)r.innerHTML=wResHTML()}
 async function loadWx(){const uid=viewAs?viewAs.id:me.id,q=t=>fetchAll(t,uid);
 try{const[a,b,c]=await Promise.all([q('workout_sets'),q('workout_cardio'),q('user_exercises')]);S.myex=(!c.error&&c.data)||[];const st={},cd={};
-(a.data||[]).forEach(r=>{(st[r.workout_id]=st[r.workout_id]||[]).push({n:r.exercise,no:r.set_no,w:r.weight_kg,r:r.reps,dn:r.drop_no||0})});
-(b.data||[]).forEach(r=>{(cd[r.workout_id]=cd[r.workout_id]||[]).push({n:r.name,i:r.intensity,t:r.duration_sec!=null?r.duration_sec:(r.duration_min!=null?Math.round(r.duration_min*60):null),k:r.calories})});
-S.workouts.forEach(x=>{x.sets=(st[x.id]||[]).sort((p,q)=>p.no-q.no||(p.dn||0)-(q.dn||0));x.cardio=cd[x.id]||[]})}catch(e){}}
+(a.data||[]).forEach(r=>{(st[r.workout_id]=st[r.workout_id]||[]).push({n:r.exercise,no:r.set_no,w:r.weight_kg,r:r.reps,dn:r.drop_no||0,ts:Date.parse(r.created_at)||0})});
+(b.data||[]).forEach(r=>{(cd[r.workout_id]=cd[r.workout_id]||[]).push({n:r.name,i:r.intensity,t:r.duration_sec!=null?r.duration_sec:(r.duration_min!=null?Math.round(r.duration_min*60):null),k:r.calories,ts:Date.parse(r.created_at)||0})});
+S.workouts.forEach(x=>{x.sets=(st[x.id]||[]).sort((p,q)=>(p.ts-q.ts)||p.no-q.no||(p.dn||0)-(q.dn||0));x.cardio=(cd[x.id]||[]).sort((p,q)=>p.ts-q.ts)})}catch(e){}}
 const _la=loadAll;loadAll=async function(){await _la();await loadWx();await loadLessons();render()};
 const _rd=render;render=function(){_rd();const m=$('#main');if(m)m.classList.toggle('wsearching',tab()==='workouts'&&!!(wq||(wf.p||[]).length||(wf.c||[]).length))};
 document.addEventListener('input',e=>{const t=e.target,d=t.dataset||{};
@@ -515,7 +515,7 @@ if(a==='pick'&&d.k==='cycle'&&cdayC&&$('#f_d'))$('#f_d').value=cdayC});
 
 /* ===== 드롭세트, 유산소 첫 줄 자동 표시 ===== */
 const sTxt=s=>(s.w!=null?+s.w+'kg':'')+(s.w!=null&&s.r!=null?' × ':'')+(s.r!=null?s.r+'회':'');
-function setRows(wid,ex){const rows=[],ok=q=>String(q.w).trim()||String(q.r).trim();ex.forEach(e=>e.sets.forEach((s,j)=>{rows.push({workout_id:wid,user_id:me.id,exercise:e.n,set_no:j+1,weight_kg:parseFloat(s.w)||null,reps:parseInt(s.r)||null});(s.d||[]).filter(ok).forEach((q,k)=>rows.push({workout_id:wid,user_id:me.id,exercise:e.n,set_no:j+1,drop_no:k+1,weight_kg:parseFloat(q.w)||null,reps:parseInt(q.r)||null}))}));return rows}
+function setRows(wid,ex){const rows=[],ok=q=>String(q.w).trim()||String(q.r).trim();ex.forEach(e=>e.sets.forEach((s,j)=>{rows.push({workout_id:wid,user_id:me.id,exercise:e.n,set_no:j+1,drop_no:0,weight_kg:parseFloat(s.w)||null,reps:parseInt(s.r)||null});(s.d||[]).filter(ok).forEach((q,k)=>rows.push({workout_id:wid,user_id:me.id,exercise:e.n,set_no:j+1,drop_no:k+1,weight_kg:parseFloat(q.w)||null,reps:parseInt(q.r)||null}))}));return rows}
 document.addEventListener('input',e=>{const t=e.target,d=t.dataset||{};if(d.df&&wd.ex[+d.i]){const q=(wd.ex[+d.i].sets[+d.j].d||[])[+d.k];if(q)q[d.df]=t.value}});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b){const a=b.dataset.a,d=b.dataset;
 if(a==='adddrop'){const s=wd.ex[+d.i].sets[+d.j];(s.d=s.d||[]).push({w:'',r:s.r});drawSets()}
@@ -610,4 +610,7 @@ if(a==='delask')$('#sp').innerHTML=`<h2>회원 탈퇴</h2><p>탈퇴하면 식사
 if(a==='dodel'){if(fv('dq')!=='탈퇴')return toast('"탈퇴"를 입력해 주세요');if(busy)return;busy=true;
 try{const L=await sb.storage.from('meal-photos').list(me.id,{limit:1000}),ps=(L.data||[]).map(f=>me.id+'/'+f.name);if(ps.length)await sb.storage.from('meal-photos').remove(ps);
 const r=await sb.rpc('delete_my_account');if(r.error)throw r.error;closeS();toast('탈퇴가 완료됐어요');await sb.auth.signOut({scope:'local'})}catch(err){toast('탈퇴하지 못했어요: '+(err.message||''))}finally{busy=false}}});
+
+/* ===== 운동 입력 순서 보존: 세트/유산소 저장 시 입력 순서대로 시간 도장(created_at)을 찍어요 ===== */
+(function(){const _from=sb.from.bind(sb);sb.from=t=>{const q=_from(t);if(t==='workout_sets'||t==='workout_cardio'){const _in=q.insert.bind(q);q.insert=(r,...a)=>{if(Array.isArray(r)){const b=Date.now();r=r.map((x,i)=>({...x,created_at:new Date(b+i).toISOString()}))}return _in(r,...a)}}return q}})();
 </script></body></html>
