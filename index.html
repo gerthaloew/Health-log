@@ -794,14 +794,14 @@ var PTM={},OTM={},rFil='target';
 const OTMAX=2;
 function dLeft(e){return Math.round((Date.parse(e+'T00:00:00Z')-Date.parse(baseDay()+'T00:00:00Z'))/864e5)}
 function ptLeft(x){return x&&x.total!=null?Math.max(x.total-x.used,0):null}
-function regInfo(id){const x=PTM[id]||{},left=ptLeft(x),dl=x.end?dLeft(x.end):null,ym=baseDay().slice(0,7),ot=OTM[id]||0;
-return{x,left,dl,ot,exp:!!x.end&&x.end.slice(0,7)===ym&&dl>=0,ended:dl!=null&&dl<0,low:left!=null&&left<5,none:x.total==null&&!x.end}}
+function regInfo(id){const x=PTM[id]||{},left=ptLeft(x),dl=x.end?dLeft(x.end):null,ym=baseDay().slice(0,7),ot=OTM[id]||0,left1=x.total!=null?Math.max(x.total-(x.used1||0),0):null;
+return{x,left,left1,dl,ot,exp:!!x.end&&x.end.slice(0,7)===ym,ended:dl!=null&&dl<0&&x.end.slice(0,7)<ym,low:left!=null&&left<5,soon:left!=null&&left<10,tgt:(!!x.end&&x.end.slice(0,7)===ym)||(left1!=null&&left1<5),none:x.total==null&&!x.end}}
 function memTxt(dl,end){return dl==null?'':dl<0?'만료됨 ('+md(end)+')':dl===0?'오늘 만료':'D-'+dl+' ('+md(end)+')'}
 function ptRow(id){const r=regInfo(id);if(r.none&&!r.ot)return'';return(r.x.end?`<div class="ml"><span>회원권</span><b class="${r.ended||r.exp?'no':''}">${memTxt(r.dl,r.x.end)}</b></div>`:'')+(r.left!=null?`<div class="ml"><span>PT 남은 횟수</span><b class="${r.low?'no':''}">${r.left} / ${r.x.total}회</b></div>`:'')+`<div class="ml"><span>이번 달 OT</span><b>${r.ot} / ${OTMAX}회</b></div>`}
-async function loadPT(){PTM={};OTM={};try{const p=await sb.from('pt_packages').select('member_id,total,mem_start,mem_end');(Array.isArray(p.data)?p.data:[]).forEach(r=>PTM[r.member_id]={total:r.total,start:r.mem_start,end:r.mem_end,used:0});
-const u=await qAll(()=>sb.from('lessons').select('member_id,kind,status,start_at').eq('kind','PT').lt('start_at',new Date().toISOString()).order('start_at').order('id'));
-(u.data||[]).forEach(r=>{if(r.status==='cancelled'||!PTM[r.member_id])return;PTM[r.member_id].used++});
-const ym=baseDay().slice(0,7),o=await qAll(()=>sb.from('lessons').select('member_id,status,start_at').eq('kind','OT').gte('start_at',ym+'-01T00:00:00+09:00').lt('start_at',mAdd(ym,1)+'-01T00:00:00+09:00').order('start_at').order('id'));
+async function loadPT(){PTM={};OTM={};try{const p=await sb.from('pt_packages').select('member_id,total,mem_start,mem_end');(Array.isArray(p.data)?p.data:[]).forEach(r=>PTM[r.member_id]={total:r.total,start:r.mem_start,end:r.mem_end,used:0,used1:0});
+const ym=baseDay().slice(0,7),ms=Date.parse(ym+'-01T00:00:00+09:00'),u=await qAll(()=>sb.from('lessons').select('member_id,kind,status,start_at').eq('kind','PT').lt('start_at',new Date().toISOString()).order('start_at').order('id'));
+(u.data||[]).forEach(r=>{if(r.status==='cancelled'||!PTM[r.member_id])return;PTM[r.member_id].used++;if(Date.parse(r.start_at)<ms)PTM[r.member_id].used1++});
+const o=await qAll(()=>sb.from('lessons').select('member_id,status,start_at').eq('kind','OT').gte('start_at',ym+'-01T00:00:00+09:00').lt('start_at',mAdd(ym,1)+'-01T00:00:00+09:00').order('start_at').order('id'));
 (o.data||[]).forEach(r=>{if(r.status!=='cancelled')OTM[r.member_id]=(OTM[r.member_id]||0)+1})}catch(e){}}
 const _ld2=loadDash;loadDash=async function(){await _ld2();await loadPT()};
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
@@ -822,14 +822,45 @@ closeS();try{await loadCal();await loadPT()}catch(x){}renderDash();toast('수업
 });
 
 function regTargets(){return(me.members||[]).map(m=>({m,r:regInfo(m.id)}))}
-function regN(){return regTargets().filter(t=>t.r.exp||t.r.ended||t.r.low).length}
-function regHTML(){const all=regTargets(),ym=baseDay().slice(0,7),F={target:['등록 대상',t=>t.r.exp||t.r.ended||t.r.low],exp:[ym.slice(5)+'월 만료',t=>t.r.exp],low:['PT 5회 미만',t=>t.r.low],ended:['만료됨',t=>t.r.ended],none:['미등록',t=>t.r.none],all:['전체',()=>true]};
-const rows=all.filter(F[rFil][1]).sort((a,b)=>(a.r.dl==null?9999:a.r.dl)-(b.r.dl==null?9999:b.r.dl));
-const tiles=`<div class="tiles"><div class="tile${all.filter(F.exp[1]).length?' warn':''}"><span>${ym.slice(5)}월 만료</span><b>${all.filter(F.exp[1]).length}<small>명</small></b></div><div class="tile${all.filter(F.low[1]).length?' warn':''}"><span>PT 5회 미만</span><b>${all.filter(F.low[1]).length}<small>명</small></b></div><div class="tile"><span>만료됨</span><b>${all.filter(F.ended[1]).length}<small>명</small></b></div><div class="tile"><span>OT 사용 (이번 달)</span><b>${all.reduce((n,t)=>n+t.r.ot,0)}<small>회</small></b></div></div>`;
+function regN(){return regTargets().filter(t=>t.r.tgt).length}
+function regHTML(){const all=regTargets(),ym=baseDay().slice(0,7),mo=+ym.slice(5),F={target:['등록 대상',t=>t.r.tgt],exp:[mo+'월 만료',t=>t.r.exp],soon:['PT 10회 미만',t=>t.r.soon],ended:['만료됨',t=>t.r.ended],none:['미등록',t=>t.r.none],all:['전체',()=>true]};
+const n=k=>all.filter(F[k][1]).length,rows=all.filter(F[rFil][1]).sort((a,b)=>(a.r.dl==null?9999:a.r.dl)-(b.r.dl==null?9999:b.r.dl));
+const tiles=`<div class="tiles"><div class="tile${n('target')?' warn':''}"><span>등록 대상 (${mo}월)</span><b>${n('target')}<small>명</small></b></div><div class="tile${n('exp')?' warn':''}"><span>${mo}월 만료</span><b>${n('exp')}<small>명</small></b></div><div class="tile"><span>PT 10회 미만</span><b>${n('soon')}<small>명</small></b></div><div class="tile"><span>만료됨</span><b>${n('ended')}<small>명</small></b></div></div><p class="mut" style="margin:-6px 0 10px;font-size:12px">등록 대상 = 이번 달 회원권 만료 + 월초(1일) 기준 PT 5회 미만</p>`;
 const fl=`<div class="chips" style="margin-bottom:8px">${Object.keys(F).map(k=>`<button type="button" class="chip${rFil===k?' on':''}" data-a="rfil" data-v="${k}">${F[k][0]}</button>`).join('')}</div>`;
-return tiles+fl+(rows.map(t=>{const r=t.r;return`<button class="mc${r.exp||r.ended||r.low?' att':''}" data-a="vm" data-i="${t.m.id}" data-n="${esc(t.m.display_name)}" style="margin-bottom:8px"><div class="mh"><b>${esc(t.m.display_name)}</b><span class="tg">${r.ended?'만료됨':r.exp?'이번 달 만료':r.low?'재등록 검토':r.none?'미등록':''}</span></div><div class="ml"><span>회원권</span><b class="${r.ended||r.exp?'no':''}">${r.x.end?memTxt(r.dl,r.x.end):'미입력'}</b></div><div class="ml"><span>PT 남은 횟수</span><b class="${r.low?'no':''}">${r.left!=null?r.left+' / '+r.x.total+'회':'미입력'}</b></div><div class="ml"><span>이번 달 OT</span><b>${r.ot} / ${OTMAX}회</b></div></button>`}).join('')||'<p class="empty">해당하는 회원이 없어요.</p>')}
+return tiles+fl+(rows.map(t=>{const r=t.r,tag=r.ended?'만료됨':r.tgt?'등록 대상':r.soon?'곧 소진':r.none?'미등록':'';return`<div style="margin-bottom:10px"><button class="mc${r.tgt?' att':''}" data-a="vm" data-i="${t.m.id}" data-n="${esc(t.m.display_name)}"><div class="mh"><b>${esc(t.m.display_name)}</b><span class="tg">${tag}</span></div><div class="ml"><span>회원권</span><b class="${r.ended||r.exp?'no':''}">${r.x.end?(r.x.start?md(r.x.start)+' ~ ':'~ ')+md(r.x.end)+' · '+memTxt(r.dl,r.x.end).replace(/ \(.*/,''):'미입력'}</b></div><div class="ml"><span>PT 남은 횟수</span><b class="${r.low?'no':''}">${r.left!=null?r.left+' / '+r.x.total+'회':'미입력'}</b></div>${r.left1!=null?`<div class="ml"><span>월초(1일) 기준</span><b class="${r.left1<5?'no':''}">${r.left1}회</b></div>`:''}<div class="ml"><span>이번 달 OT</span><b>${r.ot} / ${OTMAX}회</b></div></button><button type="button" class="cp" data-a="regedit" data-i="${t.m.id}" style="width:100%;margin-top:4px;padding:10px">회원권 · PT 입력/수정</button></div>`}).join('')||'<p class="empty">해당하는 회원이 없어요.</p>')}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b||viewAs)return;const a=b.dataset.a;
 if(a==='rfil'){rFil=b.dataset.v;renderDash()}
 if(a==='dview'&&b.dataset.v==='reg'){await loadPT();renderDash()}});
+
+/* ===== 한 끼에 여러 음식 담기 (요거트볼 = 요거트 + 바나나 + 블루베리) ===== */
+var mb=[];
+const _shMeal=sheet;sheet=function(k){if(k==='meal')mb=[];_shMeal(k);if(k==='meal')mealBasketUI()};
+function mealBasketUI(){const b=$('#sp [data-a=save][data-k=meal]');if(!b)return;
+b.insertAdjacentHTML('beforebegin','<div id="mb"></div><button type="button" class="save" data-a="madd" style="background:var(--pt);color:var(--pine);margin-bottom:8px">+ 이 음식 담기 (다른 음식 더 추가)</button>');
+b.dataset.a='msave';b.textContent='한 끼 저장';
+const l=$('#sp label');}
+function mbTot(a,k){return Math.round(a.reduce((t,x)=>t+(+x[k]||0),0)*10)/10}
+function renderMB(){const e=$('#mb');if(!e)return;if(!mb.length){e.innerHTML='';return}
+e.innerHTML=`<div class="calc" style="margin:4px 0 10px"><div class="mut">이 끼니에 담은 음식 ${mb.length}가지</div>${mb.map((x,i)=>`<div class="row"><span class="n"><b>${esc(x.n)}</b><small>${x.amt?esc(x.amt)+' · ':''}${Math.round(x.k)} kcal</small></span><button type="button" class="x" data-a="mrm" data-i="${i}" aria-label="빼기">×</button></div>`).join('')}<div style="margin-top:8px"><b>${Math.round(mbTot(mb,'k'))}</b> kcal<div class="mut">탄 ${mbTot(mb,'c')}g · 단 ${mbTot(mb,'p')}g · 지 ${mbTot(mb,'f')}g</div></div></div>`}
+function takeItem(){const n=fv('n');if(!n)return null;return{n,k:nv('k'),c:nv('c'),p:nv('p'),f:nv('f'),amt:mealAmt()}}
+function clearItem(){['n','k','c','p','f'].forEach(i=>{const e=$('#f_'+i);if(e)e.value=''});const g=$('#fg');if(g)g.value='';const q=$('#fqty');if(q)q.hidden=true;const fq=$('#fq');if(fq)fq.value='';const r=$('#fres');if(r)r.innerHTML='';curFood=null}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
+if(a==='madd'){const it=takeItem();if(!it)return toast('음식 이름을 입력하거나 검색해서 골라 주세요');mb.push(it);clearItem();renderMB();const q=$('#fq');if(q)q.focus()}
+if(a==='mrm'){mb.splice(+b.dataset.i,1);renderMB()}
+if(a==='msave'){if(viewAs&&!viewAs.edit)return toast('이 회원은 아직 열람만 동의했어요. 회원이 계정 화면에서 동의를 다시 확인하면 입력·수정할 수 있어요');
+const items=mb.slice(),cur=takeItem();if(cur)items.push(cur);if(!items.length)return toast('음식 이름을 입력해 주세요');if(busy)return;busy=true;
+try{const type=gv('mt')[0]||guess(),fl=$('#f_img')&&$('#f_img').files[0],t0=Date.now(),ids=items.map(()=>crypto.randomUUID());let img,path=null;
+if(fl){const blob=await shrinkBlob(fl);path=OID()+'/'+ids[0]+'.jpg';const u=await sb.storage.from('meal-photos').upload(path,blob,{contentType:'image/jpeg'});if(u.error)throw u.error;img=URL.createObjectURL(blob)}
+const rows=items.map((x,i)=>({id:ids[i],user_id:OID(),log_date:day,meal_type:type,name:x.n,calories:x.k,carb_g:x.c,protein_g:x.p,fat_g:x.f,amount:x.amt,created_at:new Date(t0+i).toISOString(),...(i===0&&path?{photo_path:path}:{})}));
+const r=await sb.from('meal_logs').insert(rows).select();if(r.error)throw r.error;
+const out=Array.isArray(r.data)?r.data:[r.data];out.sort((x,y)=>Date.parse(x.created_at)-Date.parse(y.created_at)).forEach((d,i)=>S.meals.push({...mapMeal(d),img:i===0?img:undefined}));
+mb=[];dayBy.meals=day;closeS();toast(items.length>1?items.length+'가지를 한 끼로 저장했어요':'저장했어요');if(location.hash==='#meals')render();else location.hash='#meals'}
+catch(err){toast('저장하지 못했어요: '+(err.message||''))}finally{busy=false}}
+});
+
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b||viewAs)return;const a=b.dataset.a;
+if(a==='regedit'){const m=(me.members||[]).find(x=>x.id===b.dataset.i);if(!m)return;const p=PTM[m.id]||{};$('#sp').innerHTML=`<h2>${esc(m.display_name)}님 회원권 · PT</h2><label>회원권 시작일<input id="f_ms" type="date" value="${p.start||''}"></label><label>회원권 종료일<input id="f_me" type="date" value="${p.end||''}"></label><label>PT 총 등록 횟수<input id="f_pt" inputmode="numeric" value="${p.total!=null?p.total:''}" placeholder="예: 20 (없으면 비워두세요)"></label><p class="mut">재등록하면 지금까지 등록한 횟수를 모두 합쳐서 입력해 주세요. 회원 상세 화면에도 바로 반영돼요.</p><button class="save" data-a="regsave" data-i="${m.id}">저장</button>`;$('#sh').hidden=false}
+if(a==='regsave'){if(busy)return;const tv=fv('pt'),t=tv===''?null:parseInt(tv);if(t!=null&&(isNaN(t)||t<0))return toast('횟수를 숫자로 입력해 주세요');if(fv('ms')&&fv('me')&&fv('me')<fv('ms'))return toast('종료일이 시작일보다 빨라요');busy=true;try{const r=await sb.from('pt_packages').upsert({member_id:b.dataset.i,trainer_id:me.id,total:t,mem_start:fv('ms')||null,mem_end:fv('me')||null,updated_at:new Date().toISOString()});if(r.error)throw r.error;closeS();await loadPT();renderDash();toast('저장했어요')}catch(err){toast('저장하지 못했어요: '+(err.message||''))}finally{busy=false}}
+});
 
 </script></body></html>
