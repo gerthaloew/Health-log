@@ -767,8 +767,8 @@ if(a==='ndel'){if(busy)return;busy=true;try{const r=await sb.from('trainer_notes
 });
 
 /* ===== 트레이너 수업 캘린더, 계정 화면 정리 ===== */
-var dView='list',cM='',cSel='',CL=[];
-function dTabs(){return`<div class="dtabs"><button data-a="dview" data-v="list" class="${dView==='list'?'on':''}">회원 현황</button><button data-a="dview" data-v="cal" class="${dView==='cal'?'on':''}">수업 캘린더</button><button data-a="dview" data-v="reg" class="${dView==='reg'?'on':''}">등록 관리${regN()?' ('+regN()+')':''}</button></div>`}
+var SHOW_REG=false,dView='list',cM='',cSel='',CL=[];
+function dTabs(){return`<div class="dtabs"><button data-a="dview" data-v="list" class="${dView==='list'?'on':''}">회원 현황</button><button data-a="dview" data-v="cal" class="${dView==='cal'?'on':''}">수업 캘린더</button>${SHOW_REG?`<button data-a="dview" data-v="reg" class="${dView==='reg'?'on':''}">등록 관리${regN()?' ('+regN()+')':''}</button>`:''}</div>`}
 function mAdd(ym,n){const[y,m]=ym.split('-').map(Number),d=new Date(Date.UTC(y,m-1+n,1));return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)}
 var HOL={},cWarn='';
 async function loadCal(){if(!cM)cM=baseDay().slice(0,7);if(!cSel)cSel=baseDay();
