@@ -12,7 +12,7 @@
 body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 "Gowun Dodum",system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;font-variant-numeric:tabular-nums}
 button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none}
 main{max-width:480px;margin:0 auto;padding:8px 16px 130px}
-.top h1{font-size:22px;margin:10px 0 2px;font-weight:700;display:flex;justify-content:space-between;align-items:center}.gear{font-size:13px;font-weight:500;padding:6px 12px;border-radius:99px;background:var(--sf);color:var(--pine)}.cy2{color:var(--pine)}.calc{background:var(--pt);border-radius:14px;padding:10px 14px;margin:0 0 12px}.calc b{font-size:22px}.th{width:40px;height:40px;object-fit:cover;border-radius:10px;display:block;flex:none}.ths{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}.tap,.th{cursor:pointer}.gal{display:grid;grid-template-columns:1fr 1fr;gap:10px}.gi{text-align:left;background:var(--bg);border-radius:16px;overflow:hidden;padding:0;display:block;width:100%}.gi img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}.ph0{width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:var(--pt);color:var(--pine);font-size:28px;font-weight:700}.gt{display:block;padding:8px 10px;font-size:14px;font-weight:500}.gt small{display:block;color:var(--mut);font-weight:400;font-size:12px}.gi{position:relative}.bd{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:2px 9px;border-radius:99px}.bimg{width:100%;max-height:260px;object-fit:cover;border-radius:14px;margin:8px 0 2px;display:block}
+.top h1{font-size:22px;margin:10px 0 2px;font-weight:700;display:flex;justify-content:space-between;align-items:center}.gear{font-size:13px;font-weight:500;padding:6px 12px;border-radius:99px;background:var(--sf);color:var(--pine)}.cy2{color:var(--pine)}.calc{background:var(--pt);border-radius:14px;padding:10px 14px;margin:0 0 12px}.calc b{font-size:22px}.th{width:40px;height:40px;object-fit:cover;border-radius:10px;display:block;flex:none}.ths{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}.tap,.th{cursor:pointer}.gal{display:grid;grid-template-columns:1fr 1fr;gap:10px}.gi{text-align:left;background:var(--bg);border-radius:16px;overflow:hidden;padding:0;display:block;width:100%}.gi img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}.ph0{width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:var(--pt);color:var(--pine);font-size:28px;font-weight:700}.gt{display:block;padding:8px 10px;font-size:14px;font-weight:500}.gt small{display:block;color:var(--mut);font-weight:400;font-size:12px}.gi{position:relative}.bd{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:2px 9px;border-radius:99px}.bimg{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:14px;margin:8px 0 2px;display:block}
 .dn{display:flex;align-items:center;gap:6px;color:var(--mut);margin-bottom:12px}
 .dn button{width:34px;height:34px;border-radius:50%;background:var(--sf);font-size:20px;line-height:1}.dn button:disabled{opacity:.35}
 .dn span{min-width:150px;text-align:center;color:var(--ink);font-weight:500}
@@ -78,6 +78,20 @@ h1,h2,h3,.big,.rc b,.calc b{font-family:"Jua","Gowun Dodum",system-ui,sans-serif
 .bt{height:10px;border-radius:10px}.bf{border-radius:10px}
 .th{border-radius:16px}
 @media (min-width:900px){.tabs{border-radius:0 26px 26px 0}}
+.vw main{padding-top:64px}
+.ap.wide{max-width:980px}.au.top{align-items:flex-start}
+.dtop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.dtop h1{margin:0 0 4px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.tile{background:var(--bg);border-radius:16px;padding:12px}.tile span{display:block;font-size:12px;color:var(--mut)}.tile b{font-size:26px}.tile b small{font-size:13px;color:var(--mut);font-weight:400}.tile.warn{background:color-mix(in srgb,var(--fat) 18%,var(--bg))}
+.dh{margin:18px 0 8px;font-size:15px}
+.dl{display:block;width:100%;text-align:left;background:var(--bg);border-radius:12px;padding:10px 12px;margin-bottom:6px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.mc{display:block;text-align:left;background:var(--bg);border-radius:16px;padding:14px;width:100%}
+.mc.att{outline:2px solid color-mix(in srgb,var(--fat) 60%,transparent)}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:16px}.tg{font-size:11px;color:var(--fat);font-weight:700}
+.ml{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--mut);padding:2px 0}.ml b{color:var(--ink)}.ml b.ok{color:var(--pine)}.ml b.no{color:var(--fat)}
+.dfoot{display:flex;gap:8px;margin-top:16px}.dfoot .save{margin:0}
+@media (max-width:600px){.tiles{grid-template-columns:repeat(2,1fr)}}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9"></script></head><body>
 <main id="main"></main>
 <nav class="tabs"><div class="ti">
@@ -162,7 +176,7 @@ else if(k==='goal'){const g=S.goal;h=`<h2>목표 설정</h2><div class="g3"><lab
 else h=`<h2>생리주기 기록</h2><label>시작일<input id="f_d" type="date" value="${day}"></label><label>종료일 (선택)<input id="f_de" type="date"></label><label>출혈량</label>${chips('cf',['점출혈','적음','보통','많음'],[])}<label>통증 정도 <b id="pv2">0</b> / 10<input id="f_pn" type="range" min="0" max="10" value="0" style="padding:0"></label><label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input id="f_pk" type="checkbox" style="width:auto;margin:0">진통제를 먹었어요</label><button class="save" data-a="save" data-k="cycle">저장</button>`;
 sp.innerHTML=h;$('#sh').hidden=false}
 function detail(k,t){let h='';
-if(k==='meal'){const a=dm(day).filter(x=>x.t===t);h=`<h2>${t}, ${sum(a,'k')} kcal</h2>${a.map(x=>`${x.img?`<img class="bimg" src="${x.img}" alt="${esc(x.n)}">`:''}<div class="row"><span class="n"><b>${esc(x.n)}</b><small>탄 ${x.c||0}g 단 ${x.p||0}g 지 ${x.f||0}g</small></span><b>${x.k} kcal</b></div>`).join('')}`}
+if(k==='meal'){h=mealDetailHTML(t)}
 else if(k==='body'){const bw=lastW(),ib=[...S.body].filter(b=>(b.m||b.f)&&b.d<=day).sort((a,b)=>a.d<b.d?1:-1)[0],w=(ib&&ib.w)||(bw&&bw.w),bp=ib&&ib.f&&w?(ib.f/w*100).toFixed(1):'-';
 h=`<h2>신체 기록</h2>${bw?`<div class="row"><span>체중 (${md(bw.d)})</span><b>${bw.w} kg</b></div>`:'<p class="empty">체중 기록이 없어요.</p>'}${ib?`<div class="row"><span>골격근량 (${md(ib.d)})</span><b>${ib.m||'-'} kg</b></div><div class="row"><span>체지방량</span><b>${ib.f||'-'} kg</b></div><div class="row"><span>체지방률</span><b>${bp}%</b></div>`:''}`}
 else{const a=dw(day);h=`<h2>운동, ${sum(a,'k')} kcal 소모</h2>${a.map(x=>`<div class="row"><span class="n"><b>${esc(x.n||wt(x).join(', ')||'운동')}</b><small>${[...wt(x),...(x.g||[]),...(x.b||[]),x.c?'컨디션 '+x.c:''].map(g=>`<span class="tag">${esc(g)}</span>`).join('')}</small></span><b>${x.k||0} kcal</b></div>`).join('')||'<p class="empty">운동 기록이 없어요.</p>'}`}
@@ -200,13 +214,13 @@ const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefr
 let me=null;
 const num=v=>v==null?undefined:+v;
 const em=m=>/Invalid login/i.test(m)?'이메일 또는 비밀번호가 맞지 않아요':/already registered/i.test(m)?'이미 가입된 이메일이에요':/Password should/i.test(m)?'비밀번호는 6자 이상이어야 해요':/not confirmed/i.test(m)?'이메일 확인이 필요해요. Supabase에서 Confirm email을 꺼 주세요 ('+m+')':/rate limit/i.test(m)?'요청이 너무 많아요. 잠시 후 다시 시도해 주세요 ('+m+')':/signups.*disabled/i.test(m)?'Supabase에서 이메일 가입이 꺼져 있어요 ('+m+')':/Failed to fetch|NetworkError|Load failed/i.test(m)?'서버에 연결하지 못했어요. 올린 주소(github.io)로 열었는지 확인해 주세요 ('+m+')':m;
-const mapMeal=r=>({id:r.id,d:r.log_date,t:r.meal_type,n:r.name,k:+r.calories,c:+r.carb_g,p:+r.protein_g,f:+r.fat_g,path:r.photo_path,ts:Date.parse(r.created_at)});
+const mapMeal=r=>({id:r.id,d:r.log_date,t:r.meal_type,n:r.name,k:+r.calories,c:+r.carb_g,p:+r.protein_g,f:+r.fat_g,path:r.photo_path,amt:r.amount||'',ts:Date.parse(r.created_at)});
 const mapWork=r=>({id:r.id,d:r.log_date,y:r.kinds,g:normCat(r.categories),b:normParts(r.parts),n:r.main_exercise||'',k:r.calories,c:r.condition||'',notes:r.notes||''});
 const mapBody=r=>({id:r.id,d:r.log_date,w:num(r.weight),m:num(r.muscle_mass),f:num(r.body_fat_mass)});
 const shrinkBlob=f=>new Promise((ok,no)=>{const r=new FileReader();r.onerror=no;r.onload=()=>{const i=new Image();i.onerror=no;i.onload=()=>{const s=Math.min(1,960/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);c.getContext('2d').drawImage(i,0,0,c.width,c.height);c.toBlob(b=>b?ok(b):no(new Error('image')),'image/jpeg',.75)};i.src=r.result};r.readAsDataURL(f)});
 
 function authUI(msg,done){document.body.classList.remove('in');let a=$('#auth');if(!a){a=document.createElement('div');a.id='auth';a.className='au';document.body.appendChild(a)}
-a.innerHTML=`<div class="ap"><h1>건강 기록</h1><p class="mut">${msg||'로그인하고 어디서든 기록을 이어가요'}</p><label>이메일<input id="a_e" type="email" autocomplete="email"></label><label>비밀번호 (6자 이상)<input id="a_p" type="password" autocomplete="current-password"></label><div id="a_x" hidden><label>이름<input id="a_n" autocomplete="name"></label><label>성별</label>${chips('ag',['여성','남성'],['여성'])}<label style="display:flex;gap:8px;align-items:flex-start;color:var(--ink);margin-top:8px"><input id="a_c" type="checkbox" style="width:auto;margin-top:4px">담당 트레이너와 관리자가 내 모든 기록(식사, 운동, 체중, 생리주기 포함)을 볼 수 있음에 동의합니다.</label></div><p id="a_err" style="color:var(--fat);font-size:13px;margin:0 0 10px;word-break:break-all"></p><button class="save" data-a="login">로그인</button><button class="save" data-a="signup" style="background:none;color:var(--pine);margin-top:0">가입하기</button><button class="cp" data-a="forgot" style="display:block;margin:14px auto 0">비밀번호를 잊으셨나요?</button></div>`;if(done)a.innerHTML=`<div class="ap"><h1>메일을 확인해 주세요</h1><p>${msg}</p><button class="save" data-a="back">로그인 화면으로</button></div>`}
+a.innerHTML=`<div class="ap"><h1>건강 기록</h1><p class="mut">${msg||'로그인하고 어디서든 기록을 이어가요'}</p><label>이메일<input id="a_e" type="email" autocomplete="email"></label><label>비밀번호 (6자 이상)<input id="a_p" type="password" autocomplete="current-password"></label><div id="a_x" hidden><label>이름<input id="a_n" autocomplete="name"></label><label>성별</label>${chips('ag',['여성','남성'],['여성'])}<label style="display:flex;gap:8px;align-items:flex-start;color:var(--ink);margin-top:8px"><input id="a_c" type="checkbox" style="width:auto;margin-top:4px">담당 트레이너와 관리자가 내 모든 기록(식사, 운동, 체중, 생리주기 포함)을 보고, 필요하면 대신 입력·수정할 수 있음에 동의합니다.</label></div><p id="a_err" style="color:var(--fat);font-size:13px;margin:0 0 10px;word-break:break-all"></p><button class="save" data-a="login">로그인</button><button class="save" data-a="signup" style="background:none;color:var(--pine);margin-top:0">가입하기</button><button class="cp" data-a="forgot" style="display:block;margin:14px auto 0">비밀번호를 잊으셨나요?</button></div>`;if(done)a.innerHTML=`<div class="ap"><h1>메일을 확인해 주세요</h1><p>${msg}</p><button class="save" data-a="back">로그인 화면으로</button></div>`}
 
 async function loadAll(){
 const q=t=>fetchAll(t,viewAs?viewAs.id:me.id);
@@ -223,53 +237,53 @@ render()}
 async function start(u){me={id:u.id};const r=await sb.from('profiles').select('*').eq('id',u.id).maybeSingle();me.p=r.data||{};if(['trainer','admin'].includes(me.p.role))return void await adminUI();document.body.classList.add('in');await loadAll();const a=$('#auth');if(a)a.remove();await checkLink()}
 sb.auth.onAuthStateChange((ev,s)=>{if(ev==='PASSWORD_RECOVERY'){recov=true;setTimeout(resetUI,0);return}setTimeout(()=>{if(recov)return;if(s&&s.user){if(!me||me.id!==s.user.id)start(s.user)}else{me=null;S.meals=[];S.workouts=[];S.body=[];S.cycle=[];S.dday=[];authUI()}},0)});
 
-function acctSheet(){const p=(me&&me.p)||{};$('#sp').innerHTML=`<h2>계정</h2><div class="row"><span>이름</span><b>${esc(p.display_name||'')}</b></div><div class="row"><span>유형</span><b>${p.role==='trainer'?'트레이너':'회원'}</b></div><label style="margin-top:12px">성별</label>${chips('ag',['여성','남성'],[p.gender==='male'?'남성':'여성'])}${p.role==='member'?`<label style="display:flex;gap:8px;align-items:flex-start;color:var(--ink);margin-top:12px"><input id="f_sc" type="checkbox" style="width:auto;margin-top:4px" ${p.staff_consent?'checked':''}>담당 트레이너와 관리자가 내 모든 기록을 볼 수 있음에 동의합니다.</label>`:''}<button class="cp" data-a="saveg">설정 저장</button>${p.role==='trainer'?`<div class="calc" style="margin-top:12px">내 초대 코드 <b>${esc(p.invite_code||'')}</b><div class="mut">회원이 이 코드를 입력하면 연결돼요</div></div>`:''}${p.role!=='trainer'?'<button class="save" data-a="linksheet" style="margin-top:12px;background:var(--pt);color:var(--pine)">담당 트레이너 연결</button>':''}${['trainer','admin'].includes(p.role)?'<button class="save" data-a="toadmin" style="margin-top:12px;background:var(--pt);color:var(--pine)">회원 관리 화면으로</button>':''}<button class="save" data-a="logout" style="margin-top:12px">로그아웃</button><button class="save" data-a="shut" style="background:none;color:var(--mut);margin-top:0">닫기</button>`;$('#sh').hidden=false}
+function acctSheet(){const p=(me&&me.p)||{};$('#sp').innerHTML=`<h2>계정</h2><div class="row"><span>이름</span><b>${esc(p.display_name||'')}</b></div><div class="row"><span>유형</span><b>${p.role==='trainer'?'트레이너':'회원'}</b></div><label style="margin-top:12px">성별</label>${chips('ag',['여성','남성'],[p.gender==='male'?'남성':'여성'])}${p.role==='member'?`<label style="display:flex;gap:8px;align-items:flex-start;color:var(--ink);margin-top:12px"><input id="f_sc" type="checkbox" style="width:auto;margin-top:4px" ${p.staff_edit_ok?'checked':''}>담당 트레이너와 관리자가 내 모든 기록을 보고, 필요하면 대신 입력·수정할 수 있음에 동의합니다.</label>`:''}<button class="cp" data-a="saveg">설정 저장</button>${p.role==='trainer'?`<div class="calc" style="margin-top:12px">내 초대 코드 <b>${esc(p.invite_code||'')}</b><div class="mut">회원이 이 코드를 입력하면 연결돼요</div></div>`:''}${p.role!=='trainer'?'<button class="save" data-a="linksheet" style="margin-top:12px;background:var(--pt);color:var(--pine)">담당 트레이너 연결</button>':''}${['trainer','admin'].includes(p.role)?'<button class="save" data-a="toadmin" style="margin-top:12px;background:var(--pt);color:var(--pine)">회원 관리 화면으로</button>':''}<button class="save" data-a="logout" style="margin-top:12px">로그아웃</button><button class="save" data-a="shut" style="background:none;color:var(--mut);margin-top:0">닫기</button>`;$('#sh').hidden=false}
 
 /* 저장(서버)로 바꾼 함수들: 위의 같은 이름 함수를 덮어써요 */
 async function doSave(k){let to='today';
 try{
 if(k==='meal'){if(!fv('n'))return toast('음식 이름을 입력해 주세요');
-const id=crypto.randomUUID(),fl=$('#f_img').files[0],row={id,user_id:me.id,log_date:day,meal_type:gv('mt')[0]||guess(),name:fv('n'),calories:nv('k'),carb_g:nv('c'),protein_g:nv('p'),fat_g:nv('f')};let img;
-if(fl){const blob=await shrinkBlob(fl),path=me.id+'/'+id+'.jpg',u=await sb.storage.from('meal-photos').upload(path,blob,{contentType:'image/jpeg'});if(u.error)throw u.error;row.photo_path=path;img=URL.createObjectURL(blob)}
+const id=crypto.randomUUID(),fl=$('#f_img').files[0],row={id,user_id:OID(),log_date:day,meal_type:gv('mt')[0]||guess(),name:fv('n'),calories:nv('k'),carb_g:nv('c'),protein_g:nv('p'),fat_g:nv('f'),amount:mealAmt()};let img;
+if(fl){const blob=await shrinkBlob(fl),path=OID()+'/'+id+'.jpg',u=await sb.storage.from('meal-photos').upload(path,blob,{contentType:'image/jpeg'});if(u.error)throw u.error;row.photo_path=path;img=URL.createObjectURL(blob)}
 const r=await sb.from('meal_logs').insert(row).select().single();if(r.error)throw r.error;S.meals.push({...mapMeal(r.data),img});to='meals'}
 else if(k==='lesson'){if(!fv('ld')||!fv('lt'))return toast('날짜와 시간을 입력해 주세요');const kind=gv('lk')[0]||'PT',o={member_id:viewAs?viewAs.id:me.id,trainer_id:viewAs?me.id:null,start_at:fv('ld')+'T'+fv('lt')+':00+09:00',kind,session_no:parseInt(fv('ln'))||null,memo:fv('lm')||null,status:'scheduled'},r=await sb.from('lessons').insert(o).select().single();if(r.error)throw r.error;S.lessons=(S.lessons||[]).concat([mapLesson(r.data)]);sday=fv('ld');cmS=sday.slice(0,7);to='schedule'}
 else if(k==='workout2'){const ex=wd.ex.map(e=>({n:e.n,sets:e.sets.filter(s=>String(s.w).trim()||String(s.r).trim())})).filter(e=>e.sets.length),cd=(($('#cdwrap')&&$('#cdwrap').hidden)?[]:wd.cd).map(c=>({...c,n:String(c.n||'').trim()||((+c.t||+c.k||String(c.i||'').trim())?'유산소':'')})).filter(c=>c.n);
 if(!wd.main.length&&!ex.length&&!cd.length&&!gv('wb').length&&!gv('wy').length)return toast('운동 종류나 종목을 선택해 주세요');
-const id=crypto.randomUUID(),kc=nv('k')+cd.reduce((t,c)=>t+(+c.k||0),0),r=await sb.from('workout_logs').insert({id,user_id:me.id,log_date:day,kinds:gv('wy'),categories:gv('wg'),parts:gv('wb'),main_exercise:wd.main.join(', '),calories:kc,condition:gv('wc')[0]||null,notes:$('#f_nt').value.trim()||null}).select().single();if(r.error)throw r.error;
+const id=crypto.randomUUID(),kc=nv('k')+cd.reduce((t,c)=>t+(+c.k||0),0),r=await sb.from('workout_logs').insert({id,user_id:OID(),log_date:day,kinds:gv('wy'),categories:gv('wg'),parts:gv('wb'),main_exercise:wd.main.join(', '),calories:kc,condition:gv('wc')[0]||null,notes:$('#f_nt').value.trim()||null}).select().single();if(r.error)throw r.error;
 const nw=mapWork(r.data);nw.sets=[];nw.cardio=[];const rows=setRows(id,ex);
 if(rows.length){const q=await sb.from('workout_sets').insert(rows);if(q.error)throw q.error;nw.sets=rows.map(x=>({n:x.exercise,no:x.set_no,w:x.weight_kg,r:x.reps,dn:x.drop_no||0}))}
-if(cd.length){const q=await sb.from('workout_cardio').insert(cd.map(c=>({workout_id:id,user_id:me.id,name:c.n.trim(),intensity:c.i.trim()||null,duration_min:c.t?+(c.t/60).toFixed(2):null,duration_sec:c.t||null,calories:parseInt(c.k)||null})));if(q.error)throw q.error;nw.cardio=cd.map(c=>({n:c.n.trim(),i:c.i.trim(),t:c.t||null,k:parseInt(c.k)||null}))}
+if(cd.length){const q=await sb.from('workout_cardio').insert(cd.map(c=>({workout_id:id,user_id:OID(),name:c.n.trim(),intensity:c.i.trim()||null,duration_min:c.t?+(c.t/60).toFixed(2):null,duration_sec:c.t||null,calories:parseInt(c.k)||null})));if(q.error)throw q.error;nw.cardio=cd.map(c=>({n:c.n.trim(),i:c.i.trim(),t:c.t||null,k:parseInt(c.k)||null}))}
 S.workouts.push(nw);to='workouts'}
 else if(k==='workout'){if(!fv('n')&&!gv('wb').length&&!gv('wy').length)return toast('운동 종류를 선택해 주세요');
-const r=await sb.from('workout_logs').insert({user_id:me.id,log_date:day,kinds:gv('wy'),categories:gv('wg'),parts:gv('wb'),main_exercise:fv('n'),calories:nv('k'),condition:gv('wc')[0]||null}).select().single();if(r.error)throw r.error;S.workouts.push(mapWork(r.data));to='workouts'}
+const r=await sb.from('workout_logs').insert({user_id:OID(),log_date:day,kinds:gv('wy'),categories:gv('wg'),parts:gv('wb'),main_exercise:fv('n'),calories:nv('k'),condition:gv('wc')[0]||null}).select().single();if(r.error)throw r.error;S.workouts.push(mapWork(r.data));to='workouts'}
 else if(k==='body'){if(!nv('w'))return toast('체중을 입력해 주세요');
-const r=await sb.from('body_logs').insert({user_id:me.id,log_date:day,weight:nv('w'),muscle_mass:nv('m')||null,body_fat_mass:nv('f')||null}).select().single();if(r.error)throw r.error;S.body.push(mapBody(r.data));to='body'}
+const r=await sb.from('body_logs').insert({user_id:OID(),log_date:day,weight:nv('w'),muscle_mass:nv('m')||null,body_fat_mass:nv('f')||null}).select().single();if(r.error)throw r.error;S.body.push(mapBody(r.data));to='body'}
 else if(k==='cycle'){if(!fv('d'))return toast('날짜를 선택해 주세요');
-const r=await sb.from('cycle_logs').insert({user_id:me.id,start_date:fv('d'),end_date:fv('de')||null,flow:({'점출혈':'spotting','적음':'light','보통':'medium','많음':'heavy'})[gv('cf')[0]]||null,pain:+$('#f_pn').value||0,painkiller:$('#f_pk').checked}).select().single();if(r.error)throw r.error;(S.cid=S.cid||{})[fv('d')]=r.data.id;S.cycle.push(fv('d'));(S.cinfo=S.cinfo||{})[fv('d')]={flow:({'점출혈':'spotting','적음':'light','보통':'medium','많음':'heavy'})[gv('cf')[0]]||null,pain:+$('#f_pn').value||0,pk:$('#f_pk').checked,e:fv('de')||null};S.cend=S.cend||{};if(fv('de'))S.cend[fv('d')]=fv('de');to='body'}
+const r=await sb.from('cycle_logs').insert({user_id:OID(),start_date:fv('d'),end_date:fv('de')||null,flow:({'점출혈':'spotting','적음':'light','보통':'medium','많음':'heavy'})[gv('cf')[0]]||null,pain:+$('#f_pn').value||0,painkiller:$('#f_pk').checked}).select().single();if(r.error)throw r.error;(S.cid=S.cid||{})[fv('d')]=r.data.id;S.cycle.push(fv('d'));(S.cinfo=S.cinfo||{})[fv('d')]={flow:({'점출혈':'spotting','적음':'light','보통':'medium','많음':'heavy'})[gv('cf')[0]]||null,pain:+$('#f_pn').value||0,pk:$('#f_pk').checked,e:fv('de')||null};S.cend=S.cend||{};if(fv('de'))S.cend[fv('d')]=fv('de');to='body'}
 else if(k==='goal'){const c=nv('gc'),p=nv('gp'),f=nv('gf');if(!(c+p+f))return toast('탄수화물, 단백질, 지방 목표를 입력해 주세요');
 if(fv('dn')&&!fv('dd'))return toast('디데이 날짜를 선택해 주세요');if(!fv('dn')&&fv('dd'))return toast('디데이 이름을 입력해 주세요');
-const g=await sb.from('goals').upsert({user_id:me.id,carb_g:c,protein_g:p,fat_g:f,target_weight:nv('gw')||null,updated_at:new Date().toISOString()});if(g.error)throw g.error;
+const g=await sb.from('goals').upsert({user_id:OID(),carb_g:c,protein_g:p,fat_g:f,target_weight:nv('gw')||null,updated_at:new Date().toISOString()});if(g.error)throw g.error;
 S.goal={c,p,f,k:c*4+p*4+f*9,w:nv('gw')||undefined};
-if(fv('dn')){const r=await sb.from('ddays').insert({user_id:me.id,name:fv('dn'),date:fv('dd')}).select().single();if(r.error)throw r.error;S.dday.push({id:r.data.id,n:r.data.name,d:r.data.date})}to='today'}
+if(fv('dn')){const r=await sb.from('ddays').insert({user_id:OID(),name:fv('dn'),date:fv('dd')}).select().single();if(r.error)throw r.error;S.dday.push({id:r.data.id,n:r.data.name,d:r.data.date})}to='today'}
 }catch(e){return toast('저장하지 못했어요: '+(e.message||''))}
 if(to==='meals'||to==='workouts')dayBy[to]=day;closeS();toast('저장했어요');if(location.hash==='#'+to)render();else location.hash='#'+to}
 
 async function upd(id){const x=S.meals.find(m=>String(m.id)===String(id));if(!x)return;if(!fv('n'))return toast('음식 이름을 입력해 주세요');
 try{const o={meal_type:gv('mt')[0]||x.t,name:fv('n'),calories:nv('k'),carb_g:nv('c'),protein_g:nv('p'),fat_g:nv('f')},fl=$('#f_img').files[0];let img=x.img,path=x.path;
 if(rmImg&&path){await sb.storage.from('meal-photos').remove([path]);path=null;img=undefined}
-if(fl){const blob=await shrinkBlob(fl);path=me.id+'/'+x.id+'.jpg';const u=await sb.storage.from('meal-photos').upload(path,blob,{contentType:'image/jpeg',upsert:true});if(u.error)throw u.error;img=URL.createObjectURL(blob)}
+if(fl){const blob=await shrinkBlob(fl);path=OID()+'/'+x.id+'.jpg';const u=await sb.storage.from('meal-photos').upload(path,blob,{contentType:'image/jpeg',upsert:true});if(u.error)throw u.error;img=URL.createObjectURL(blob)}
 o.photo_path=path;const r=await sb.from('meal_logs').update(o).eq('id',x.id);if(r.error)throw r.error;
 Object.assign(x,{t:o.meal_type,n:o.name,k:o.calories,c:o.carb_g,p:o.protein_g,f:o.fat_g,path,img})}catch(e){return toast('저장하지 못했어요: '+(e.message||''))}
 closeS();render();toast('저장했어요')}
 
 /* 삭제, 복사, 로그인 등은 기존 클릭 처리보다 먼저 가로채서 서버에 반영해요 */
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,d=b.dataset;
-if(viewAs&&!(tab()==='schedule'&&me.p.role==='trainer'&&['pick','save','ledit','ulesson','dlesson'].includes(a)&&(!d.k||d.k==='lesson'))&&['fab','goal','edit','upd','qa','cp','del','del2','ddel','pick','save','rmimg','wedit','bedit','cedit','uwork','ubody','dbody','ucyc','dcyc','ledit','ulesson','dlesson'].includes(a)){e.stopImmediatePropagation();return toast('보기 전용이에요')}
+if(viewAs&&!viewAs.edit&&!(tab()==='schedule'&&me.p.role==='trainer'&&['pick','save','ledit','ulesson','dlesson'].includes(a)&&(!d.k||d.k==='lesson'))&&['fab','goal','edit','upd','qa','cp','del','del2','ddel','pick','save','rmimg','wedit','bedit','cedit','uwork','ubody','dbody','ucyc','dcyc','ledit','ulesson','dlesson'].includes(a)){e.stopImmediatePropagation();if(a==='edit'){const x=S.meals.find(y=>String(y.id)===d.i);if(x)detail('meal',x.t);return}return toast('이 회원은 아직 열람만 동의했어요. 회원이 계정 화면에서 동의를 다시 확인하면 입력·수정할 수 있어요')}
 if(!['del','del2','qa','cp','ddel','acct','logout','login','signup','clear','back','cday','cprev','cnext','cprev2','cnext2','vm','vback','dolink','skiplink','linksheet','saveg','rmmain','rmex','rmset','addset','addcd','rmcd','wdet','wedit','uwork','bedit','ubody','dbody','cedit','ucyc','dcyc','forgot','setpw','myrec','toadmin','ledit','ulesson','dlesson','sday','cprevS','cnextS'].includes(a))return;e.stopImmediatePropagation();let own=false;if(['del','del2','qa','cp','ddel','saveg','dolink','uwork','ubody','dbody','ucyc','dcyc','setpw','ulesson','dlesson'].includes(a)){if(busy)return;busy=own=true}
 try{
 if(a==='acct')return acctSheet();
 if(a==='back')return authUI();
-if(a==='vm'){viewAs={id:d.i,name:d.n,gender:((me.members||[]).find(x=>x.id===d.i)||{}).gender};const au=$('#auth');if(au)au.remove();document.body.classList.add('in','ro');showVB();dayBy={};day=baseDay();cm=lastDM=day.slice(0,7);if(location.hash!=='#today')location.hash='#today';return void await loadAll()}
+if(a==='vm'){viewAs=mkView(d.i);const au=$('#auth');if(au)au.remove();document.body.classList.add('in');setRo();showVB();dayBy={};day=baseDay();cm=lastDM=day.slice(0,7);if(location.hash!=='#today')location.hash='#today';return void await loadAll()}
 if(a==='vback'){const v=$('#vb');if(v)v.remove();S.meals=[];S.workouts=[];S.body=[];S.cycle=[];S.dday=[];return void await adminUI()}
 if(a==='linksheet')return linkSheet();
 if(a==='rmmain'){wd.main=wd.main.filter(n=>n!==d.n);return drawMain()}
@@ -296,7 +310,7 @@ if(a==='ucyc')return void await ucyc(d.i,d.s);
 if(a==='dcyc')return void await dcyc(d.i,d.s);
 if(a==='forgot'){const email=$('#a_e').value.trim();if(!email)return toast('이메일을 먼저 입력해 주세요');const r=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(r.error)throw r.error;return authUI('비밀번호 재설정 메일을 보냈어요. 메일의 링크를 눌러 새 비밀번호를 정해 주세요.',true)}
 if(a==='setpw'){const pw=$('#a_np').value;if(pw.length<6)return toast('비밀번호는 6자 이상이어야 해요');const r=await sb.auth.updateUser({password:pw});if(r.error)throw r.error;recov=false;const u=await sb.auth.getUser();toast('비밀번호를 바꿨어요');if(u.data&&u.data.user)start(u.data.user);return}
-if(a==='saveg'){const g=gv('ag')[0]==='남성'?'male':'female',r=await sb.from('profiles').update({gender:g,staff_consent:$('#f_sc')?$('#f_sc').checked:!!me.p.staff_consent}).eq('id',me.id);if(r.error)throw r.error;me.p.gender=g;me.p.staff_consent=$('#f_sc')?$('#f_sc').checked:!!me.p.staff_consent;toast('저장했어요');return render()}
+if(a==='saveg'){const g=gv('ag')[0]==='남성'?'male':'female',r=await sb.from('profiles').update({gender:g,staff_consent:$('#f_sc')?$('#f_sc').checked:!!me.p.staff_consent,staff_edit_ok:$('#f_sc')?$('#f_sc').checked:!!me.p.staff_edit_ok}).eq('id',me.id);if(r.error)throw r.error;me.p.gender=g;me.p.staff_consent=$('#f_sc')?$('#f_sc').checked:!!me.p.staff_consent;me.p.staff_edit_ok=me.p.staff_consent;toast('저장했어요');return render()}
 if(a==='skiplink'){try{sessionStorage.setItem('skipLink','1')}catch(e){}return closeS()}
 if(a==='dolink'){if(!$('#f_ok').checked)return toast('동의에 체크해 주세요');if(!fv('code'))return toast('초대 코드를 입력해 주세요');const r=await sb.rpc('link_trainer',{code:fv('code')});if(r.error)throw r.error;closeS();return toast('트레이너와 연결했어요')}
 if(a==='cday'){day=d.d;cm=lastDM=day.slice(0,7);return render()}
@@ -306,14 +320,14 @@ if(a==='logout'){closeS();return void await sb.auth.signOut()}
 if(a==='login'||a==='signup'){const email=$('#a_e').value.trim(),password=$('#a_p').value;if(!email||!password)return toast('이메일과 비밀번호를 입력해 주세요');
 if(a==='login'){const r=await sb.auth.signInWithPassword({email,password});if(r.error)throw r.error;return}
 if($('#a_x').hidden){$('#a_x').hidden=false;return toast('이름과 성별을 확인하고 가입하기를 한 번 더 눌러 주세요')}
-if(!$('#a_c').checked)return toast('동의에 체크해 주세요');const r=await sb.auth.signUp({email,password,options:{data:{staff_consent:true,display_name:$('#a_n').value.trim()||'회원',gender:gv('ag')[0]==='남성'?'male':'female'}}});if(r.error)throw r.error;
+if(!$('#a_c').checked)return toast('동의에 체크해 주세요');const r=await sb.auth.signUp({email,password,options:{data:{staff_consent:true,staff_edit_ok:true,display_name:$('#a_n').value.trim()||'회원',gender:gv('ag')[0]==='남성'?'male':'female'}}});if(r.error)throw r.error;
 if(!r.data.session)authUI('가입 확인 메일을 보냈어요. 메일의 링크를 누른 뒤 로그인해 주세요.',true);return}
 if(a==='del'||a==='del2'){const tb=a==='del2'?'meals':d.k,tn={meals:'meal_logs',workouts:'workout_logs'}[tb],x=S[tb].find(y=>String(y.id)===d.i),r=await sb.from(tn).delete().eq('id',d.i);if(r.error)throw r.error;
 if(x&&x.path)await sb.storage.from('meal-photos').remove([x.path]);S[tb]=S[tb].filter(y=>String(y.id)!==d.i);if(a==='del2')closeS();render();return toast('삭제했어요')}
-if(a==='qa'){const x=S.meals.find(y=>String(y.id)===d.i);if(!x)return;const r=await sb.from('meal_logs').insert({user_id:me.id,log_date:day,meal_type:guess(),name:x.n,calories:x.k,carb_g:x.c,protein_g:x.p,fat_g:x.f}).select().single();if(r.error)throw r.error;S.meals.push(mapMeal(r.data));render();return toast('저장했어요')}
-if(a==='cp'){const x=S.workouts.find(y=>String(y.id)===d.i);if(!x)return;const r=await sb.from('workout_logs').insert({user_id:me.id,log_date:day,kinds:x.y||[],categories:x.g||[],parts:x.b||[],main_exercise:x.n,calories:x.k,condition:x.c||null}).select().single();if(r.error)throw r.error;const nw=mapWork(r.data);nw.sets=[];nw.cardio=[];
-if((x.sets||[]).length){const q=await sb.from('workout_sets').insert(x.sets.map(s=>({workout_id:nw.id,user_id:me.id,exercise:s.n,set_no:s.no,weight_kg:s.w,reps:s.r,drop_no:s.dn||0})));if(!q.error)nw.sets=x.sets.map(s=>({...s}))}
-if((x.cardio||[]).length){const q=await sb.from('workout_cardio').insert(x.cardio.map(c=>({workout_id:nw.id,user_id:me.id,name:c.n,intensity:c.i||null,duration_min:c.t?+(c.t/60).toFixed(2):null,duration_sec:c.t||null,calories:c.k})));if(!q.error)nw.cardio=x.cardio.map(c=>({...c}))}
+if(a==='qa'){const x=S.meals.find(y=>String(y.id)===d.i);if(!x)return;const r=await sb.from('meal_logs').insert({user_id:OID(),log_date:day,meal_type:guess(),name:x.n,amount:x.amt||null,calories:x.k,carb_g:x.c,protein_g:x.p,fat_g:x.f}).select().single();if(r.error)throw r.error;S.meals.push(mapMeal(r.data));render();return toast('저장했어요')}
+if(a==='cp'){const x=S.workouts.find(y=>String(y.id)===d.i);if(!x)return;const r=await sb.from('workout_logs').insert({user_id:OID(),log_date:day,kinds:x.y||[],categories:x.g||[],parts:x.b||[],main_exercise:x.n,calories:x.k,condition:x.c||null}).select().single();if(r.error)throw r.error;const nw=mapWork(r.data);nw.sets=[];nw.cardio=[];
+if((x.sets||[]).length){const q=await sb.from('workout_sets').insert(x.sets.map(s=>({workout_id:nw.id,user_id:OID(),exercise:s.n,set_no:s.no,weight_kg:s.w,reps:s.r,drop_no:s.dn||0})));if(!q.error)nw.sets=x.sets.map(s=>({...s}))}
+if((x.cardio||[]).length){const q=await sb.from('workout_cardio').insert(x.cardio.map(c=>({workout_id:nw.id,user_id:OID(),name:c.n,intensity:c.i||null,duration_min:c.t?+(c.t/60).toFixed(2):null,duration_sec:c.t||null,calories:c.k})));if(!q.error)nw.cardio=x.cardio.map(c=>({...c}))}
 S.workouts.push(nw);render();return toast('저장했어요')}
 if(a==='ddel'){const r=await sb.from('ddays').delete().eq('id',d.i);if(r.error)throw r.error;S.dday=S.dday.filter(y=>String(y.id)!==d.i);sheet('goal');render()}
 }catch(err){const m=em(err.message||'문제가 생겼어요'),ae=$('#a_err');if(ae)ae.textContent=m;else toast(m)}finally{if(own)busy=false}
@@ -349,8 +363,8 @@ if(ids.length){const r=await sb.from('profiles').select('id,display_name,gender'
 me.members=ps;
 a.innerHTML=`<div class="ap"><h1>회원 관리</h1><p class="mut">내 초대 코드 <b>${esc(me.p.invite_code||'')}</b><br>회원이 가입한 뒤 이 코드를 입력하면 여기에 나타나요.</p>${ps.map(p=>`<button class="mem" data-a="vm" data-i="${p.id}" data-n="${esc(p.display_name)}">${esc(p.display_name)}</button>`).join('')||'<p class="empty">아직 연결된 회원이 없어요.</p>'}<button class="save" data-a="myrec" style="background:var(--pt);color:var(--pine);margin-top:14px">내 기록 보기</button><button class="save" data-a="logout" style="background:none;color:var(--mut);margin-top:12px">로그아웃</button></div>`}
 function showVB(){let v=$('#vb');if(!v){v=document.createElement('div');v.id='vb';v.className='vb';document.body.appendChild(v)}v.innerHTML=`<select id="vsel" aria-label="회원 선택">${(me.members||[]).map(m=>`<option value="${m.id}" ${m.id===viewAs.id?'selected':''}>${esc(m.display_name)}</option>`).join('')}</select><span>보기 전용</span><button class="cp" data-a="vback">회원 목록</button>`}
-document.addEventListener('change',e=>{if(e.target.id==='vsel'){const o=e.target.selectedOptions[0];viewAs={id:o.value,name:o.textContent,gender:((me.members||[]).find(x=>x.id===o.value)||{}).gender};showVB();dayBy={};day=baseDay();cm=lastDM=day.slice(0,7);loadAll()}});
-function linkSheet(){$('#sp').innerHTML=`<h2>담당 트레이너 연결</h2><p class="mut">트레이너에게 받은 초대 코드를 입력하세요.</p><label>초대 코드<input id="f_code" autocapitalize="characters" autocomplete="off"></label><label style="display:flex;gap:8px;align-items:flex-start;color:var(--ink)"><input id="f_ok" type="checkbox" style="width:auto;margin-top:4px">담당 트레이너가 제 식사, 운동, 체중, 생리주기 등 모든 기록을 볼 수 있는 것에 동의합니다.</label><button class="save" data-a="dolink">연결하기</button><button class="save" data-a="skiplink" style="background:none;color:var(--mut);margin-top:0">나중에 하기</button>`;$('#sh').hidden=false}
+document.addEventListener('change',e=>{if(e.target.id==='vsel'){const o=e.target.selectedOptions[0];viewAs=mkView(o.value);setRo();showVB();dayBy={};day=baseDay();cm=lastDM=day.slice(0,7);loadAll()}});
+function linkSheet(){$('#sp').innerHTML=`<h2>담당 트레이너 연결</h2><p class="mut">트레이너에게 받은 초대 코드를 입력하세요.</p><label>초대 코드<input id="f_code" autocapitalize="characters" autocomplete="off"></label><label style="display:flex;gap:8px;align-items:flex-start;color:var(--ink)"><input id="f_ok" type="checkbox" style="width:auto;margin-top:4px">담당 트레이너가 제 식사, 운동, 체중, 생리주기 등 모든 기록을 보고 필요하면 대신 입력·수정할 수 있는 것에 동의합니다.</label><button class="save" data-a="dolink">연결하기</button><button class="save" data-a="skiplink" style="background:none;color:var(--mut);margin-top:0">나중에 하기</button>`;$('#sh').hidden=false}
 
 /* ===== 생리주기추적 ===== */
 function hideCyc(){try{return viewAs?viewAs.gender==='male':me.p.gender==='male'}catch(e){return false}}
@@ -378,7 +392,7 @@ function drawMain(){$('#mainsel').innerHTML=wd.main.map(n=>`<button type="button
 function drawSets(){const I=(i,j)=>`data-i="${i}" data-j="${j}"`;$('#sets').innerHTML=wd.ex.map((e,i)=>`<div class="exb"><div class="exh"><b>${esc(e.n)}</b><button type="button" class="x" data-a="rmex" data-i="${i}" aria-label="종목 삭제">×</button></div>${lastHint(e.n)}${e.sets.map((s,j)=>`<div class="sr"><span>${j+1}세트</span><input inputmode="decimal" placeholder="kg" value="${esc(s.w)}" data-f="w" ${I(i,j)}><input inputmode="numeric" placeholder="회" value="${esc(s.r)}" data-f="r" ${I(i,j)}><button type="button" class="x" data-a="rmset" ${I(i,j)} aria-label="세트 삭제">×</button></div>${(s.d||[]).map((q,k)=>`<div class="sr dr"><span>↳ 드롭</span><input inputmode="decimal" placeholder="kg" value="${esc(q.w)}" data-df="w" ${I(i,j)} data-k="${k}"><input inputmode="numeric" placeholder="회" value="${esc(q.r)}" data-df="r" ${I(i,j)} data-k="${k}"><button type="button" class="x" data-a="rmdrop" ${I(i,j)} data-k="${k}" aria-label="드롭 삭제">×</button></div>`).join('')}<button type="button" class="cp dpb" data-a="adddrop" ${I(i,j)}>+ 드롭</button>`).join('')}<button type="button" class="cp" data-a="addset" data-i="${i}">+ 세트 추가</button></div>`).join('')}
 function drawCd(){$('#cd').innerHTML=wd.cd.map((c,i)=>`<div class="cdr"><input placeholder="운동명 (예: 인클라인 걷기)" value="${esc(c.n)}" data-c="n" data-i="${i}"><input placeholder="강도 (예: 경사 11 속도 4)" value="${esc(c.i)}" data-c="i" data-i="${i}"><input inputmode="decimal" placeholder="시간 (분)" value="${esc(c.m)}" data-c="m" data-i="${i}"><input inputmode="decimal" placeholder="소모 kcal" value="${esc(c.k)}" data-c="k" data-i="${i}"><button type="button" class="x" data-a="rmcd" data-i="${i}" aria-label="삭제">×</button></div>`).join('')}
 function wForm(){wd={main:[],ex:[],cd:[]};$('#sp').innerHTML=`<h2>운동 기록</h2><label>종류</label>${chips('wy',['웨이트','요가','필라테스','유산소','기타'],[],1)}<label>구분</label>${chips('wg',['PT','개인 운동'],[],1)}<label>부위</label>${chips('wb',['하체','어깨','가슴','등','팔','복근'],[],1)}<label>메인 운동</label><div id="mainsel" class="chips" style="margin:4px 0"></div><select id="f_mp" class="sel"></select><h3 class="sh3">세트 기록 (웨이트)</h3><div id="sets"></div><select id="f_ep" class="sel"></select><h3 class="sh3">유산소</h3><div id="cd"></div><button type="button" class="cp" data-a="addcd">+ 유산소 하나 더 추가</button><label style="margin-top:14px">소모 열량 (kcal)<input id="f_k" inputmode="decimal"></label><label>컨디션</label>${chips('wc',['상','중','하'],[])}<label>특이사항<textarea id="f_nt" rows="3" placeholder="메모할 내용이 있으면 적어요"></textarea></label><button class="save" data-a="save" data-k="workout2">저장</button>`;refreshEx();drawMain();drawSets();drawCd();kTot();$('#sh').hidden=false}
-function addCustomEx(name){const part=gv('wb')[0]||'';S.myex=S.myex||[];if(!S.myex.some(x=>x.name===name)){S.myex.push({name,part});sb.from('user_exercises').insert({user_id:me.id,name,part:part||null}).then(()=>{},()=>{})}}
+function addCustomEx(name){const part=gv('wb')[0]||'';S.myex=S.myex||[];if(!S.myex.some(x=>x.name===name)){S.myex.push({name,part});sb.from('user_exercises').insert({user_id:OID(),name,part:part||null}).then(()=>{},()=>{})}}
 function wdetail(id){const x=S.workouts.find(y=>String(y.id)===String(id));if(!x)return;const g={};(x.sets||[]).forEach(s=>{(g[s.n]=g[s.n]||[]).push(s)});
 const tb=Object.keys(g).map(n=>`<div class="row" style="align-items:flex-start"><b style="flex:none;max-width:45%">${esc(n)}</b><span style="text-align:right">${g[n].reduce((a,s)=>{const t=sTxt(s);if(s.dn>0&&a.length)a[a.length-1]+=' → '+t;else a.push(t);return a},[]).join('<br>')}</span></div>`).join(''),
 cd=(x.cardio||[]).map(c=>`<div class="row"><span class="n">${esc(c.n)}<small>${esc(c.i||'')}</small></span><b>${c.t?hms(c.t)+' ':''}${c.k?c.k+' kcal':''}</b></div>`).join(''),h3=t=>`<h3 style="margin:14px 0 4px;font-size:15px">${t}</h3>`;
@@ -425,7 +439,7 @@ r=await sb.from('workout_sets').delete().eq('workout_id',x.id);if(r.error)throw 
 r=await sb.from('workout_cardio').delete().eq('workout_id',x.id);if(r.error)throw r.error;
 const rows=setRows(x.id,ex);
 if(rows.length){r=await sb.from('workout_sets').insert(rows);if(r.error)throw r.error}
-if(cd.length){r=await sb.from('workout_cardio').insert(cd.map(c=>({workout_id:x.id,user_id:me.id,name:c.n.trim(),intensity:String(c.i).trim()||null,duration_min:c.t?+(c.t/60).toFixed(2):null,duration_sec:c.t||null,calories:parseInt(c.k)||null})));if(r.error)throw r.error}
+if(cd.length){r=await sb.from('workout_cardio').insert(cd.map(c=>({workout_id:x.id,user_id:OID(),name:c.n.trim(),intensity:String(c.i).trim()||null,duration_min:c.t?+(c.t/60).toFixed(2):null,duration_sec:c.t||null,calories:parseInt(c.k)||null})));if(r.error)throw r.error}
 Object.assign(x,{y:o.kinds,g:o.categories,b:o.parts,n:o.main_exercise,k:kc,c:o.condition||'',notes:o.notes||'',sets:rows.map(q=>({n:q.exercise,no:q.set_no,w:q.weight_kg,r:q.reps,dn:q.drop_no||0})),cardio:cd.map(c=>({n:c.n.trim(),i:String(c.i).trim(),t:c.t||null,k:parseInt(c.k)||null}))});
 closeS();render();toast('저장했어요')}
 
@@ -514,7 +528,7 @@ async function checkLink(){const r=await sb.from('trainer_links').select('traine
 var cdayC='',cycAll=false;
 function cycSel(){if(!cdayC)return'';const en=S.cend||{},st=[...S.cycle].sort().find(x=>cdayC>=x&&cdayC<=(en[x]||addDays(x,4)));
 const btn=st?`<button class="cp" data-a="cedit" data-s="${st}">수정</button>`:`<button class="cp" data-a="cycnew" data-d="${cdayC}">생리 시작일로 기록</button>`;
-return`<div class="row" style="margin-top:10px"><span class="n"><b>${md(cdayC)}</b><small>${st?md(st)+' 시작 기록에 포함돼요':'기록 없음'}</small></span>${viewAs?'':btn}</div>`}
+return`<div class="row" style="margin-top:10px"><span class="n"><b>${md(cdayC)}</b><small>${st?md(st)+' 시작 기록에 포함돼요':'기록 없음'}</small></span>${viewAs&&!viewAs.edit?'':btn}</div>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,d=b.dataset;
 if(a==='ctoday'){const t=baseDay();if(d.k==='sched'){sday=t;cmS=t.slice(0,7)}else if(d.k==='cycle'){cdayC=t;cmC=t.slice(0,7)}else{day=t;cm=lastDM=t.slice(0,7)}render()}
 if(a==='cycday'){cdayC=d.d;render()}
@@ -525,7 +539,7 @@ if(a==='pick'&&d.k==='cycle'&&cdayC&&$('#f_d'))$('#f_d').value=cdayC});
 
 /* ===== 드롭세트, 유산소 첫 줄 자동 표시 ===== */
 const sTxt=s=>(s.w!=null?+s.w+'kg':'')+(s.w!=null&&s.r!=null?' × ':'')+(s.r!=null?s.r+'회':'');
-function setRows(wid,ex){const rows=[],ok=q=>String(q.w).trim()||String(q.r).trim();ex.forEach(e=>e.sets.forEach((s,j)=>{rows.push({workout_id:wid,user_id:me.id,exercise:e.n,set_no:j+1,drop_no:0,weight_kg:parseFloat(s.w)||null,reps:parseInt(s.r)||null});(s.d||[]).filter(ok).forEach((q,k)=>rows.push({workout_id:wid,user_id:me.id,exercise:e.n,set_no:j+1,drop_no:k+1,weight_kg:parseFloat(q.w)||null,reps:parseInt(q.r)||null}))}));return rows}
+function setRows(wid,ex){const rows=[],ok=q=>String(q.w).trim()||String(q.r).trim();ex.forEach(e=>e.sets.forEach((s,j)=>{rows.push({workout_id:wid,user_id:OID(),exercise:e.n,set_no:j+1,drop_no:0,weight_kg:parseFloat(s.w)||null,reps:parseInt(s.r)||null});(s.d||[]).filter(ok).forEach((q,k)=>rows.push({workout_id:wid,user_id:OID(),exercise:e.n,set_no:j+1,drop_no:k+1,weight_kg:parseFloat(q.w)||null,reps:parseInt(q.r)||null}))}));return rows}
 document.addEventListener('input',e=>{const t=e.target,d=t.dataset||{};if(d.df&&wd.ex[+d.i]){const q=(wd.ex[+d.i].sets[+d.j].d||[])[+d.k];if(q)q[d.df]=t.value}});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b){const a=b.dataset.a,d=b.dataset;
 if(a==='adddrop'){const s=wd.ex[+d.i].sets[+d.j];(s.d=s.d||[]).push({w:'',r:s.r});drawSets()}
@@ -633,8 +647,8 @@ function foodFill(){const g=+(($('#fg')||{}).value)||0;if(!curFood||!g||!$('#f_k
 /* ===== 트레이너 수업 등록, 회차 자동 ===== */
 const nextNo=k=>{if(k!=='PT')return'';const a=(S.lessons||[]).filter(l=>l.kind==='PT'&&l.no&&l.status!=='cancelled');return a.length?Math.max(...a.map(l=>l.no))+1:''};
 function mapLesson(l){const q=sp(l.start_at);return{id:l.id,d:q.d,h:q.h,m:q.m,kind:l.kind,no:l.session_no,memo:l.memo||'',own:!l.trainer_id,tid:l.trainer_id,status:l.status}}
-const canEd=l=>viewAs?(me.p.role==='trainer'&&l.tid===me.id):l.own;
-function vSched(){if(!sday)sday=baseDay();const a=lessonsOn(sday),add=!viewAs||me.p.role==='trainer';return head('스케줄',false)+calCard('sched')+`<section class="card"><h3>${md(sday)} 수업${add?'<button class="cp" data-a="pick" data-k="lesson">+ 일정 추가</button>':''}</h3>${a.map(l=>`<div class="row${canEd(l)?' tap':''}" ${canEd(l)?`role="button" tabindex="0" data-a="ledit" data-i="${l.id}"`:''}><span class="n">${lsTxt(l)}<small>${l.tid?'트레이너 등록':'직접 등록'}${l.memo?', '+esc(l.memo):''}</small></span></div>`).join('')||'<p class="empty">이 날은 수업 일정이 없어요.</p>'}</section>`}
+const canEd=l=>viewAs?(viewAs.edit||(me.p.role==='trainer'&&l.tid===me.id)):l.own;
+function vSched(){if(!sday)sday=baseDay();const a=lessonsOn(sday),add=!viewAs||viewAs.edit||me.p.role==='trainer';return head('스케줄',false)+calCard('sched')+`<section class="card"><h3>${md(sday)} 수업${add?'<button class="cp" data-a="pick" data-k="lesson">+ 일정 추가</button>':''}</h3>${a.map(l=>`<div class="row${canEd(l)?' tap':''}" ${canEd(l)?`role="button" tabindex="0" data-a="ledit" data-i="${l.id}"`:''}><span class="n">${lsTxt(l)}<small>${l.tid?'트레이너 등록':'직접 등록'}${l.memo?', '+esc(l.memo):''}</small></span></div>`).join('')||'<p class="empty">이 날은 수업 일정이 없어요.</p>'}</section>`}
 
 /* ===== 체중 그래프 기간, 목표선 ===== */
 var bRange='3m';
@@ -645,7 +659,7 @@ return`<svg class="ch" viewBox="0 0 ${W} ${H}" role="img" aria-label="체중 변
 
 /* ===== 개인정보 처리방침, 회원 탈퇴 ===== */
 const OP_CONTACT='[운영자 연락처를 여기에 입력]';
-const privHTML=()=>`<details style="margin:10px 0"><summary class="cp">개인정보 처리방침 보기</summary><div class="mut" style="font-size:12px;line-height:1.65;margin-top:6px"><b>1. 수집 항목</b><br>이메일, 이름, 성별, 그리고 직접 입력한 건강 기록(식사, 식사 사진, 운동, 체중, 체성분, 생리주기, 수업 일정). 건강 정보는 민감정보에 해당해요.<br><b>2. 이용 목적</b><br>기록 서비스 제공, 담당 트레이너와 관리자의 회원 관리.<br><b>3. 제3자 열람</b><br>동의한 경우에만 담당 트레이너와 관리자가 내 모든 기록(생리주기 포함)을 볼 수 있어요. 보기 전용이며, 계정 화면에서 동의를 언제든 해제할 수 있어요.<br><b>4. 보관과 삭제</b><br>회원 탈퇴 시 모든 기록과 사진을 즉시 삭제해요.<br><b>5. 처리 위탁</b><br>데이터 저장은 Supabase, 앱 배포는 GitHub Pages를 사용하며 서버가 국외에 있을 수 있어요.<br><b>6. 이용자 권리</b><br>열람, 수정, 삭제, 동의 철회를 요구할 수 있어요.<br><b>7. 문의</b><br>${esc(OP_CONTACT)}</div></details>`;
+const privHTML=()=>`<details style="margin:10px 0"><summary class="cp">개인정보 처리방침 보기</summary><div class="mut" style="font-size:12px;line-height:1.65;margin-top:6px"><b>1. 수집 항목</b><br>이메일, 이름, 성별, 그리고 직접 입력한 건강 기록(식사, 식사 사진, 운동, 체중, 체성분, 생리주기, 수업 일정). 건강 정보는 민감정보에 해당해요.<br><b>2. 이용 목적</b><br>기록 서비스 제공, 담당 트레이너와 관리자의 회원 관리.<br><b>3. 제3자 열람과 대리 입력</b><br>동의한 경우에만 담당 트레이너와 관리자가 내 모든 기록(생리주기 포함)을 보고, 필요하면 회원을 대신해 입력·수정할 수 있어요. 계정 화면에서 동의를 언제든 해제할 수 있어요.<br><b>4. 보관과 삭제</b><br>회원 탈퇴 시 모든 기록과 사진을 즉시 삭제해요.<br><b>5. 처리 위탁</b><br>데이터 저장은 Supabase, 앱 배포는 GitHub Pages를 사용하며 서버가 국외에 있을 수 있어요.<br><b>6. 이용자 권리</b><br>열람, 수정, 삭제, 동의 철회를 요구할 수 있어요.<br><b>7. 문의</b><br>${esc(OP_CONTACT)}</div></details>`;
 const _ac=acctSheet;acctSheet=function(){_ac();const p=(me&&me.p)||{},el=$('#sp').querySelector('[data-a="logout"]');if(el)el.insertAdjacentHTML('beforebegin',privHTML()+(p.role==='member'?'<button class="save" data-a="delask" style="margin-top:12px;background:none;color:var(--fat)">회원 탈퇴</button>':''))};
 const _au=authUI;authUI=function(m,d){_au(m,d);const x=$('#a_x');if(x)x.insertAdjacentHTML('beforeend',privHTML())};
 
@@ -665,4 +679,70 @@ const r=await sb.rpc('delete_my_account');if(r.error)throw r.error;closeS();toas
 
 /* ===== 운동 입력 순서 보존: 세트/유산소 저장 시 입력 순서대로 시간 도장(created_at)을 찍어요 ===== */
 (function(){const _from=sb.from.bind(sb);sb.from=t=>{const q=_from(t);if(t==='workout_sets'||t==='workout_cardio'){const _in=q.insert.bind(q);q.insert=(r,...a)=>{if(Array.isArray(r)){const b=Date.now();r=r.map((x,i)=>({...x,created_at:new Date(b+i).toISOString()}))}return _in(r,...a)}}return q}})();
+
+/* ===== 트레이너/관리자 전체 접근, 회원 관리 대시보드, 식사 상세 ===== */
+var DASH=null,dFilter='all';
+function OID(){return viewAs?viewAs.id:me.id}
+function mealAmt(){const q=$('#fqty'),g=$('#fg');return(typeof curFood!=='undefined'&&curFood&&q&&!q.hidden&&g&&g.value)?(+g.value+(curFood.s?'회분':'g')):null}
+function setRo(){document.body.classList.toggle('ro',!!viewAs&&!viewAs.edit);document.body.classList.toggle('vw',!!viewAs)}
+function mkView(id){const m=(me.members||[]).find(x=>x.id===id)||{};return{id,name:m.display_name||'',gender:m.gender,edit:!!m.staff_edit_ok}}
+function seoulHour(){return +new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Seoul',hour:'2-digit',hourCycle:'h23'}).format(new Date())}
+function showVB(){let v=$('#vb');if(!v){v=document.createElement('div');v.id='vb';v.className='vb';document.body.appendChild(v)}
+v.innerHTML=`<select id="vsel" aria-label="회원 선택">${(me.members||[]).map(m=>`<option value="${m.id}" ${m.id===viewAs.id?'selected':''}>${esc(m.display_name)}</option>`).join('')}</select><span>${viewAs.edit?'회원 기록 관리 중':'열람만 가능'}</span><button class="cp" data-a="vback">회원 목록</button>`}
+function mealDetailHTML(t){const a=dm(day).filter(x=>x.t===t),T=k=>Math.round(sum(a,k)*10)/10;
+if(!a.length)return`<h2>${t}</h2><p class="empty">기록이 없어요.</p>`;
+const can=!(viewAs&&!viewAs.edit);
+return`<h2>${t}, ${a.length}가지</h2><div class="calc"><b>${Math.round(sum(a,'k'))}</b> kcal<div class="mut">탄수화물 ${T('c')}g, 단백질 ${T('p')}g, 지방 ${T('f')}g</div></div>`+a.map(x=>`<div class="mi">${x.img?`<img class="bimg" src="${x.img}" alt="${esc(x.n)}">`:''}<div class="row" style="border:0;padding:6px 0"><span class="n"><b>${esc(x.n)}</b><small>${x.amt?'먹은 양 '+esc(x.amt)+', ':''}탄 ${x.c||0}g 단 ${x.p||0}g 지 ${x.f||0}g</small></span><b>${Math.round(x.k)} kcal</b>${can?`<button class="cp" data-a="edit" data-i="${x.id}">수정</button>`:''}</div></div>`).join('')}
+
+async function qAll(build){let all=[];for(let i=0;;i++){const r=await build().range(i*1000,i*1000+999);if(r.error)return r;all=all.concat(r.data);if(r.data.length<1000)return{data:all,error:null}}}
+async function loadDash(){const today=baseDay(),from=addDays(today,-29),from2=addDays(today,-13),
+pr=await sb.from('profiles').select('id,display_name,gender,staff_consent,staff_edit_ok').eq('role','member'),
+ps=(pr.data||[]).sort((x,y)=>x.display_name<y.display_name?-1:1);me.members=ps;
+const gq=await sb.from('goals').select('user_id,carb_g,protein_g,fat_g'),gm={};(Array.isArray(gq.data)?gq.data:[]).forEach(g=>gm[g.user_id]=Math.round(g.carb_g*4+g.protein_g*4+g.fat_g*9));
+const[m,w,b,l]=await Promise.all([
+qAll(()=>sb.from('meal_logs').select('user_id,log_date,meal_type,calories').gte('log_date',from).order('log_date').order('id')),
+qAll(()=>sb.from('workout_logs').select('user_id,log_date').gte('log_date',from).order('log_date').order('id')),
+qAll(()=>sb.from('body_logs').select('user_id,log_date,weight').gte('log_date',from).order('log_date').order('id')),
+qAll(()=>sb.from('lessons').select('*').gte('start_at',today+'T00:00:00+09:00').lte('start_at',addDays(today,14)+'T23:59:59+09:00').order('start_at').order('id'))]);
+const mm={};ps.forEach(p=>{mm[p.id]={p,kc:0,goal:gm[p.id]||1735,ty:new Set(),wk:0,last:'',wl:null,w0:null,next:null}});
+(m.data||[]).forEach(r=>{const o=mm[r.user_id];if(!o)return;if(r.log_date===today){o.ty.add(r.meal_type);o.kc+=+r.calories||0}if(r.log_date>o.last)o.last=r.log_date});
+(w.data||[]).forEach(r=>{const o=mm[r.user_id];if(!o)return;if(r.log_date===today)o.wk++;if(r.log_date>o.last)o.last=r.log_date});
+(b.data||[]).forEach(r=>{const o=mm[r.user_id];if(!o)return;if(r.log_date>o.last)o.last=r.log_date;if(r.weight!=null&&r.log_date>=from2){if(!o.w0)o.w0=r;o.wl=r}});
+const lessons=[],now=Date.now();
+(l.data||[]).forEach(r=>{const o=mm[r.member_id];if(!o||r.status==='cancelled')return;const q=sp(r.start_at),x={d:q.d,h:q.h,m:q.m,kind:r.kind,no:r.session_no,name:o.p.display_name,id:o.p.id,t:Date.parse(r.start_at)};if(q.d===today)lessons.push(x);if(!o.next&&x.t>=now-36e5)o.next=x});
+DASH={today,hr:seoulHour(),lessons,rows:Object.values(mm).map(o=>{const days=o.last?diff(o.last,today):null;return{...o,days,noMeal:!o.ty.size,stale:days==null||days>=3}})}}
+function dCard(r){const p=r.p,over=r.kc>r.goal*1.2,att=r.stale||over||(r.noMeal&&DASH.hr>=12),
+meals=r.ty.size?[...r.ty].sort((a,b)=>TYPES.indexOf(a)-TYPES.indexOf(b)).join(' '):'없음',
+dw=r.wl&&r.w0&&r.wl!==r.w0?r.wl.weight-r.w0.weight:null,
+wtxt=r.wl?r.wl.weight+'kg'+(dw!=null?' ('+(dw>0?'+':'')+dw.toFixed(1)+')':''):'-',
+last=r.days==null?'기록 없음':r.days===0?'오늘':r.days+'일 전',
+nx=r.next?(r.next.d===DASH.today?'오늘':md(r.next.d))+' '+pad(r.next.h)+':'+pad(r.next.m)+' '+r.next.kind+(r.next.no?' '+r.next.no+'회차':''):'일정 없음';
+return`<button class="mc${att?' att':''}" data-a="vm" data-i="${p.id}" data-n="${esc(p.display_name)}"><div class="mh"><b>${esc(p.display_name)}</b><span class="tg">${r.stale?'기록 없음':over?'열량 초과':att?'확인 필요':''}</span></div><div class="ml"><span>오늘 식사</span><b class="${r.ty.size?'ok':'no'}">${meals}</b></div><div class="ml"><span>섭취 / 목표</span><b class="${over?'no':''}">${Math.round(r.kc)} / ${r.goal} kcal</b></div><div class="ml"><span>오늘 운동</span><b class="${r.wk?'ok':'no'}">${r.wk?r.wk+'회':'없음'}</b></div><div class="ml"><span>체중 (2주)</span><b>${wtxt}</b></div><div class="ml"><span>마지막 기록</span><b class="${r.stale?'no':''}">${last}</b></div><div class="ml"><span>다음 수업</span><b>${nx}</b></div><small class="mut">${p.staff_edit_ok?'입력·수정 가능':'열람만 가능'}</small></button>`}
+function dashHTML(){const D=DASH,rows=D.rows,att=r=>r.stale||r.kc>r.goal*1.2||(r.noMeal&&D.hr>=12),nM=rows.filter(r=>!r.noMeal).length,nW=rows.filter(r=>r.wk>0).length,nA=rows.filter(att).length;
+const tiles=`<div class="tiles"><div class="tile"><span>오늘 수업</span><b>${D.lessons.length}<small>건</small></b></div><div class="tile"><span>식사 기록</span><b>${nM}<small>/${rows.length}명</small></b></div><div class="tile"><span>운동 기록</span><b>${nW}<small>/${rows.length}명</small></b></div><div class="tile${nA?' warn':''}"><span>확인 필요</span><b>${nA}<small>명</small></b></div></div>`;
+const ls=D.lessons.length?'<h3 class="dh">오늘 수업</h3>'+D.lessons.map(l=>`<button class="dl" data-a="vm" data-i="${l.id}" data-n="${esc(l.name)}"><b>${pad(l.h)}시 ${pad(l.m)}분</b> ${esc(l.name)} ${l.kind}${l.no?' '+l.no+'회차':' 수업'}</button>`).join(''):'';
+const F=[['all','전체'],['meal','오늘 식사 없음'],['work','오늘 운동 없음'],['stale','3일 이상 기록 없음']],
+fn={all:()=>true,meal:r=>r.noMeal,work:r=>!r.wk,stale:r=>r.stale}[dFilter]||(()=>true),
+sc=r=>(r.stale?2:0)+(r.kc>r.goal*1.2?1:0)+(r.noMeal&&D.hr>=12?1:0),
+list=rows.filter(fn).sort((x,y)=>sc(y)-sc(x)||(x.p.display_name<y.p.display_name?-1:1));
+return tiles+ls+`<h3 class="dh">회원 현황</h3><div class="chips">${F.map(([v,t])=>`<button type="button" class="chip${dFilter===v?' on':''}" data-a="dfil" data-v="${v}">${t}</button>`).join('')}</div><div class="mgrid">${list.map(dCard).join('')||'<p class="empty">해당하는 회원이 없어요.</p>'}</div>`}
+function renderDash(){const a=overlay(),role=me.p.role==='admin'?'관리자':'트레이너',t=DASH?DASH.today:baseDay();
+a.className='au top';a.innerHTML=`<div class="ap wide"><div class="dtop"><div><h1>회원 관리</h1><p class="mut">${md(t)} (${'일월화수목금토'[new Date(t+'T12:00:00').getDay()]}), ${role}${me.p.invite_code?', 내 초대 코드 <b>'+esc(me.p.invite_code)+'</b>':''}</p></div><button class="cp" data-a="drefresh">새로고침</button></div>${DASH?dashHTML():'<p class="empty">회원 현황을 불러오지 못했어요. 새로고침을 눌러 주세요.</p>'}<div class="dfoot"><button class="save" data-a="myrec" style="background:var(--pt);color:var(--pine)">내 기록 보기</button><button class="save" data-a="logout" style="background:none;color:var(--mut)">로그아웃</button></div></div>`}
+async function adminUI(){document.body.classList.remove('in','ro','vw');viewAs=null;const a=overlay();a.className='au top';a.innerHTML='<div class="ap wide"><h1>회원 관리</h1><p class="mut">불러오는 중...</p></div>';
+try{await loadDash()}catch(e){DASH=null}renderDash()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;if(b.dataset.a==='dfil'){dFilter=b.dataset.v;renderDash()}if(b.dataset.a==='drefresh')adminUI()});
+
+/* ===== 트레이너 메모 / 수업 후 피드백 ===== */
+const isStaff=()=>me&&['trainer','admin'].includes(me.p.role);
+async function loadNotes(){try{const r=await sb.from('trainer_notes').select('*').eq('member_id',OID()).order('note_date',{ascending:false}).order('created_at',{ascending:false}).limit(30);S.notes=r.error?[]:(r.data||[])}catch(e){S.notes=[]}}
+function notesCard(){const a=(S.notes||[]).slice(0,5),st=isStaff()&&viewAs;if(!a.length&&!st)return'';
+return`<section class="card"><h3>${st?'트레이너 메모':'트레이너 피드백'}${st?'<button class="cp" data-a="noteadd">+ 메모</button>':''}</h3>${a.map(n=>`<div class="row" style="align-items:flex-start"><span class="n"><b>${md(n.note_date)}</b><small style="white-space:pre-wrap;color:var(--ink);font-size:14px">${esc(n.body)}</small></span>${n.author_id===me.id?`<button class="x" data-a="ndel" data-i="${n.id}" aria-label="삭제">×</button>`:''}</div>`).join('')||'<p class="empty">아직 메모가 없어요.</p>'}</section>`}
+const _vToday=vToday;vToday=function(){const h=_vToday(),i=h.indexOf('<section'),j=h.indexOf('</header>');const nc=notesCard();if(!nc)return h;const k=h.indexOf('<section class="card hero"');return k>0?h.slice(0,k)+nc+h.slice(k):h+nc};
+const _la2=loadAll;loadAll=async function(){await _la2();await loadNotes();render()};
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,d=b.dataset;
+if(a==='noteadd'){$('#sp').innerHTML=`<h2>${esc(viewAs.name)}님 메모</h2><label>날짜<input id="f_nd" type="date" value="${baseDay()}"></label><label>내용<textarea id="f_nb" rows="5" placeholder="수업 후 피드백, 주의할 점 등. 회원도 이 메모를 볼 수 있어요"></textarea></label><button class="save" data-a="nsave">저장</button>`;$('#sh').hidden=false}
+if(a==='nsave'){if(busy)return;const t=$('#f_nb').value.trim();if(!t||!fv('nd'))return toast('날짜와 내용을 입력해 주세요');busy=true;try{const r=await sb.from('trainer_notes').insert({member_id:viewAs.id,author_id:me.id,note_date:fv('nd'),body:t}).select().single();if(r.error)throw r.error;S.notes=[r.data,...(S.notes||[])].sort((x,y)=>x.note_date<y.note_date?1:-1);closeS();render();toast('저장했어요')}catch(err){toast('저장하지 못했어요: '+(err.message||''))}finally{busy=false}}
+if(a==='ndel'){if(busy)return;busy=true;try{const r=await sb.from('trainer_notes').delete().eq('id',d.i);if(r.error)throw r.error;S.notes=(S.notes||[]).filter(x=>x.id!==d.i);render();toast('삭제했어요')}catch(err){toast('삭제하지 못했어요')}finally{busy=false}}
+});
+
 </script></body></html>
