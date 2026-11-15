@@ -738,17 +738,20 @@ sc=r=>(r.stale?2:0)+(r.kc>r.goal*1.2?1:0)+(r.noMeal&&D.hr>=12?1:0),
 list=rows.filter(fn).sort((x,y)=>sc(y)-sc(x)||(x.p.display_name<y.p.display_name?-1:1));
 return tiles+ls+`<h3 class="dh">회원 현황</h3><div class="chips">${F.map(([v,t])=>`<button type="button" class="chip${dFilter===v?' on':''}" data-a="dfil" data-v="${v}">${t}</button>`).join('')}</div><div class="mgrid">${list.map(dCard).join('')||'<p class="empty">해당하는 회원이 없어요.</p>'}</div>`}
 function renderDash(){const a=overlay(),role=me.p.role==='admin'?'관리자':'트레이너',t=DASH?DASH.today:baseDay();
-a.className='au top';a.innerHTML=`<div class="ap wide"><div class="dtop"><div><h1>회원 관리</h1><p class="mut">${md(t)} (${'일월화수목금토'[new Date(t+'T12:00:00').getDay()]}), ${role}${me.p.invite_code?', 내 초대 코드 <b>'+esc(me.p.invite_code)+'</b>':''}</p></div><button class="cp" data-a="drefresh">새로고침</button></div>${dTabs()}${dView==='cal'?calDashHTML():DASH?dashHTML():'<p class="empty">회원 현황을 불러오지 못했어요. 새로고침을 눌러 주세요.</p>'}<div class="dfoot"><button class="save" data-a="logout" style="background:none;color:var(--mut)">로그아웃</button></div></div>`}
+a.className='au top';a.innerHTML=`<div class="ap wide"><div class="dtop"><div><h1>회원 관리</h1><p class="mut">${md(t)} (${'일월화수목금토'[new Date(t+'T12:00:00').getDay()]}), ${role}${me.p.invite_code?', 내 초대 코드 <b>'+esc(me.p.invite_code)+'</b>':''}</p></div><button class="cp" data-a="drefresh">새로고침</button></div>${dTabs()}${dView==='cal'?calDashHTML():dView==='reg'?regHTML():DASH?dashHTML():'<p class="empty">회원 현황을 불러오지 못했어요. 새로고침을 눌러 주세요.</p>'}<div class="dfoot"><button class="save" data-a="logout" style="background:none;color:var(--mut)">로그아웃</button></div></div>`}
 async function adminUI(){document.body.classList.remove('in','ro','vw');viewAs=null;const a=overlay();a.className='au top';a.innerHTML='<div class="ap wide"><h1>회원 관리</h1><p class="mut">불러오는 중...</p></div>';
 try{await loadDash()}catch(e){DASH=null}renderDash()}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;if(b.dataset.a==='dfil'){dFilter=b.dataset.v;renderDash()}if(b.dataset.a==='drefresh')adminUI()});
 
 /* ===== 트레이너 메모 / 수업 후 피드백 ===== */
 const isStaff=()=>me&&['trainer','admin'].includes(me.p.role);
-async function loadNotes(){try{const r=await sb.from('trainer_notes').select('*').eq('member_id',OID()).order('note_date',{ascending:false}).order('created_at',{ascending:false}).limit(30);S.notes=r.error?[]:(r.data||[])}catch(e){S.notes=[]}try{const p=await sb.from('pt_packages').select('total').eq('member_id',OID()).maybeSingle();S.pt=p.data||null}catch(e){S.pt=null}}
+async function loadNotes(){try{const r=await sb.from('trainer_notes').select('*').eq('member_id',OID()).order('note_date',{ascending:false}).order('created_at',{ascending:false}).limit(30);S.notes=r.error?[]:(r.data||[])}catch(e){S.notes=[]}try{const p=await sb.from('pt_packages').select('total,mem_start,mem_end').eq('member_id',OID()).maybeSingle();S.pt=p.data||null}catch(e){S.pt=null}}
 function ptUsed(){const n=sp(new Date().toISOString()),k=n.d+pad(n.h)+pad(n.m);return(S.lessons||[]).filter(l=>l.kind==='PT'&&l.status!=='cancelled'&&(l.d+pad(l.h)+pad(l.m))<k).length}
-function ptCard(){const st=isStaff()&&viewAs,t=S.pt?S.pt.total:null;if(t==null&&!st)return'';const u=ptUsed();
-return`<section class="card"><h3>PT 횟수${st?'<button class="cp" data-a="ptset">'+(t==null?'설정':'수정')+'</button>':''}</h3>${t==null?'<p class="empty">아직 등록된 횟수가 없어요.</p>':`<div class="calc"><b${t-u<=3?' style="color:var(--fat)"':''}>${Math.max(t-u,0)}</b>회 남음<div class="mut">총 ${t}회 중 ${u}회 진행${t-u<=3?' · 재등록 시기가 가까워요':''}</div></div>`}</section>`}
+function otThisMonth(){const ym=baseDay().slice(0,7);return(S.lessons||[]).filter(l=>l.kind==='OT'&&l.status!=='cancelled'&&l.d.slice(0,7)===ym).length}
+function ptCard(){const st=isStaff()&&viewAs,p=S.pt;if(!p&&!st)return'';const u=ptUsed(),t=p&&p.total!=null?p.total:null,dl=p&&p.mem_end?dLeft(p.mem_end):null,ot=otThisMonth();
+const mem=p&&p.mem_end?`<div class="row"><span>회원권</span><b${dl!=null&&dl<=30?' style="color:var(--fat)"':''}>${p.mem_start?md(p.mem_start)+' ~ ':'~ '}${md(p.mem_end)} <small>${memTxt(dl,p.mem_end).replace(/ \(.*/,'')}</small></b></div>`:'';
+const pt=t!=null?`<div class="row"><span>PT 남은 횟수</span><b${t-u<5?' style="color:var(--fat)"':''}>${Math.max(t-u,0)}회 <small>(총 ${t}회 중 ${u}회 진행)</small></b></div>`:'';
+return`<section class="card"><h3>회원권 · PT${st?'<button class="cp" data-a="ptset">'+(p?'수정':'설정')+'</button>':''}</h3>${mem}${pt}<div class="row"><span>이번 달 OT</span><b>${ot} / ${OTMAX}회 <small>(회원권 등록 시 월 ${OTMAX}회 무료)</small></b></div>${!p?'<p class="empty">아직 등록 정보가 없어요.</p>':''}</section>`}
 function onelineCard(){const st=isStaff()&&viewAs,n=(S.notes||[]).find(x=>x.kind==='oneline'&&x.note_date===day);if(!n&&!st)return'';
 return`<section class="card"><h3>오늘의 한줄평${st?'<button class="cp" data-a="olset">'+(n?'수정':'+ 작성')+'</button>':''}</h3>${n?`<p style="font-size:16px;margin:4px 0">${esc(n.body)}</p>`:'<p class="empty">아직 한줄평이 없어요.</p>'}</section>`}
 function notesCard(){const a=(S.notes||[]).filter(x=>x.kind!=='oneline').slice(0,5),st=isStaff()&&viewAs;let m='';if(a.length||st)m=`<section class="card"><h3>${st?'트레이너 메모':'트레이너 피드백'}${st?'<button class="cp" data-a="noteadd">+ 메모</button>':''}</h3>${a.map(n=>`<div class="row" style="align-items:flex-start"><span class="n"><b>${md(n.note_date)}</b><small style="white-space:pre-wrap;color:var(--ink);font-size:14px">${esc(n.body)}</small></span>${n.author_id===me.id?`<button class="x" data-a="ndel" data-i="${n.id}" aria-label="삭제">×</button>`:''}</div>`).join('')||'<p class="empty">아직 메모가 없어요.</p>'}</section>`;
@@ -763,7 +766,7 @@ if(a==='ndel'){if(busy)return;busy=true;try{const r=await sb.from('trainer_notes
 
 /* ===== 트레이너 수업 캘린더, 계정 화면 정리 ===== */
 var dView='list',cM='',cSel='',CL=[];
-function dTabs(){return`<div class="dtabs"><button data-a="dview" data-v="list" class="${dView==='list'?'on':''}">회원 현황</button><button data-a="dview" data-v="cal" class="${dView==='cal'?'on':''}">수업 캘린더</button></div>`}
+function dTabs(){return`<div class="dtabs"><button data-a="dview" data-v="list" class="${dView==='list'?'on':''}">회원 현황</button><button data-a="dview" data-v="cal" class="${dView==='cal'?'on':''}">수업 캘린더</button><button data-a="dview" data-v="reg" class="${dView==='reg'?'on':''}">등록 관리${regN()?' ('+regN()+')':''}</button></div>`}
 function mAdd(ym,n){const[y,m]=ym.split('-').map(Number),d=new Date(Date.UTC(y,m-1+n,1));return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)}
 async function loadCal(){if(!cM)cM=baseDay().slice(0,7);if(!cSel)cSel=baseDay();
 const r=await qAll(()=>sb.from('lessons').select('*').gte('start_at',cM+'-01T00:00:00+09:00').lt('start_at',mAdd(cM,1)+'-01T00:00:00+09:00').order('start_at').order('id'));
@@ -787,15 +790,23 @@ if(me.linked===true)return fix();
 sb.from('trainer_links').select('trainer_id').eq('member_id',me.id).eq('status','active').then(r=>{me.linked=!!(r.data||[]).length;fix()})};
 
 /* ===== PT 횟수, 한줄평, 캘린더에서 수업 등록 ===== */
-var PTM={};
-function ptRow(id){const x=PTM[id];if(!x||x.total==null)return'';const left=Math.max(x.total-x.used,0);return`<div class="ml"><span>PT 남은 횟수</span><b class="${left<=3?'no':''}">${left} / ${x.total}회</b></div>`}
-async function loadPT(){PTM={};try{const p=await sb.from('pt_packages').select('member_id,total');(Array.isArray(p.data)?p.data:[]).forEach(r=>PTM[r.member_id]={total:r.total,used:0});
+var PTM={},OTM={},rFil='target';
+const OTMAX=2;
+function dLeft(e){return Math.round((Date.parse(e+'T00:00:00Z')-Date.parse(baseDay()+'T00:00:00Z'))/864e5)}
+function ptLeft(x){return x&&x.total!=null?Math.max(x.total-x.used,0):null}
+function regInfo(id){const x=PTM[id]||{},left=ptLeft(x),dl=x.end?dLeft(x.end):null,ym=baseDay().slice(0,7),ot=OTM[id]||0;
+return{x,left,dl,ot,exp:!!x.end&&x.end.slice(0,7)===ym&&dl>=0,ended:dl!=null&&dl<0,low:left!=null&&left<5,none:x.total==null&&!x.end}}
+function memTxt(dl,end){return dl==null?'':dl<0?'만료됨 ('+md(end)+')':dl===0?'오늘 만료':'D-'+dl+' ('+md(end)+')'}
+function ptRow(id){const r=regInfo(id);if(r.none&&!r.ot)return'';return(r.x.end?`<div class="ml"><span>회원권</span><b class="${r.ended||r.exp?'no':''}">${memTxt(r.dl,r.x.end)}</b></div>`:'')+(r.left!=null?`<div class="ml"><span>PT 남은 횟수</span><b class="${r.low?'no':''}">${r.left} / ${r.x.total}회</b></div>`:'')+`<div class="ml"><span>이번 달 OT</span><b>${r.ot} / ${OTMAX}회</b></div>`}
+async function loadPT(){PTM={};OTM={};try{const p=await sb.from('pt_packages').select('member_id,total,mem_start,mem_end');(Array.isArray(p.data)?p.data:[]).forEach(r=>PTM[r.member_id]={total:r.total,start:r.mem_start,end:r.mem_end,used:0});
 const u=await qAll(()=>sb.from('lessons').select('member_id,kind,status,start_at').eq('kind','PT').lt('start_at',new Date().toISOString()).order('start_at').order('id'));
-(u.data||[]).forEach(r=>{if(r.status==='cancelled'||!PTM[r.member_id])return;PTM[r.member_id].used++})}catch(e){}}
+(u.data||[]).forEach(r=>{if(r.status==='cancelled'||!PTM[r.member_id])return;PTM[r.member_id].used++});
+const ym=baseDay().slice(0,7),o=await qAll(()=>sb.from('lessons').select('member_id,status,start_at').eq('kind','OT').gte('start_at',ym+'-01T00:00:00+09:00').lt('start_at',mAdd(ym,1)+'-01T00:00:00+09:00').order('start_at').order('id'));
+(o.data||[]).forEach(r=>{if(r.status!=='cancelled')OTM[r.member_id]=(OTM[r.member_id]||0)+1})}catch(e){}}
 const _ld2=loadDash;loadDash=async function(){await _ld2();await loadPT()};
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
-if(a==='ptset'&&viewAs){$('#sp').innerHTML=`<h2>${esc(viewAs.name)}님 PT 횟수</h2><label>총 등록 횟수<input id="f_pt" inputmode="numeric" value="${S.pt?S.pt.total:''}" placeholder="예: 20"></label><p class="mut">재등록하면 지금까지 등록한 횟수를 모두 합쳐서 입력해 주세요. 진행한 횟수는 지난 PT 일정에서 자동으로 세요.</p><button class="save" data-a="ptsave">저장</button>`;$('#sh').hidden=false}
-if(a==='ptsave'&&viewAs){if(busy)return;const t=parseInt(fv('pt'));if(isNaN(t)||t<0)return toast('횟수를 숫자로 입력해 주세요');busy=true;try{const r=await sb.from('pt_packages').upsert({member_id:viewAs.id,trainer_id:me.id,total:t,updated_at:new Date().toISOString()});if(r.error)throw r.error;S.pt={total:t};closeS();render();toast('저장했어요')}catch(err){toast('저장하지 못했어요: '+(err.message||''))}finally{busy=false}}
+if(a==='ptset'&&viewAs){const p=S.pt||{};$('#sp').innerHTML=`<h2>${esc(viewAs.name)}님 회원권 · PT</h2><label>회원권 시작일<input id="f_ms" type="date" value="${p.mem_start||''}"></label><label>회원권 종료일<input id="f_me" type="date" value="${p.mem_end||''}"></label><label>PT 총 등록 횟수<input id="f_pt" inputmode="numeric" value="${p.total!=null?p.total:''}" placeholder="예: 20 (없으면 비워두세요)"></label><p class="mut">PT를 재등록하면 지금까지 등록한 횟수를 모두 합쳐서 입력해 주세요. 진행한 횟수는 지난 PT 일정에서 자동으로 세요.</p><button class="save" data-a="ptsave">저장</button>`;$('#sh').hidden=false}
+if(a==='ptsave'&&viewAs){if(busy)return;const tv=fv('pt'),t=tv===''?null:parseInt(tv);if(t!=null&&(isNaN(t)||t<0))return toast('횟수를 숫자로 입력해 주세요');if(fv('ms')&&fv('me')&&fv('me')<fv('ms'))return toast('종료일이 시작일보다 빨라요');busy=true;try{const row={member_id:viewAs.id,trainer_id:me.id,total:t,mem_start:fv('ms')||null,mem_end:fv('me')||null,updated_at:new Date().toISOString()},r=await sb.from('pt_packages').upsert(row);if(r.error)throw r.error;S.pt={total:t,mem_start:row.mem_start,mem_end:row.mem_end};closeS();render();toast('저장했어요')}catch(err){toast('저장하지 못했어요: '+(err.message||''))}finally{busy=false}}
 if(a==='olset'&&viewAs){const n=(S.notes||[]).find(x=>x.kind==='oneline'&&x.note_date===day);$('#sp').innerHTML=`<h2>${md(day)} 한줄평</h2><label>${esc(viewAs.name)}님께<input id="f_ol" maxlength="80" value="${n?esc(n.body):''}" placeholder="오늘 운동 정말 좋았어요!"></label><p class="mut">회원의 오늘 탭에 바로 보여요. 비우고 저장하면 삭제돼요.</p><button class="save" data-a="olsave">저장</button>`;$('#sh').hidden=false}
 if(a==='olsave'&&viewAs){if(busy)return;busy=true;try{const t=fv('ol'),n=(S.notes||[]).find(x=>x.kind==='oneline'&&x.note_date===day&&x.author_id===me.id);
 if(n&&!t){const r=await sb.from('trainer_notes').delete().eq('id',n.id);if(r.error)throw r.error;S.notes=S.notes.filter(x=>x!==n)}
@@ -804,9 +815,21 @@ else if(t){const r=await sb.from('trainer_notes').insert({member_id:viewAs.id,au
 closeS();render();toast('저장했어요')}catch(err){toast('저장하지 못했어요: '+(err.message||''))}finally{busy=false}}
 if(a==='cnew'&&!viewAs){const ms=me.members||[];if(!ms.length)return toast('연결된 회원이 없어요');$('#sp').innerHTML=`<h2>${md(cSel)} 수업 등록</h2><label>회원<select id="f_cm">${ms.map(m=>`<option value="${m.id}">${esc(m.display_name)}</option>`).join('')}</select></label><label>시간<input id="f_ct" type="time" value="10:00"></label><label>수업 종류</label>${chips('ck',['PT','OT','요가','필라테스','기타'],['PT'])}<label>회차 (PT만, 비우면 자동)<input id="f_cn" inputmode="numeric" placeholder="자동"></label><label>메모 (선택)<input id="f_cx"></label><button class="save" data-a="csave">저장</button>`;$('#sh').hidden=false}
 if(a==='csave'&&!viewAs){if(busy)return;if(!fv('ct'))return toast('시간을 입력해 주세요');busy=true;try{const kind=gv('ck')[0]||'PT',mid=fv('cm'),at=cSel+'T'+fv('ct')+':00+09:00';let no=kind==='PT'?(parseInt(fv('cn'))||null):null;
+if(kind==='OT'){const ym=cSel.slice(0,7),c=await sb.from('lessons').select('id',{count:'exact',head:true}).eq('member_id',mid).eq('kind','OT').neq('status','cancelled').gte('start_at',ym+'-01T00:00:00+09:00').lt('start_at',mAdd(ym,1)+'-01T00:00:00+09:00');if((c.count||0)>=OTMAX){busy=false;return toast('이 회원은 '+ym.slice(5)+'월 OT를 이미 '+OTMAX+'회 사용했어요')}}
 if(kind==='PT'&&!no){const c=await sb.from('lessons').select('id',{count:'exact',head:true}).eq('member_id',mid).eq('kind','PT').neq('status','cancelled').lt('start_at',at);no=(c.count||0)+1}
 const r=await sb.from('lessons').insert({member_id:mid,trainer_id:me.id,start_at:at,kind,session_no:no,memo:fv('cx')||null,status:'scheduled'});if(r.error)throw r.error;
 closeS();try{await loadCal();await loadPT()}catch(x){}renderDash();toast('수업을 등록했어요')}catch(err){toast('등록하지 못했어요: '+(err.message||''))}finally{busy=false}}
 });
+
+function regTargets(){return(me.members||[]).map(m=>({m,r:regInfo(m.id)}))}
+function regN(){return regTargets().filter(t=>t.r.exp||t.r.ended||t.r.low).length}
+function regHTML(){const all=regTargets(),ym=baseDay().slice(0,7),F={target:['등록 대상',t=>t.r.exp||t.r.ended||t.r.low],exp:[ym.slice(5)+'월 만료',t=>t.r.exp],low:['PT 5회 미만',t=>t.r.low],ended:['만료됨',t=>t.r.ended],none:['미등록',t=>t.r.none],all:['전체',()=>true]};
+const rows=all.filter(F[rFil][1]).sort((a,b)=>(a.r.dl==null?9999:a.r.dl)-(b.r.dl==null?9999:b.r.dl));
+const tiles=`<div class="tiles"><div class="tile${all.filter(F.exp[1]).length?' warn':''}"><span>${ym.slice(5)}월 만료</span><b>${all.filter(F.exp[1]).length}<small>명</small></b></div><div class="tile${all.filter(F.low[1]).length?' warn':''}"><span>PT 5회 미만</span><b>${all.filter(F.low[1]).length}<small>명</small></b></div><div class="tile"><span>만료됨</span><b>${all.filter(F.ended[1]).length}<small>명</small></b></div><div class="tile"><span>OT 사용 (이번 달)</span><b>${all.reduce((n,t)=>n+t.r.ot,0)}<small>회</small></b></div></div>`;
+const fl=`<div class="chips" style="margin-bottom:8px">${Object.keys(F).map(k=>`<button type="button" class="chip${rFil===k?' on':''}" data-a="rfil" data-v="${k}">${F[k][0]}</button>`).join('')}</div>`;
+return tiles+fl+(rows.map(t=>{const r=t.r;return`<button class="mc${r.exp||r.ended||r.low?' att':''}" data-a="vm" data-i="${t.m.id}" data-n="${esc(t.m.display_name)}" style="margin-bottom:8px"><div class="mh"><b>${esc(t.m.display_name)}</b><span class="tg">${r.ended?'만료됨':r.exp?'이번 달 만료':r.low?'재등록 검토':r.none?'미등록':''}</span></div><div class="ml"><span>회원권</span><b class="${r.ended||r.exp?'no':''}">${r.x.end?memTxt(r.dl,r.x.end):'미입력'}</b></div><div class="ml"><span>PT 남은 횟수</span><b class="${r.low?'no':''}">${r.left!=null?r.left+' / '+r.x.total+'회':'미입력'}</b></div><div class="ml"><span>이번 달 OT</span><b>${r.ot} / ${OTMAX}회</b></div></button>`}).join('')||'<p class="empty">해당하는 회원이 없어요.</p>')}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b||viewAs)return;const a=b.dataset.a;
+if(a==='rfil'){rFil=b.dataset.v;renderDash()}
+if(a==='dview'&&b.dataset.v==='reg'){await loadPT();renderDash()}});
 
 </script></body></html>
