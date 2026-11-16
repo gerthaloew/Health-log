@@ -215,14 +215,17 @@ function vMeals3(){const rec=freqFoods(),all=TYPES.flatMap(t=>dm(day).filter(x=>
 const sub=TYPES.map(t=>{const a=dm(day).filter(x=>x.t===t);return a.length?t+' '+sum(a,'k')+' kcal':''}).filter(Boolean).join(', ');
 return head('식사')+calCard('meals')+(rec.length?`<section class="card"><h3>자주 먹는 음식</h3><div class="chips" style="margin:0">${rec.map(x=>`<button class="chip" data-a="qa" data-i="${x.id}">${esc(x.n)}</button>`).join('')}</div><p class="mut" style="margin:8px 0 0">누르면 ${nextMeal(day)}에 바로 추가돼요.</p></section>`:'')+`<section class="card"><h3>식사 기록<span>${sum(all,'k')} kcal</span></h3>${sub?`<p class="mut" style="margin:0 0 10px">${sub}</p>`:''}${all.length?`<div class="gal">${all.map(x=>`<button class="gi" data-a="edit" data-i="${x.id}">${x.img?`<img src="${x.img}" alt="${esc(x.n)}">`:`<span class="ph0">${esc(x.n.slice(0,2))}</span>`}<span class="bd">${x.t}</span><span class="gt">${esc(x.n)}<small>${x.k} kcal</small></span></button>`).join('')}</div>`:'<p class="empty">아직 기록이 없어요.</p>'}${isRO()?'':'<button type="button" class="save" data-a="pick" data-k="meal" style="background:var(--pt);color:var(--pine);margin:12px 0 0">+ 식사 등록</button>'}${ycopyBtn()}</section>`}
 let rmImg=false;
-function editSheet(id){const x=S.meals.find(m=>String(m.id)===String(id));if(!x)return;rmImg=false;
-$('#sp').innerHTML=`<h2>식사 수정</h2>${chips('mt',TYPES,[x.t])}<label>음식<input id="f_n" value="${esc(x.n)}" autocomplete="off"></label><label>열량 (kcal)<input id="f_k" inputmode="decimal" value="${x.k||''}"></label><div class="g3"><label>탄수화물 g<input id="f_c" inputmode="decimal" value="${x.c||''}"></label><label>단백질 g<input id="f_p" inputmode="decimal" value="${x.p||''}"></label><label>지방 g<input id="f_f" inputmode="decimal" value="${x.f||''}"></label></div>${x.img?`<img class="bimg" id="pv" src="${x.img}" alt="${esc(x.n)}">`:''}<label>${x.img?'사진 바꾸기':'사진 (선택)'}<input id="f_img" type="file" accept="image/*"></label>${x.img?'<button type="button" class="cp" data-a="rmimg" style="margin:-4px 0 12px">사진 삭제</button>':''}<button class="save" data-a="upd" data-i="${x.id}">저장</button><button class="save" data-a="del2" data-i="${x.id}" style="background:none;color:var(--fat);margin-top:0">삭제</button>`;$('#sh').hidden=false}
+function mealFields(){return`<label>음식<input id="f_n" placeholder="예: 닭가슴살 샐러드" autocomplete="off"></label><label>음식 검색 (선택)<input id="fq" placeholder="예: 닭가슴살, 밥, 라면" autocomplete="off"></label><div id="fres" class="chips" style="margin:0 0 8px"></div><div id="fqty" hidden><label>먹은 양 (g)<input id="fg" inputmode="decimal"></label><div class="mut" id="fcal" style="margin:-4px 0 10px"></div></div><label>열량 (kcal)<input id="f_k" inputmode="decimal"></label><div class="g3"><label>탄수화물 g<input id="f_c" inputmode="decimal"></label><label>단백질 g<input id="f_p" inputmode="decimal"></label><label>지방 g<input id="f_f" inputmode="decimal"></label></div><label>사진 (선택)<input id="f_img" type="file" accept="image/*"></label><label>사진 (선택)<input id="f_img" type="file" accept="image/*"></label>`}
+function editSheet(id){const x=S.meals.find(m=>String(m.id)===String(id));if(!x)return;rmImg=false;mnameTouched=true;
+mb=(x.it&&x.it.length?x.it:[{n:x.n,amt:x.amt,k:x.k,c:x.c,p:x.p,f:x.f}]).map(i=>({n:i.n,amt:i.amt||'',k:+i.k||0,c:+i.c||0,p:+i.p||0,f:+i.f||0}));
+$('#sp').innerHTML=`<h2>식사 수정</h2>${chips('mt',TYPES,[x.t])}<div id="mb"></div><div class="mut" style="margin:0 0 8px">음식을 더 넣으려면 아래에 입력하고 "담기"를 눌러 주세요.</div>${mealFields()}<button type="button" class="save" data-a="madd" style="background:var(--pt);color:var(--pine);margin-bottom:8px">+ 이 음식 담기 (다른 음식 더 추가)</button>${x.img?`<img class="bimg" id="pv" src="${x.img}" alt="${esc(x.n)}"><button type="button" class="cp" data-a="rmimg" style="margin:-4px 0 12px">사진 삭제</button>`:''}<button class="save" data-a="upd" data-i="${x.id}">저장</button><button class="save" data-a="del2" data-i="${x.id}" style="background:none;color:var(--fat);margin-top:0">삭제</button>`;
+renderMB();const mn=$('#f_mname');if(mn)mn.value=x.n;$('#sh').hidden=false}
 function _renderBase(){const t=tab();if(t!==lastTab){if(lastTab)dayBy[lastTab]=day;day=(t==='body'||t==='schedule')?baseDay():(dayBy[t]||baseDay());lastTab=t}document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===t));$('#main').innerHTML={today:vToday,meals:vMeals3,workouts:vWork,body:vBody,schedule:vSched}[t]()}
 const chips=(g,o,sel,m)=>`<div class="chips" data-g="${g}" data-m="${m?1:0}">${o.map(x=>`<button type="button" class="chip${sel.includes(x)?' on':''}" data-v="${x}">${x}</button>`).join('')}</div>`;
 const gv=g=>[...document.querySelectorAll(`[data-g="${g}"] .on`)].map(b=>b.dataset.v),fv=i=>$('#f_'+i).value.trim(),nv=i=>+fv(i)||0;
 function _sheetBase(k){if(k==='workout')return wForm();if(k==='lesson')return lessonForm();const sp=$('#sp');let h='';
 if(!k)h='<h2>무엇을 기록할까요?</h2><div class="menu"><button data-a="pick" data-k="meal">식사</button><button data-a="pick" data-k="workout">운동</button><button data-a="pick" data-k="body">체중</button><button data-a="pick" data-k="lesson">수업 일정</button>'+(hideCyc()?'':'<button data-a="pick" data-k="cycle">생리주기추적</button>')+'</div>';
-else if(k==='meal')h=`<h2>식사 기록</h2>${chips('mt',TYPES,[guess()])}<label>음식<input id="f_n" placeholder="예: 닭가슴살 샐러드" autocomplete="off"></label><label>음식 검색 (선택)<input id="fq" placeholder="예: 닭가슴살, 밥, 라면" autocomplete="off"></label><div id="fres" class="chips" style="margin:0 0 8px"></div><div id="fqty" hidden><label>먹은 양 (g)<input id="fg" inputmode="decimal"></label><div class="mut" id="fcal" style="margin:-4px 0 10px"></div></div><label>열량 (kcal)<input id="f_k" inputmode="decimal"></label><div class="g3"><label>탄수화물 g<input id="f_c" inputmode="decimal"></label><label>단백질 g<input id="f_p" inputmode="decimal"></label><label>지방 g<input id="f_f" inputmode="decimal"></label></div><label>사진 (선택)<input id="f_img" type="file" accept="image/*"></label><button class="save" data-a="save" data-k="meal">저장</button>`;
+else if(k==='meal')h=`<h2>식사 기록</h2>${chips('mt',TYPES,[guess()])}${mealFields()}<button class="save" data-a="save" data-k="meal">저장</button>`;
 else if(k==='workout')h=`<h2>운동 기록</h2><label>종류</label>${chips('wy',['웨이트','요가','필라테스','유산소','기타'],[],1)}<label>구분</label>${chips('wg',['PT','개인 운동'],[],1)}<label>부위</label>${chips('wb',['하체','어깨','가슴','등','팔','복근'],[],1)}<label>메인 운동<input id="f_n" placeholder="예: 스쿼트, 랫 풀 다운" autocomplete="off"></label><label>소모 열량 (kcal)<input id="f_k" inputmode="decimal"></label><label>컨디션</label>${chips('wc',['상','중','하'],[])}<button class="save" data-a="save" data-k="workout">저장</button>`;
 else if(k==='body')h=`<h2>체중 기록</h2><label>체중 (kg)<input id="f_w" inputmode="decimal" autofocus></label><div class="g3" style="grid-template-columns:1fr 1fr"><label>골격근량 (선택)<input id="f_m" inputmode="decimal"></label><label>체지방량 (선택)<input id="f_f" inputmode="decimal"></label></div><button class="save" data-a="save" data-k="body">저장</button>`;
 else if(k==='goal'){const g=S.goal;h=`<h2>목표 설정</h2><div class="g3"><label>탄수화물 g<input id="f_gc" inputmode="decimal" value="${g.c}"></label><label>단백질 g<input id="f_gp" inputmode="decimal" value="${g.p}"></label><label>지방 g<input id="f_gf" inputmode="decimal" value="${g.f}"></label></div><div class="calc">하루 목표 열량 <b id="gk">${g.k}</b> kcal<div class="mut">탄수화물×4 + 단백질×4 + 지방×9로 계산해요</div></div><label>목표 체중 (kg, 선택)<input id="f_gw" inputmode="decimal" value="${g.w||''}"></label><h2 style="margin-top:24px">디데이 (선택)</h2>${S.dday.map(x=>`<div class="row"><span class="n">${esc(x.n)}<small>${md(x.d)}</small></span><button class="x" data-a="ddel" data-i="${x.id}" aria-label="삭제">×</button></div>`).join('')}<label style="margin-top:10px">이름<input id="f_dn" placeholder="예: 바디프로필, 제주 여행" autocomplete="off"></label><label>날짜<input id="f_dd" type="date"></label><button class="save" data-a="save" data-k="goal">저장</button>`}
@@ -321,13 +324,14 @@ if(fv('dn')){const r=await sb.from('ddays').insert({user_id:OID(),name:fv('dn'),
 }catch(e){return toast('저장하지 못했어요: '+(e.message||''))}
 if(to==='meals'||to==='workouts')dayBy[to]=day;closeS();toast('저장했어요');if(location.hash==='#'+to)render();else location.hash='#'+to}
 
-async function _upd(id){const x=S.meals.find(m=>String(m.id)===String(id));if(!x)return;if(!fv('n'))return toast('음식 이름을 입력해 주세요');
-try{const o={meal_type:gv('mt')[0]||x.t,name:fv('n'),calories:nv('k'),carb_g:nv('c'),protein_g:nv('p'),fat_g:nv('f')},fl=$('#f_img').files[0];let img=x.img,path=x.path;
+async function _upd(id){const x=S.meals.find(m=>String(m.id)===String(id));if(!x)return;
+const items=mb.slice(),cur=takeItem();if(cur)items.push(cur);if(!items.length)return toast('음식이 하나는 있어야 해요');
+try{const o={meal_type:gv('mt')[0]||x.t,...mealCalc(items,(($('#f_mname')||{}).value||'').trim())},fl=$('#f_img').files[0];let img=x.img,path=x.path;
 if(rmImg&&path){await sb.storage.from('meal-photos').remove([path]);path=null;img=undefined}
 if(fl){const blob=await shrinkBlob(fl);path=OID()+'/'+x.id+'.jpg';const u=await sb.storage.from('meal-photos').upload(path,blob,{contentType:'image/jpeg',upsert:true});if(u.error)throw u.error;img=URL.createObjectURL(blob)}
 o.photo_path=path;const r=await sb.from('meal_logs').update(o).eq('id',x.id);if(r.error)throw r.error;
-Object.assign(x,{t:o.meal_type,n:o.name,k:o.calories,c:o.carb_g,p:o.protein_g,f:o.fat_g,path,img})}catch(e){return toast('저장하지 못했어요: '+(e.message||''))}
-closeS();render();toast('저장했어요')}
+Object.assign(x,{t:o.meal_type,n:o.name,k:o.calories,c:o.carb_g,p:o.protein_g,f:o.fat_g,amt:o.amount||'',it:o.items,path,img})}catch(e){return toast('저장하지 못했어요: '+(e.message||''))}
+mb=[];closeS();render();toast('저장했어요')}
 
 /* 삭제, 복사, 로그인 등은 기존 클릭 처리보다 먼저 가로채서 서버에 반영해요 */
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,d=b.dataset;
@@ -600,13 +604,11 @@ const FOODS=`밥(흰쌀밥)|210|150|33|2.7|0.3
 햄버거|200|250|27|13|10
 만두|100|220|25|9|9
 샐러드 채소|100|15|3|1.4|0.2
+로메인|100|17|3.3|1.2|0.3
 브로콜리|100|34|7|2.8|0.4
-방울토마토|100|18|3.9|0.9|0.2
-아보카도|100|160|9|2|15
 바나나|100|89|23|1.1|0.3
 사과|200|52|14|0.3|0.2
 귤|100|46|12|0.7|0.1
-블루베리|100|57|14|0.7|0.3
 그릭요거트|100|97|4|9|5
 우유|200|61|4.7|3.2|3.3
 아몬드|30|579|22|21|50
@@ -845,14 +847,21 @@ if(a==='dview'&&b.dataset.v==='reg'){await loadPT();renderDash()}});
 <script>
 /* ===== 한 끼에 여러 음식 담기 (요거트볼 = 요거트 + 바나나 + 블루베리) ===== */
 var mb=[];
-function sheet(k){if(k==='meal')mb=[];_sheetBase(k);if(k==='meal')mealBasketUI()};
+var mnameTouched=false;
+function sheet(k){if(k==='meal'){mb=[];mnameTouched=false}_sheetBase(k);if(k==='meal')mealBasketUI()};
 function mealBasketUI(){const b=$('#sp [data-a=save][data-k=meal]');if(!b)return;
 b.insertAdjacentHTML('beforebegin','<div id="mb"></div><button type="button" class="save" data-a="madd" style="background:var(--pt);color:var(--pine);margin-bottom:8px">+ 이 음식 담기 (다른 음식 더 추가)</button>');
 b.dataset.a='msave';b.textContent='한 끼 저장';
 }
+/* 기록 이름을 따로 안 적으면: 첫 음식 이름 (여러 개면 '… 외 2가지') */
+const autoName=a=>a.length>1?a[0].n+' 외 '+(a.length-1)+'가지':(a[0]?a[0].n:'');
+/* 담은 음식들 -> 저장할 값 (새로 저장, 수정 둘 다 써요) */
+function mealCalc(items,name){const R=k=>Math.round(items.reduce((t,x)=>t+(+x[k]||0),0)*10)/10,multi=items.length>1;
+return{name:name||autoName(items),calories:R('k'),carb_g:R('c'),protein_g:R('p'),fat_g:R('f'),amount:multi?null:(items[0].amt||null),items:multi?items.map(x=>({n:x.n,amt:x.amt||'',k:+x.k||0,c:+x.c||0,p:+x.p||0,f:+x.f||0})):null}}
 function mbTot(a,k){return Math.round(a.reduce((t,x)=>t+(+x[k]||0),0)*10)/10}
-function renderMB(){const e=$('#mb');if(!e)return;const keep=($('#f_mname')||{}).value||'';if(!mb.length){e.innerHTML='';return}
-e.innerHTML=`<div class="calc" style="margin:4px 0 10px"><div class="mut">이 끼니에 담은 음식 ${mb.length}가지</div>${mb.map((x,i)=>`<div class="row"><span class="n"><b>${esc(x.n)}</b><small>${x.amt?esc(x.amt)+' · ':''}${Math.round(x.k)} kcal</small></span><button type="button" class="x" data-a="mrm" data-i="${i}" aria-label="빼기">×</button></div>`).join('')}<div style="margin-top:8px"><b>${Math.round(mbTot(mb,'k'))}</b> kcal<div class="mut">탄 ${mbTot(mb,'c')}g · 단 ${mbTot(mb,'p')}g · 지 ${mbTot(mb,'f')}g</div></div><label style="display:block;margin-top:10px">한 끼 이름 (선택)<input id="f_mname" maxlength="60" placeholder="예: 요거트볼 (비우면 음식 이름을 합쳐서 표시해요)" autocomplete="off"></label></div>`;const mn=$('#f_mname');if(mn)mn.value=keep}
+function renderMB(){const e=$('#mb');if(!e)return;const keep=($('#f_mname')||{}).value||'';if(!mb.length){e.innerHTML='';mnameTouched=false;return}
+e.innerHTML=`<div class="calc" style="margin:4px 0 10px"><div class="mut">이 끼니에 담은 음식 ${mb.length}가지</div>${mb.map((x,i)=>`<div class="row"><span class="n"><b>${esc(x.n)}</b><small>${x.amt?esc(x.amt)+' · ':''}${Math.round(x.k)} kcal</small></span><button type="button" class="x" data-a="mrm" data-i="${i}" aria-label="빼기">×</button></div>`).join('')}<div style="margin-top:8px"><b>${Math.round(mbTot(mb,'k'))}</b> kcal<div class="mut">탄 ${mbTot(mb,'c')}g · 단 ${mbTot(mb,'p')}g · 지 ${mbTot(mb,'f')}g</div></div><label style="display:block;margin-top:10px">기록 이름 (자동으로 채워져요, 바꾸려면 수정)<input id="f_mname" maxlength="60" autocomplete="off"></label></div>`;const mn=$('#f_mname');if(mn)mn.value=mnameTouched?keep:autoName(mb)}
+document.addEventListener('input',e=>{if(e.target.id==='f_mname')mnameTouched=true});
 function takeItem(){const n=fv('n');if(!n)return null;return{n,k:nv('k'),c:nv('c'),p:nv('p'),f:nv('f'),amt:mealAmt()}}
 function clearItem(){['n','k','c','p','f'].forEach(i=>{const e=$('#f_'+i);if(e)e.value=''});const g=$('#fg');if(g)g.value='';const q=$('#fqty');if(q)q.hidden=true;const fq=$('#fq');if(fq)fq.value='';const r=$('#fres');if(r)r.innerHTML='';curFood=null}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
@@ -862,8 +871,8 @@ if(a==='msave'){if(isRO())return toast(roMsg());
 const items=mb.slice(),cur=takeItem();if(cur)items.push(cur);if(!items.length)return toast('음식 이름을 입력해 주세요');if(busy)return;busy=true;
 try{const type=gv('mt')[0]||guess(),fl=$('#f_img')&&$('#f_img').files[0],id=crypto.randomUUID();let img,path=null;
 if(fl){const blob=await shrinkBlob(fl);path=OID()+'/'+id+'.jpg';const u=await sb.storage.from('meal-photos').upload(path,blob,{contentType:'image/jpeg'});if(u.error)throw u.error;img=URL.createObjectURL(blob)}
-const mname=(($('#f_mname')||{}).value||'').trim(),R=k=>Math.round(items.reduce((t,x)=>t+(+x[k]||0),0)*10)/10,multi=items.length>1,
-row={id,user_id:OID(),log_date:day,meal_type:type,name:mname||(multi?items.map(x=>x.n).join(' + '):items[0].n),calories:R('k'),carb_g:R('c'),protein_g:R('p'),fat_g:R('f'),amount:multi?null:items[0].amt,items:multi?items.map(x=>({n:x.n,amt:x.amt||'',k:+x.k||0,c:+x.c||0,p:+x.p||0,f:+x.f||0})):null,...(path?{photo_path:path}:{})};
+const mname=mnameTouched?(($('#f_mname')||{}).value||'').trim():'',
+row={id,user_id:OID(),log_date:day,meal_type:type,...mealCalc(items,mname),...(path?{photo_path:path}:{})};
 const r=await sb.from('meal_logs').insert(row).select().single();if(r.error)throw r.error;
 S.meals.push({...mapMeal(r.data),img});
 mb=[];dayBy.meals=day;closeS();toast(items.length>1?items.length+'가지를 한 끼 1건으로 저장했어요':'저장했어요');if(location.hash==='#meals')render();else location.hash='#meals'}
