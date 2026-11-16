@@ -113,7 +113,19 @@ input[type=date]::-webkit-date-and-time-value,input[type=time]::-webkit-date-and
 
 .sbrow{display:flex;gap:8px;margin-top:6px}.sbrow .save{margin:0}.sbrow .save:first-child{flex:1}.sbrow .cls{flex:0 0 30%;background:var(--bg)!important;color:var(--mut)!important}
 .tp{display:flex;gap:8px;align-items:center;margin-top:4px}.tp select{flex:1;min-width:0;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:16px}
-</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9"></script></head><body>
+
+/* 하단 안내 (이용약관 · 개인정보처리방침 · 문의) */
+body:has(#auth) .sh{z-index:60}
+.foot{margin-top:18px;padding-top:12px;border-top:1px solid var(--line);text-align:center}
+.foot .fl{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px}
+.foot .fl button{font-size:12px;color:var(--mut);padding:2px 0;background:none;text-decoration:underline}
+.foot .fl i{color:var(--line);font-style:normal}
+.foot p{margin:8px 0 0;font-size:11px;color:var(--mut);line-height:1.5;word-break:keep-all}
+.tos b{display:block;margin-top:10px}
+.iqrow{padding:10px 0;border-bottom:1px dashed var(--line);font-size:13px}.iqrow .meta{display:flex;justify-content:space-between;gap:8px;color:var(--mut);font-size:12px}.iqrow .bd{white-space:pre-wrap;word-break:break-all;margin:6px 0}.iqrow.done{opacity:.55}
+.iqbtn{display:flex;gap:6px}.iqbtn button{font-size:12px;padding:4px 10px;border-radius:99px;background:var(--bg);color:var(--mut)}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9"></script></head><body>
 <main id="main"></main>
 <nav class="tabs"><div class="ti">
 <button class="tab" data-t="today" data-a="go"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>오늘</button>
@@ -124,6 +136,11 @@ input[type=date]::-webkit-date-and-time-value,input[type=time]::-webkit-date-and
 <button class="tab" data-t="schedule" data-a="go"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>스케줄</button>
 </div></nav>
 <div id="sh" class="sh" hidden><div class="sp" id="sp"></div></div>
+<script>
+/* 운영자 설정 — 아래 한 줄만 바꾸면 하단 안내, 개인정보처리방침, 이용약관의 문의 주소가 모두 바뀌어요 */
+const SUPPORT_EMAIL='gerthaloew@gmail.com';
+const APP_VER='2026.11.16';
+</script>
 <script>
 const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -226,8 +243,10 @@ if(a==='qa'){const x=S.meals.find(m=>String(m.id)===d.i);if(x){S.meals.push({...
 if(a==='cp'){const x=S.workouts.find(m=>String(m.id)===d.i);if(x){S.workouts.push({...x,id:nid(),d:day});save();render();toast('저장했어요')}}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeS();if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.a==='det')e.target.click()});
 document.addEventListener('input',e=>{if(/^f_g[cpf]$/.test(e.target.id)){const g=i=>+$('#f_'+i).value||0;$('#gk').textContent=g('gc')*4+g('gp')*4+g('gf')*9}});
-addEventListener('hashchange',()=>{render();scrollTo(0,0)});render();
+addEventListener('hashchange',()=>{render();scrollTo(0,0)});
 
+</script>
+<script>
 /* ===== Supabase 연결 ===== */
 function showDemoBar(){let v=$('#vb');if(!v){v=document.createElement('div');v.id='vb';v.className='vb';document.body.appendChild(v)}v.innerHTML='<span>샘플 계정 · 둘러보기 전용</span><button class="cp" data-a="logout">로그아웃</button>'}
 function isRO(){return !!(viewAs&&!viewAs.edit)||!!(me&&me.p&&me.p.is_demo&&!viewAs)}
@@ -244,7 +263,7 @@ const mapBody=r=>({id:r.id,d:r.log_date,w:num(r.weight),m:num(r.muscle_mass),f:n
 const shrinkBlob=f=>new Promise((ok,no)=>{const r=new FileReader();r.onerror=no;r.onload=()=>{const i=new Image();i.onerror=no;i.onload=()=>{const s=Math.min(1,960/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);c.getContext('2d').drawImage(i,0,0,c.width,c.height);c.toBlob(b=>b?ok(b):no(new Error('image')),'image/jpeg',.75)};i.src=r.result};r.readAsDataURL(f)});
 
 function authUI(msg,done){document.body.classList.remove('in');let a=$('#auth');if(!a){a=document.createElement('div');a.id='auth';a.className='au';document.body.appendChild(a)}
-a.innerHTML=`<div class="ap"><h1>건강 기록</h1><p class="mut">${msg||'로그인하고 어디서든 기록을 이어가요'}</p><label>이메일<input id="a_e" type="email" autocomplete="email"></label><label>비밀번호 (6자 이상)<input id="a_p" type="password" autocomplete="current-password"></label><div id="a_x" hidden><label>이름<input id="a_n" autocomplete="name"></label><label>성별</label>${chips('ag',['여성','남성'],['여성'])}<label style="display:flex;gap:8px;align-items:flex-start;color:var(--ink);margin-top:8px"><input id="a_c" type="checkbox" style="width:auto;margin-top:4px">가입과 트레이너 연결을 위해, 담당 트레이너와 관리자가 내 모든 개인정보(식사, 운동, 체중·인바디, 수면, 생리주기, 수업 일정 포함)를 보고 필요하면 대신 입력·수정할 수 있음에 동의합니다.</label></div><p id="a_err" style="color:var(--fat);font-size:13px;margin:0 0 10px;word-break:break-all"></p><button class="save" data-a="login">로그인</button><button class="save" data-a="signup" style="background:none;color:var(--pine);margin-top:0">가입하기</button><button class="cp" data-a="forgot" style="display:block;margin:14px auto 0">비밀번호를 잊으셨나요?</button></div>`;if(done)a.innerHTML=`<div class="ap"><h1>메일을 확인해 주세요</h1><p>${msg}</p><button class="save" data-a="back">로그인 화면으로</button></div>`}
+a.innerHTML=`<div class="ap"><h1>건강 기록</h1><p class="mut">${msg||'로그인하고 어디서든 기록을 이어가요'}</p><label>이메일<input id="a_e" type="email" autocomplete="email"></label><label>비밀번호 (6자 이상)<input id="a_p" type="password" autocomplete="current-password"></label><div id="a_x" hidden><label>이름<input id="a_n" autocomplete="name"></label><label>성별</label>${chips('ag',['여성','남성'],['여성'])}<label style="display:flex;gap:8px;align-items:flex-start;color:var(--ink);margin-top:8px"><input id="a_c" type="checkbox" style="width:auto;margin-top:4px">가입과 트레이너 연결을 위해, 담당 트레이너와 관리자가 내 모든 개인정보(식사, 운동, 체중·인바디, 수면, 생리주기, 수업 일정 포함)를 보고 필요하면 대신 입력·수정할 수 있음에 동의합니다.</label></div><p id="a_err" style="color:var(--fat);font-size:13px;margin:0 0 10px;word-break:break-all"></p><button class="save" data-a="login">로그인</button><button class="save" data-a="signup" style="background:none;color:var(--pine);margin-top:0">가입하기</button><button class="cp" data-a="forgot" style="display:block;margin:14px auto 0">비밀번호를 잊으셨나요?</button>${footHTML()}</div>`;if(done)a.innerHTML=`<div class="ap"><h1>메일을 확인해 주세요</h1><p>${msg}</p><button class="save" data-a="back">로그인 화면으로</button></div>`}
 
 async function loadAll(){
 const q=t=>fetchAll(t,viewAs?viewAs.id:me.id);
@@ -343,7 +362,7 @@ if(a==='cprev'||a==='cnext'){cm=shiftM(cm,a==='cnext'?1:-1);return render()}
 if(a==='cprev2'||a==='cnext2'){cmC=shiftM(cmC,a==='cnext2'?1:-1);return render()}
 if(a==='logout'){closeS();return void await sb.auth.signOut()}
 if(a==='login'||a==='signup'){const email=$('#a_e').value.trim(),password=$('#a_p').value;if(!email||!password)return toast('이메일과 비밀번호를 입력해 주세요');
-if(a==='login'){const r=await sb.auth.signInWithPassword({email,password});if(r.error)throw r.error;return}
+if(a==='login'){if(window.__li)return;window.__li=1;try{const r=await sb.auth.signInWithPassword({email,password});if(r.error)throw r.error}finally{window.__li=0}return}
 if($('#a_x').hidden){$('#a_x').hidden=false;return toast('이름과 성별을 확인하고 가입하기를 한 번 더 눌러 주세요')}
 if(!$('#a_c').checked)return toast('동의에 체크해 주세요');const r=await sb.auth.signUp({email,password,options:{data:{staff_consent:true,staff_edit_ok:true,display_name:$('#a_n').value.trim()||'회원',gender:gv('ag')[0]==='남성'?'male':'female'}}});if(r.error)throw r.error;
 if(!r.data.session)authUI('가입 확인 메일을 보냈어요. 메일의 링크를 누른 뒤 로그인해 주세요.',true);return}
@@ -391,6 +410,8 @@ function showVB(){let v=$('#vb');if(!v){v=document.createElement('div');v.id='vb
 document.addEventListener('change',e=>{if(e.target.id==='vsel'){const o=e.target.selectedOptions[0];viewAs=mkView(o.value);setRo();showVB();dayBy={};day=baseDay();cm=lastDM=day.slice(0,7);loadAll()}});
 function linkSheet(){$('#sp').innerHTML=`<h2>담당 트레이너 연결</h2><p class="mut">트레이너에게 받은 초대 코드를 입력하세요.</p><label>초대 코드<input id="f_code" autocapitalize="characters" autocomplete="off"></label><label style="display:flex;gap:8px;align-items:flex-start;color:var(--ink)"><input id="f_ok" type="checkbox" style="width:auto;margin-top:4px">담당 트레이너가 제 모든 개인정보(식사, 운동, 체중·인바디, 수면, 생리주기, 수업 일정 포함)를 보고 필요하면 대신 입력·수정할 수 있는 것에 동의합니다.</label><button class="save" data-a="dolink">연결하기</button><button class="save" data-a="skiplink" style="background:none;color:var(--mut);margin-top:0">나중에 하기</button>`;$('#sh').hidden=false}
 
+</script>
+<script>
 /* ===== 생리주기추적 ===== */
 function hideCyc(){try{return viewAs?viewAs.gender==='male':me.p.gender==='male'}catch(e){return false}}
 function cycSets(){const p=new Set(),f=new Set(),o=new Set(),w=new Set(),en=S.cend||{},s=[...S.cycle].sort(),ls=s.map(st=>en[st]?diff(st,en[st])+1:0).filter(x=>x>0),len=ls.length?Math.round(ls.reduce((a,b)=>a+b)/ls.length):5;
@@ -578,6 +599,8 @@ if(e.target.closest('[data-g="wy"] .chip'))setTimeout(()=>{const w=$('#cdwrap');
 function lastHint(n){const ref=wd.d||day,w=S.workouts.filter(x=>x.d<ref&&x.id!==wd.id&&(x.sets||[]).some(q=>q.n===n)).sort((a,b)=>a.d<b.d?1:-1)[0];if(!w)return'';
 const L=[];w.sets.filter(q=>q.n===n).forEach(q=>{const t=sTxt(q);if(q.dn>0&&L.length)L[L.length-1]+=' → '+t;else L.push(t)});return`<div class="hint">지난번 ${md(w.d)}: ${esc(L.join(', '))}</div>`}
 
+</script>
+<script>
 /* ===== 음식 데이터베이스 (100g 기준 대략값: 이름|기본g|kcal|탄|단|지) ===== */
 const FOODS=`밥(흰쌀밥)|210|150|33|2.7|0.3
 현미밥|210|150|31.5|3|1
@@ -672,6 +695,8 @@ C4 부스터 1스쿱|1|5|1.3|0|0|1
 var curFood=null;
 function foodFill(){const g=+(($('#fg')||{}).value)||0;if(!curFood||!g||!$('#f_k'))return;const r=curFood.s?g:g/100,v=(x,d)=>+(x*r).toFixed(d);$('#f_k').value=Math.round(curFood.k*r);$('#f_c').value=v(curFood.c,1);$('#f_p').value=v(curFood.p,1);$('#f_f').value=v(curFood.f,1)}
 
+</script>
+<script>
 /* ===== 트레이너 수업 등록, 회차 자동 ===== */
 const nextNo=k=>{if(k!=='PT')return'';const a=(S.lessons||[]).filter(l=>l.kind==='PT'&&l.no&&l.status!=='cancelled');return a.length?Math.max(...a.map(l=>l.no))+1:''};
 function mapLesson(l){const q=sp(l.start_at);return{id:l.id,d:q.d,h:q.h,m:q.m,kind:l.kind,no:l.session_no,memo:l.memo||'',own:!l.trainer_id,tid:l.trainer_id,status:l.status}}
@@ -686,8 +711,9 @@ const W=320,H=130,P=14,gw=S.goal&&S.goal.w,v=a.map(b=>b.w).concat(gw?[gw]:[]),mn
 return`<svg class="ch" viewBox="0 0 ${W} ${H}" role="img" aria-label="체중 변화 그래프"><polygon class="ar" points="${P},${H-P} ${p.join(' ')} ${W-P},${H-P}"/>${gw?`<line x1="${P}" x2="${W-P}" y1="${Y(gw)}" y2="${Y(gw)}" stroke="var(--rose)" stroke-width="1.5" stroke-dasharray="4 3"/><text x="${W-P}" y="${Y(gw)-4}" text-anchor="end" font-size="10" fill="var(--rose)">목표 ${gw}kg</text>`:''}<polyline class="ln" points="${p.join(' ')}"/>${a.length<=40?a.map(b=>`<circle class="dt" r="2.5" cx="${X(b).toFixed(1)}" cy="${Y(b.w).toFixed(1)}"/>`).join(''):`<circle class="dt" r="4" cx="${X(a[a.length-1]).toFixed(1)}" cy="${Y(a[a.length-1].w).toFixed(1)}"/>`}</svg><div class="axis"><span>${md(a[0].d)}</span><span>${md(a[a.length-1].d)}</span></div>`}
 
 /* ===== 개인정보 처리방침, 회원 탈퇴 ===== */
-const OP_CONTACT='[운영자 연락처를 여기에 입력]';
-const privHTML=()=>`<details style="margin:10px 0"><summary class="cp">개인정보 처리방침 보기</summary><div class="mut" style="font-size:12px;line-height:1.65;margin-top:6px"><b>1. 수집 항목</b><br>이메일, 이름, 성별, 그리고 직접 입력한 건강 기록(식사, 식사 사진, 운동, 체중, 체성분, 생리주기, 수업 일정). 건강 정보는 민감정보에 해당해요.<br><b>2. 이용 목적</b><br>기록 서비스 제공, 담당 트레이너와 관리자의 회원 관리.<br><b>3. 제3자 열람과 대리 입력</b><br>동의한 경우에만 담당 트레이너와 관리자가 내 모든 기록(생리주기 포함)을 보고, 필요하면 회원을 대신해 입력·수정할 수 있어요. 계정 화면에서 동의를 언제든 해제할 수 있어요.<br><b>4. 보관과 삭제</b><br>회원 탈퇴 시 모든 기록과 사진을 즉시 삭제해요.<br><b>5. 처리 위탁</b><br>데이터 저장은 Supabase, 앱 배포는 GitHub Pages를 사용하며 서버가 국외에 있을 수 있어요.<br><b>6. 이용자 권리</b><br>열람, 수정, 삭제, 동의 철회를 요구할 수 있어요.<br><b>7. 문의</b><br>${esc(OP_CONTACT)}</div></details>`;
+const OP_CONTACT=SUPPORT_EMAIL+' (앱 안의 문의·버그 신고로도 접수할 수 있어요)';
+const privBody=()=>`<div class="mut" style="font-size:12px;line-height:1.65;margin-top:6px"><b>1. 수집 항목</b><br>이메일, 이름, 성별, 그리고 직접 입력한 건강 기록(식사, 식사 사진, 운동, 체중, 체성분, 생리주기, 수업 일정). 건강 정보는 민감정보에 해당해요.<br><b>2. 이용 목적</b><br>기록 서비스 제공, 담당 트레이너와 관리자의 회원 관리.<br><b>3. 제3자 열람과 대리 입력</b><br>동의한 경우에만 담당 트레이너와 관리자가 내 모든 기록(생리주기 포함)을 보고, 필요하면 회원을 대신해 입력·수정할 수 있어요. 동의는 가입할 때 받으며, 철회하려면 회원 탈퇴를 하거나 문의로 요청해 주세요.<br><b>4. 보관과 삭제</b><br>회원 탈퇴 시 모든 기록과 사진을 즉시 삭제해요.<br><b>5. 처리 위탁</b><br>데이터 저장은 Supabase, 앱 배포는 GitHub Pages를 사용하며 서버가 국외에 있을 수 있어요.<br><b>6. 이용자 권리</b><br>열람, 수정, 삭제, 동의 철회(회원 탈퇴)를 요구할 수 있어요.<br><b>7. 문의</b><br>${esc(OP_CONTACT)}</div>`;
+const privHTML=()=>`<details style="margin:10px 0"><summary class="cp">개인정보 처리방침 보기</summary>${privBody()}</details>`;
 const _ac=acctSheet;acctSheet=function(){_ac();const p=(me&&me.p)||{},el=$('#sp').querySelector('[data-a="logout"]');if(el)el.insertAdjacentHTML('beforebegin',privHTML()+(p.role==='member'?'<button class="save" data-a="delask" style="margin-top:12px;background:none;color:var(--fat)">회원 탈퇴</button>':''))};
 const _au=authUI;authUI=function(m,d){_au(m,d);const x=$('#a_x');if(x)x.insertAdjacentHTML('beforeend',privHTML())};
 
@@ -708,6 +734,8 @@ const r=await sb.rpc('delete_my_account');if(r.error)throw r.error;closeS();toas
 /* ===== 운동 입력 순서 보존: 세트/유산소 저장 시 입력 순서대로 시간 도장(created_at)을 찍어요 ===== */
 (function(){const _from=sb.from.bind(sb);sb.from=t=>{const q=_from(t);if(t==='workout_sets'||t==='workout_cardio'){const _in=q.insert.bind(q);q.insert=(r,...a)=>{if(Array.isArray(r)){const b=Date.now();r=r.map((x,i)=>({...x,created_at:new Date(b+i).toISOString()}))}return _in(r,...a)}}return q}})();
 
+</script>
+<script>
 /* ===== 트레이너/관리자 전체 접근, 회원 관리 대시보드, 식사 상세 ===== */
 var DASH=null,dFilter='all';
 function OID(){return viewAs?viewAs.id:me.id}
@@ -855,6 +883,8 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
 if(a==='rfil'){rFil=b.dataset.v;renderDash()}
 if(a==='dview'&&b.dataset.v==='reg'){await loadPT();renderDash()}});
 
+</script>
+<script>
 /* ===== 한 끼에 여러 음식 담기 (요거트볼 = 요거트 + 바나나 + 블루베리) ===== */
 var mb=[];
 const _shMeal=sheet;sheet=function(k){if(k==='meal')mb=[];_shMeal(k);if(k==='meal')mealBasketUI()};
@@ -927,6 +957,8 @@ try{const r=await sb.from('sleep_logs').upsert({user_id:OID(),log_date:dd,minute
 if(a==='sleepdel'){if(busy)return;busy=true;try{const r=await sb.from('sleep_logs').delete().eq('id',b.dataset.i);if(r.error)throw r.error;S.sleep=(S.sleep||[]).filter(x=>String(x.id)!==b.dataset.i);closeS();render();toast('삭제했어요')}catch(err){toast('삭제하지 못했어요')}finally{busy=false}}
 });
 
+</script>
+<script>
 /* ===== 개인정보 제공 동의 (가입·트레이너 연결과 함께) ===== */
 function consentSheet(){$('#sp').innerHTML=`<h2>개인정보 제공 동의</h2><p>담당 트레이너와 관리자가 내 모든 개인정보(식사, 운동, 체중·인바디, 수면, 생리주기, 수업 일정 포함)를 보고, 필요하면 대신 입력·수정할 수 있어요.</p><p class="mut">이 앱은 트레이너와 연결해서 쓰는 서비스라서, 연결을 유지하려면 동의가 필요해요. 동의하지 않으면 트레이너가 기록을 볼 수 없어요.</p><button class="save" data-a="agreeall">동의하고 계속</button><button class="save" data-a="logout" style="background:none;color:var(--mut);margin-top:0">로그아웃</button>`;$('#sh').hidden=false}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a=agreeall]');if(!b)return;if(busy)return;busy=true;
@@ -956,4 +988,43 @@ if(a==='hsrot'&&!confirm('토큰을 다시 만들면 기존 단축어는 새 토
 const r=await sb.rpc(a==='hsrot'?'rotate_health_token':'get_health_token');if(r.error)throw r.error;hsSheet(r.data,a==='hsrot'?'새 토큰을 만들었어요. 단축어의 토큰도 바꿔 주세요.':'')}catch(err){toast('불러오지 못했어요: '+(err.message||''))}finally{busy=false}});
 
 document.addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing)return;const t=e.target;if(!t||!['a_e','a_p','a_n'].includes(t.id))return;e.preventDefault();const x=$('#a_x'),b=document.querySelector('#auth [data-a='+(x&&!x.hidden?'signup':'login')+']');if(b)b.click()});
-</script></body></html>
+</script>
+<script>
+/* ===== 하단 안내(이용약관·개인정보처리방침), 문의·버그 신고, 관리자 문의함 ===== */
+function footHTML(){return`<div class="foot"><div class="fl"><button type="button" data-a="ft_terms">이용약관</button><i>|</i><button type="button" data-a="ft_priv">개인정보처리방침</button><i>|</i><button type="button" data-a="ft_inq">문의·버그 신고</button></div><p>개인이 운영하는 서비스예요 · 문의 ${esc(SUPPORT_EMAIL)}</p></div>`}
+const TOS_HTML=()=>`<div class="mut tos" style="font-size:13px;line-height:1.65"><b>1. 목적</b>이 약관은 개인이 운영하는 건강 기록 서비스(이하 "서비스")의 이용 조건을 정해요.<b>2. 서비스 내용</b>식사, 운동, 체중·체성분, 수면, 생리주기, 수업 일정을 기록하고, 담당 트레이너와 관리자가 회원 관리를 위해 이를 열람·입력·수정할 수 있어요. 서비스는 현재 무료로 제공돼요.<b>3. 계정</b>가입할 때 입력한 정보는 정확해야 하고, 계정과 비밀번호는 본인이 관리해야 해요. 다른 사람에게 계정을 빌려주면 안 돼요.<b>4. 이용자가 지켜야 할 점</b>다른 사람의 정보를 허락 없이 입력하거나, 서비스를 방해하는 행위(비정상적인 접속, 자동 입력 등)를 하면 이용이 제한될 수 있어요.<b>5. 의료 정보가 아니에요</b>서비스의 기록, 계산된 열량, 그래프는 참고용이에요. 의학적 진단이나 치료를 대신하지 않아요. 건강에 이상이 있으면 의료진과 상담해 주세요.<b>6. 서비스 변경과 중단</b>운영자는 서비스의 일부 또는 전부를 변경하거나 중단할 수 있어요. 중요한 변경은 앱 안에서 미리 알릴게요.<b>7. 책임의 제한</b>개인이 운영하는 서비스라서, 천재지변이나 외부 서비스(Supabase, GitHub 등) 장애로 생긴 기록 손실이나 접속 장애에 대한 책임이 제한될 수 있어요. 중요한 기록은 따로 보관해 주세요.<b>8. 탈퇴</b>계정 화면에서 언제든 회원 탈퇴를 할 수 있고, 탈퇴하면 모든 기록과 사진이 삭제돼요.<b>9. 문의</b>${esc(SUPPORT_EMAIL)} 또는 앱 안의 문의·버그 신고를 이용해 주세요.<p style="margin-top:10px">시행일: 2026년 11월 16일</p></div>`;
+function pageSheet(title,body){$('#sp').innerHTML=`<h2>${title}</h2>${body}<button class="save" data-a="shut" style="background:none;color:var(--mut);margin-top:12px">닫기</button>`;$('#sh').hidden=false}
+function inqSheet(){
+if(!me||!me.id){return pageSheet('문의·버그 신고',`<p>로그인하면 앱 안에서 바로 보낼 수 있어요. 로그인 전이라면 아래 이메일로 보내 주세요.</p><p><b>${esc(SUPPORT_EMAIL)}</b></p>`)}
+if(me.p&&me.p.is_demo){return toast('샘플 계정은 문의를 보낼 수 없어요')}
+$('#sp').innerHTML=`<h2>문의·버그 신고</h2><label>종류</label>${chips('iq',['문의','버그 신고','건의'],['문의'])}<label>내용<textarea id="f_iq" rows="5" maxlength="2000" placeholder="어떤 상황인지 적어 주세요. 버그라면 어떤 화면에서 무엇을 눌렀는지 알려 주시면 좋아요."></textarea></label><p class="mut" style="font-size:12px;margin:4px 0 0">보낸 사람 이름, 기기 정보, 현재 화면이 함께 전달돼요.</p><button class="save" data-a="inqsave">보내기</button>`;$('#sh').hidden=false}
+SAVEA.add('inqsave');
+const _ac9=acctSheet;acctSheet=function(){_ac9();const sp=$('#sp');if(sp)sp.insertAdjacentHTML('beforeend',footHTML())};
+/* 관리자·트레이너 문의함 */
+let INQN=0;
+const _rd9=renderDash;renderDash=function(){_rd9();const s=document.querySelector('.dtop span');if(s&&!s.querySelector('[data-a=inqbox]'))s.insertAdjacentHTML('afterbegin',`<button class="cp" data-a="inqbox">문의함${INQN?' ('+INQN+')':''}</button>`);inqCount()};
+async function inqCount(){try{const r=await sb.from('inquiries').select('id',{count:'exact',head:true}).eq('status','new');if(r.error||typeof r.count!=='number')return;if(r.count!==INQN){INQN=r.count;const b=document.querySelector('[data-a=inqbox]');if(b)b.textContent='문의함'+(INQN?' ('+INQN+')':'')}}catch(_){}}
+async function inqBox(){
+$('#sp').innerHTML='<h2>문의함</h2><p class="mut">불러오는 중...</p>';$('#sh').hidden=false;
+try{const r=await sb.from('inquiries').select('*').order('created_at',{ascending:false}).limit(50);if(r.error)throw r.error;const rows=Array.isArray(r.data)?r.data:[];
+const t=x=>{const q=sp(x);return md(q.d)+' '+pad(q.h)+':'+pad(q.m)};
+$('#sp').innerHTML=`<h2>문의함</h2>${rows.map(x=>`<div class="iqrow${x.status==='done'?' done':''}"><div class="meta"><span><b>${esc(x.kind||'')}</b> · ${esc(x.author_name||'이름 없음')}</span><span>${t(x.created_at)}</span></div><div class="bd">${esc(x.body||'')}</div><div class="meta"><span style="word-break:break-all">${esc((x.page||'')+' · '+(x.device||'').slice(0,60))}</span></div><div class="iqbtn">${x.status==='done'?'<span class="mut">처리 완료</span>':`<button type="button" data-a="inqdone" data-i="${x.id}">처리 완료</button>`}<button type="button" data-a="inqdel" data-i="${x.id}" style="color:var(--fat)">삭제</button></div></div>`).join('')||'<p class="empty">아직 문의가 없어요.</p>'}<button class="save" data-a="shut" style="background:none;color:var(--mut);margin-top:12px">닫기</button>`;
+INQN=rows.filter(x=>x.status==='new').length;const b=document.querySelector('[data-a=inqbox]');if(b)b.textContent='문의함'+(INQN?' ('+INQN+')':'')
+}catch(e){$('#sp').innerHTML='<h2>문의함</h2><p class="mut">불러오지 못했어요: '+esc(e.message||'')+'</p><button class="save" data-a="shut">닫기</button>'}}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-a^=ft_],[data-a=inqsave],[data-a=inqbox],[data-a=inqdone],[data-a=inqdel]');if(!b)return;const a=b.dataset.a;
+if(a==='ft_terms')return pageSheet('이용약관',TOS_HTML());
+if(a==='ft_priv')return pageSheet('개인정보처리방침',privBody());
+if(a==='ft_inq')return inqSheet();
+if(a==='inqbox')return inqBox();
+if(busy)return;busy=true;try{
+if(a==='inqsave'){const body=($('#f_iq').value||'').trim();if(!body)return toast('내용을 입력해 주세요');
+const r=await sb.from('inquiries').insert({user_id:me.id,author_name:(me.p&&me.p.display_name)||'',kind:gv('iq')[0]||'문의',body,device:navigator.userAgent.slice(0,200),page:(location.hash||'#today')+' · v'+APP_VER});if(r.error)throw r.error;closeS();toast('보냈어요. 확인 후 답변드릴게요')}
+else if(a==='inqdone'){const r=await sb.from('inquiries').update({status:'done'}).eq('id',b.dataset.i);if(r.error)throw r.error;busy=false;return inqBox()}
+else if(a==='inqdel'){if(!confirm('이 문의를 삭제할까요?'))return;const r=await sb.from('inquiries').delete().eq('id',b.dataset.i);if(r.error)throw r.error;busy=false;return inqBox()}
+}catch(err){toast('처리하지 못했어요: '+(err.message||''))}finally{busy=false}});
+</script>
+<script>
+/* 모든 파일이 불러와진 뒤 첫 화면을 그려요 */
+render();
+</script>
+</body></html>
