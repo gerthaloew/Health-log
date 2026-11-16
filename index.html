@@ -968,7 +968,7 @@ SAVEA.add('inqsave');
 function acctFoot(){const sp=$('#sp');if(sp)sp.insertAdjacentHTML('beforeend',footHTML())};
 /* 관리자·트레이너 문의함 */
 let INQN=0;
-function renderDash(){_renderDashBase();const s=document.querySelector('.dtop span');if(s&&!s.querySelector('[data-a=inqbox]'))s.insertAdjacentHTML('afterbegin',`<button class="cp" data-a="inqbox">문의함${INQN?' ('+INQN+')':''}</button>`);inqCount()};
+function renderDash(){_renderDashBase();const s=document.querySelector('.dtop span');if(s&&me.p.role==='admin'){const o=s.querySelector('[data-a=bkup]');if(o)o.remove();s.insertAdjacentHTML('afterbegin',bkBtn())}if(s&&!s.querySelector('[data-a=inqbox]'))s.insertAdjacentHTML('afterbegin',`<button class="cp" data-a="inqbox">문의함${INQN?' ('+INQN+')':''}</button>`);inqCount()};
 async function inqCount(){try{const r=await sb.from('inquiries').select('id',{count:'exact',head:true}).eq('status','new');if(r.error||typeof r.count!=='number')return;if(r.count!==INQN){INQN=r.count;const b=document.querySelector('[data-a=inqbox]');if(b)b.textContent='문의함'+(INQN?' ('+INQN+')':'')}}catch(_){}}
 async function inqBox(){
 $('#sp').innerHTML='<h2>문의함</h2><p class="mut">불러오는 중...</p>';$('#sh').hidden=false;
@@ -1175,6 +1175,21 @@ try{const{r,dates,el}=repCtx,blob=await wkReportBlob(r,dates,el),name='주간리
 if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file]})}catch(x){if(x&&x.name!=='AbortError')throw x}}
 else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('이미지를 저장했어요')}}
 catch(x){toast('저장하지 못했어요: '+(x.message||''))}finally{busy=false}});
+
+/* --- 관리자 전용: 전체 백업 내려받기 (무료 플랜은 자동 백업이 없어서 직접 받아 둬요) --- */
+const BK_TABLES=['profiles','goals','ddays','meal_logs','workout_logs','workout_sets','workout_cardio','body_logs','sleep_logs','cycle_logs','user_exercises','lessons','pt_packages','pt_payments','trainer_links','trainer_notes','trainer_holidays','notif_prefs','inquiries'];
+function bkLast(){try{return localStorage.getItem('bk_last')||''}catch(e){return''}}
+function bkBtn(){const l=bkLast(),n=l?diff(l,baseDay()):null,old=n==null||n>=2;return`<button class="cp" data-a="bkup" style="${old?'background:var(--pt);color:var(--pine);font-weight:700':''}">${old?(n==null?'백업 받기':'백업 받기 ('+n+'일 지남)'):'백업 ('+md(l)+')'}</button>`}
+async function bkFetch(t){for(const o of ['id','created_at','']){const r=await qAll(()=>{const q=sb.from(t).select('*');return o?q.order(o):q});if(!r.error)return r}return qAll(()=>sb.from(t).select('*'))}
+document.addEventListener('click',async e=>{if(!e.target.closest('[data-a=bkup]'))return;if(!me||!me.p||me.p.role!=='admin')return;if(busy)return;busy=true;toast('백업을 만드는 중이에요. 잠시만요...');
+try{const out={app:'건강 기록',exportedAt:new Date().toISOString(),note:'식사 사진 파일은 포함되지 않고 photo_path 로만 남아요',tables:{},counts:{},errors:{}};
+for(const t of BK_TABLES){const r=await bkFetch(t);if(r.error){out.errors[t]=r.error.message;out.tables[t]=[];out.counts[t]=0}else{out.tables[t]=r.data;out.counts[t]=r.data.length}}
+const blob=new Blob([JSON.stringify(out)],{type:'application/json'}),a=document.createElement('a'),name='건강기록_백업_'+baseDay()+'.json';
+a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+const bad=Object.keys(out.errors).length,tot=Object.values(out.counts).reduce((t,x)=>t+x,0);
+try{localStorage.setItem('bk_last',baseDay())}catch(x){}
+renderDash();toast(bad?'백업했지만 '+bad+'개 표를 못 읽었어요 ('+Object.keys(out.errors).join(', ')+')':'백업을 저장했어요 · 기록 '+tot+'건')}
+catch(x){toast('백업하지 못했어요: '+(x.message||''))}finally{busy=false}});
 
 /* --- 비밀번호 변경 (설정 화면) --- */
 function acctPw(){const sp=$('#sp');if(!sp||!me||(me.p&&me.p.is_demo))return;sp.insertAdjacentHTML('beforeend','<button type="button" class="cp" data-a="pwform" style="margin:12px 0 0">비밀번호 변경</button>')}
