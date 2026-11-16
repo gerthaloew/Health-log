@@ -688,7 +688,7 @@ function authUI(m,d){_authBase(m,d);const x=$('#a_x');if(x)x.insertAdjacentHTML(
 function fnm(n){return n.replace(/\(\s*\d+(\.\d+)?\s*[가-힣]+\s*,\s*/,'(').replace(/\s*\d+(\.\d+)?\s*(잔|개|회분|컵|병|캔|봉지|봉|포|조각|공기|접시|인분|스쿱|장|알)$/,'')}
 /* ===== 새 기능 클릭/입력 처리 ===== */
 document.addEventListener('input',e=>{const i=e.target.id;
-if(i==='fq'){const q=e.target.value.replace(/\s/g,'');$('#fres').innerHTML=q?FOODS.map((x,k)=>[x,k]).filter(([x])=>x.n.replace(/\s/g,'').includes(q)).slice(0,8).map(([x,k])=>`<button type="button" class="chip" data-a="fpick" data-i="${k}">${esc(fnm(x.n))}</button>`).join('')||'<span class="mut">검색 결과가 없어요. 아래에 직접 입력해 주세요.</span>':''}
+if(i==='fq'){const q=e.target.value.replace(/\s/g,'');$('#fres').innerHTML=q?FOODS.map((x,k)=>[x,k,x.n.replace(/\s/g,'')]).filter(r=>r[2].includes(q)).sort((a,b)=>(a[2].startsWith(q)?0:1)-(b[2].startsWith(q)?0:1)||a[2].length-b[2].length||a[1]-b[1]).slice(0,10).map(([x,k])=>`<button type="button" class="chip" data-a="fpick" data-i="${k}">${esc(fnm(x.n))}</button>`).join('')||'<span class="mut">검색 결과가 없어요. 아래에 직접 입력해 주세요.</span>':''}
 if(i==='fg')foodFill();if(i==='f_ln')e.target.dataset.auto='0'});
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');
 if(e.target.closest('[data-g="lk"] .chip'))setTimeout(()=>{const n=$('#f_ln');if(n&&n.dataset.auto==='1')n.value=nextNo(gv('lk')[0])},0);
@@ -1208,4 +1208,5 @@ render();
 setTimeout(()=>{const a=$('#auth');if(!a||me||!/불러오는 중/.test(a.textContent))return;
 a.innerHTML='<div class="ap"><h1>건강 기록</h1><p class="mut">연결이 오래 걸리고 있어요. 인터넷을 확인하고 다시 시도해 주세요.</p><button class="save" onclick="location.reload()">다시 시도</button><button class="save" style="background:none;color:var(--fat)" onclick="try{Object.keys(localStorage).filter(k=>k.indexOf(\'sb-\')===0).forEach(k=>localStorage.removeItem(k))}catch(e){}location.reload()">저장된 로그인 지우고 다시 시작</button></div>'},10000);
 </script>
+<script src="foods2.js?v=1" defer></script>
 </body></html>
