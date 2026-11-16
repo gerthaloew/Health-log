@@ -154,11 +154,6 @@ let S={meals:[],workouts:[],body:[],cycle:[]},day=baseDay();var dayBy={},lastTab
 
 S.goal=S.goal||{c:220,p:90,f:55};S.goal.k=S.goal.c*4+S.goal.p*4+S.goal.f*9;S.dday=S.dday||[];
 function save(){}
-function seed(){const t=baseDay();S.sample=1;
-S.meals=[{id:1,d:t,t:'아침',n:'오트밀과 바나나',k:320,c:58,p:11,f:6},{id:2,d:t,t:'점심',n:'닭가슴살 샐러드',k:410,c:28,p:38,f:14},{id:3,d:t,t:'간식',n:'그릭요거트',k:140,c:9,p:15,f:4},{id:4,d:addDays(t,-1),t:'저녁',n:'연어 포케',k:560,c:62,p:30,f:20}];
-S.workouts=[{id:5,d:addDays(t,-1),g:['Personal Training'],b:['하체'],n:'스쿼트, 불가리안 스플릿 스쿼트',k:290,c:'상'}];
-S.body=[];for(let i=0;i<10;i++)S.body.push({id:10+i,d:addDays(t,-(27-i*3)),w:+(62.4-i*.17).toFixed(1),...(i==9?{m:23.1,f:15.8}:{})});
-S.cycle=[addDays(t,-76),addDays(t,-48),addDays(t,-20)];}
 
 const sum=(a,f)=>a.reduce((s,x)=>s+(+x[f]||0),0),dm=k=>S.meals.filter(m=>m.d===k),dw=k=>S.workouts.filter(w=>w.d===k);
 const tab=()=>{const h=location.hash.slice(1);return['today','meals','workouts','body','schedule'].includes(h)?h:'today'};
@@ -167,7 +162,6 @@ function head(t,nav=true){const d=new Date(day+'T12:00:00'),b=baseDay(),lab=day=
 return`<header class="top"><h1><span>${t}</span>${t==='오늘'&&!viewAs?'<span><button class="gear" data-a="goal">목표</button> <button class="gear" data-a="acct">설정</button></span>':''}</h1>${nav?`<div class="dn"><button data-a="prev" aria-label="전날">‹</button><span>${lab}${md(day)} (${'일월화수목금토'[d.getDay()]})</span><button data-a="next" aria-label="다음날" ${day>=b?'disabled':''}>›</button></div>`:''}</header>${S.sample?'<div class="ban"><span>샘플 데이터가 들어 있어요.</span><button data-a="clear">샘플 지우기</button></div>':''}`}
 const bar=(l,v,g,c)=>`<div class="mb"><div class="ml"><span>${l}</span><b>${Math.round(v)}<i> / ${g}g</i></b></div><div class="bt"><div class="bf ${c}" style="width:${Math.min(v/g*100,100)}%"></div></div></div>`;
 const lastW=()=>[...S.body].filter(b=>b.w&&b.d<=day).sort((a,b)=>a.d<b.d?1:-1)[0];
-const shrink=f=>new Promise((ok,no)=>{const r=new FileReader();r.onerror=no;r.onload=()=>{const i=new Image();i.onerror=no;i.onload=()=>{const s=Math.min(1,480/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);c.getContext('2d').drawImage(i,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',.7))};i.src=r.result};r.readAsDataURL(f)});
 const ph=(a,n=6)=>{const p=a.filter(x=>x.img).slice(0,n);return p.length?`<div class="ths">${p.map(x=>`<img class="th" data-a="det" data-k="meal" data-t="${x.t}" src="${x.img}" alt="${esc(x.n)}">`).join('')}</div>`:''};
 const wt=x=>x.y&&x.y.length?x.y:[...new Set([...(x.g||[]).filter(p=>p==='필라테스'),...(x.b||[]).map(p=>p==='유산소'||p==='필라테스'?p:'웨이트')])];
 function ddCard(){const t=baseDay(),a=[...S.dday].sort((x,y)=>{const p=u=>u.d<t?1:0;return p(x)-p(y)||(x.d<y.d?-1:1)});if(!a.length)return'';return`<section class="card"><h3>디데이</h3>${a.slice(0,3).map(x=>{const n=diff(t,x.d);return`<div class="row"><span class="n">${esc(x.n)}<small>${md(x.d)}</small></span><b class="cy2">${n===0?'D-Day':n>0?'D-'+n:'D+'+(-n)}</b></div>`}).join('')}</section>`}
@@ -179,9 +173,6 @@ return head('오늘')+lessonCard()+ddCard()+`<section class="card hero"><div cla
 <div class="two sec"><div class="card tap" role="button" tabindex="0" data-a="det" data-k="body"><div class="mut">체중</div><div class="big">${bw?bw.w:'-'}<small class="mut"> kg</small></div><div class="mut">${bw&&bw.d!==day?md(bw.d)+' 기록':bw?'':'기록 없음'}</div>${bcHtml}</div>
 <div class="card tap" role="button" tabindex="0" data-a="det" data-k="work"><div class="mut">운동</div><div class="big" style="font-size:20px">${wn.length?esc(wn.join(', ')):'-'}</div><div class="mut">${w.length?burn+' kcal 소모':'기록 없음'}</div></div></div>
 <section class="card"><h3>식사 <a href="#meals">전체 보기</a></h3>${ph(m)}${rows||'<p class="empty">아직 기록이 없어요. 아래 + 버튼으로 추가해 보세요.</p>'}</section>`}
-function vMeals(){const seen={},rec=[...S.meals].sort((a,b)=>(b.ts||0)-(a.ts||0)).filter(x=>!seen[x.n]&&(seen[x.n]=1)).slice(0,6);
-const sec=TYPES.map(t=>{const a=dm(day).filter(x=>x.t===t);return`<section class="card"><h3>${t}<span>${sum(a,'k')} kcal</span></h3>${a.map(x=>`<div class="row">${x.img?`<img class="th" src="${x.img}" alt="${esc(x.n)}">`:''}<span class="n">${esc(x.n)}<small>탄 ${x.c||0}g 단 ${x.p||0}g 지 ${x.f||0}g</small></span><b>${x.k} kcal</b><button class="x" data-a="del" data-k="meals" data-i="${x.id}" aria-label="삭제">×</button></div>`).join('')||'<p class="empty">없음</p>'}</section>`}).join('');
-return head('식사')+calCard('meals')+(rec.length?`<section class="card"><h3>자주 먹는 음식</h3><div class="chips" style="margin:0">${rec.map(x=>`<button class="chip" data-a="qa" data-i="${x.id}">${esc(x.n)}</button>`).join('')}</div><p class="mut" style="margin:8px 0 0">누르면 ${guess()}으로 바로 추가돼요.</p></section>`:'')+sec}
 function vWork(){const a=dw(day),r=[...S.workouts].filter(x=>x.d!==day).sort((x,y)=>y.d<x.d?-1:1).slice(0,4);
 return head('운동')+wSearchBox()+calCard('workouts')+`<section class="card"><h3>기록<span>${sum(a,'k')} kcal</span></h3>${a.map(x=>`<div class="row"><span class="n tap" data-a="wdet" data-i="${x.id}">${esc(x.n||'운동')}<small>${wt(x).map(g=>`<span class="tag">${esc(g)}</span>`).join('')}${(x.g||[]).map(g=>`<span class="tag">${esc(g)}</span>`).join('')}${(x.b||[]).map(g=>`<span class="tag">${esc(g)}</span>`).join('')}${x.c?`<span class="tag">컨디션 ${esc(x.c)}</span>`:''}</small></span><b>${x.k||0} kcal</b><button class="x" data-a="del" data-k="workouts" data-i="${x.id}" aria-label="삭제">×</button></div>`).join('')||'<p class="empty">이 날은 운동 기록이 없어요.</p>'}</section>
 ${r.length?`<section class="card"><h3>지난 운동 복사</h3>${r.map(x=>`<div class="row"><span class="n">${esc(x.n||'운동')}<small>${md(x.d)}</small></span><button class="cp" data-a="cp" data-i="${x.id}">복사</button></div>`).join('')}</section>`:''}`}
@@ -189,9 +180,6 @@ function cyc(){const s=[...S.cycle].sort();if(!s.length)return null;let avg=28;i
 function _vBodyBase(){const a=[...S.body].filter(b=>b.w).sort((x,y)=>x.d<y.d?-1:1),l=a[a.length-1],ch=a.length>1?+(l.w-a[0].w).toFixed(1):0,ib=[...S.body].filter(b=>b.m||b.f).sort((x,y)=>y.d<x.d?-1:1)[0],c=cyc(),dd=c?diff(baseDay(),c.next):0;
 return head('신체',false)+`<section class="card"><h3>체중 변화</h3><div class="chips" style="margin:0 0 8px">${[['1m','1개월'],['3m','3개월'],['all','전체']].map(([v,l])=>`<button type="button" class="chip${bRange===v?' on':''}" data-a="brange" data-v="${v}">${l}</button>`).join('')}</div>${chart()}<div class="st"><div class="mut">현재<b>${l?l.w+' kg':'-'}</b></div><div class="mut">변화<b>${a.length>1?(ch>0?'+':'')+ch+' kg':'-'}</b></div><div class="mut">골격근 / 체지방<b>${ib?(ib.m||'-')+' / '+(ib.f||'-'):'-'}</b></div></div></section>
 ${bodyList()}${S.goal.w&&l?`<section class="card"><h3>목표 체중</h3><div class="big">${S.goal.w} kg</div><div class="mut">${Math.abs(l.w-S.goal.w)<.05?'목표를 달성했어요':'목표까지 '+Math.abs(l.w-S.goal.w).toFixed(1)+' kg '+(l.w>S.goal.w?'감량':'증량')}</div></section>`:''}<section class="card" ${hideCyc()?'hidden':''}><h3>생리주기추적</h3>${c?`<div class="big cy">${md(c.next)}</div><div class="mut">다음 예정일 ${dd>=0?'D-'+dd:'D+'+(-dd)}, 평균 주기 ${c.avg}일</div><div class="mut" style="margin-top:8px">마지막 시작일 ${md(c.last)}. 기록 ${c.n}회${c.n<5?' (5회 이상이면 더 정확해져요)':''}</div>`:'<p class="empty">시작일을 기록하면 다음 예정일을 계산해 드려요.</p>'}${calHTML('cycle')}${cycSel()}${cycList()}</section>`}
-function vMeals2(){const seen={},rec=[...S.meals].sort((a,b)=>(b.ts||0)-(a.ts||0)).filter(x=>!seen[x.n]&&(seen[x.n]=1)).slice(0,6);
-const sec=TYPES.map(t=>{const a=dm(day).filter(x=>x.t===t);return`<section class="card"><h3>${t}<span>${sum(a,'k')} kcal</span></h3>${a.length?`<div class="gal">${a.map(x=>`<button class="gi" data-a="edit" data-i="${x.id}">${x.img?`<img src="${x.img}" alt="${esc(x.n)}">`:`<span class="ph0">${esc(x.n.slice(0,2))}</span>`}<span class="gt">${esc(x.n)}<small>${x.k} kcal</small></span></button>`).join('')}</div>`:'<p class="empty">없음</p>'}</section>`}).join('');
-return head('식사')+calCard('meals')+(rec.length?`<section class="card"><h3>자주 먹는 음식</h3><div class="chips" style="margin:0">${rec.map(x=>`<button class="chip" data-a="qa" data-i="${x.id}">${esc(x.n)}</button>`).join('')}</div><p class="mut" style="margin:8px 0 0">누르면 ${guess()}으로 바로 추가돼요.</p></section>`:'')+sec}
 function vMeals3(){const seen={},rec=[...S.meals].sort((a,b)=>(b.ts||0)-(a.ts||0)).filter(x=>!seen[x.n]&&(seen[x.n]=1)).slice(0,6),all=TYPES.flatMap(t=>dm(day).filter(x=>x.t===t));
 const sub=TYPES.map(t=>{const a=dm(day).filter(x=>x.t===t);return a.length?t+' '+sum(a,'k')+' kcal':''}).filter(Boolean).join(', ');
 return head('식사')+calCard('meals')+(rec.length?`<section class="card"><h3>자주 먹는 음식</h3><div class="chips" style="margin:0">${rec.map(x=>`<button class="chip" data-a="qa" data-i="${x.id}">${esc(x.n)}</button>`).join('')}</div><p class="mut" style="margin:8px 0 0">누르면 ${guess()}으로 바로 추가돼요.</p></section>`:'')+`<section class="card"><h3>식사 기록<span>${sum(all,'k')} kcal</span></h3>${sub?`<p class="mut" style="margin:0 0 10px">${sub}</p>`:''}${all.length?`<div class="gal">${all.map(x=>`<button class="gi" data-a="edit" data-i="${x.id}">${x.img?`<img src="${x.img}" alt="${esc(x.n)}">`:`<span class="ph0">${esc(x.n.slice(0,2))}</span>`}<span class="bd">${x.t}</span><span class="gt">${esc(x.n)}<small>${x.k} kcal</small></span></button>`).join('')}</div>`:'<p class="empty">아직 기록이 없어요. 아래 + 버튼으로 추가해 보세요.</p>'}</section>`}
@@ -317,13 +305,12 @@ closeS();render();toast('저장했어요')}
 /* 삭제, 복사, 로그인 등은 기존 클릭 처리보다 먼저 가로채서 서버에 반영해요 */
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,d=b.dataset;
 if(isRO()&&!(tab()==='schedule'&&me.p.role==='trainer'&&['pick','save','ledit','ulesson','dlesson'].includes(a)&&(!d.k||d.k==='lesson'))&&['fab','goal','edit','upd','qa','cp','del','del2','ddel','pick','save','rmimg','wedit','bedit','cedit','uwork','ubody','dbody','ucyc','dcyc','ledit','ulesson','dlesson'].includes(a)){e.stopImmediatePropagation();if(a==='edit'){const x=S.meals.find(y=>String(y.id)===d.i);if(x)detail('meal',x.t);return}return toast(roMsg())}
-if(!['del','del2','qa','cp','ddel','acct','logout','login','signup','clear','back','cday','cprev','cnext','cprev2','cnext2','vm','vback','dolink','skiplink','linksheet','saveg','rmmain','rmex','mvex','rmset','addset','addcd','rmcd','wdet','wedit','uwork','bedit','ubody','dbody','cedit','ucyc','dcyc','forgot','setpw','myrec','toadmin','ledit','ulesson','dlesson','sday','cprevS','cnextS'].includes(a))return;e.stopImmediatePropagation();let own=false;if(['del','del2','qa','cp','ddel','saveg','dolink','uwork','ubody','dbody','ucyc','dcyc','setpw','ulesson','dlesson'].includes(a)){if(busy)return;busy=own=true}
+if(!['del','del2','qa','cp','ddel','acct','logout','login','signup','clear','back','cday','cprev','cnext','cprev2','cnext2','vm','vback','saveg','rmmain','rmex','mvex','rmset','addset','addcd','rmcd','wdet','wedit','uwork','bedit','ubody','dbody','cedit','ucyc','dcyc','forgot','setpw','myrec','toadmin','ledit','ulesson','dlesson','sday','cprevS','cnextS'].includes(a))return;e.stopImmediatePropagation();let own=false;if(['del','del2','qa','cp','ddel','saveg','uwork','ubody','dbody','ucyc','dcyc','setpw','ulesson','dlesson'].includes(a)){if(busy)return;busy=own=true}
 try{
 if(a==='acct')return acctSheet();
 if(a==='back')return authUI();
 if(a==='vm'){viewAs=mkView(d.i);const au=$('#auth');if(au)au.remove();document.body.classList.add('in');setRo();showVB();dayBy={};day=baseDay();cm=lastDM=day.slice(0,7);if(location.hash!=='#today')location.hash='#today';return void await loadAll()}
 if(a==='vback'){const v=$('#vb');if(v)v.remove();S.meals=[];S.workouts=[];S.body=[];S.cycle=[];S.dday=[];return void await adminUI()}
-if(a==='linksheet')return linkSheet();
 if(a==='rmmain'){wd.main=wd.main.filter(n=>n!==d.n);return drawMain()}
 if(a==='rmex'){wd.ex.splice(+d.i,1);return drawSets()}
 if(a==='mvex'){const i=+d.i,j=i+ +d.dir;if(j<0||j>=wd.ex.length)return;[wd.ex[i],wd.ex[j]]=[wd.ex[j],wd.ex[i]];return drawSets()}
@@ -350,8 +337,6 @@ if(a==='dcyc')return void await dcyc(d.i,d.s);
 if(a==='forgot'){const email=$('#a_e').value.trim();if(!email)return toast('이메일을 먼저 입력해 주세요');const r=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(r.error)throw r.error;return authUI('비밀번호 재설정 메일을 보냈어요. 메일의 링크를 눌러 새 비밀번호를 정해 주세요.',true)}
 if(a==='setpw'){const pw=$('#a_np').value;if(pw.length<6)return toast('비밀번호는 6자 이상이어야 해요');const r=await sb.auth.updateUser({password:pw});if(r.error)throw r.error;recov=false;const u=await sb.auth.getUser();toast('비밀번호를 바꿨어요');if(u.data&&u.data.user)start(u.data.user);return}
 if(a==='saveg'){const g=gv('ag')[0]==='남성'?'male':'female',r=await sb.from('profiles').update({gender:g,staff_consent:$('#f_sc')?$('#f_sc').checked:!!me.p.staff_consent,staff_edit_ok:$('#f_sc')?$('#f_sc').checked:!!me.p.staff_consent}).eq('id',me.id);if(r.error)throw r.error;me.p.gender=g;me.p.staff_consent=$('#f_sc')?$('#f_sc').checked:!!me.p.staff_consent;me.p.staff_consent=me.p.staff_consent;toast('저장했어요');return render()}
-if(a==='skiplink'){try{sessionStorage.setItem('skipLink','1')}catch(e){}return closeS()}
-if(a==='dolink'){if(!$('#f_ok').checked)return toast('동의에 체크해 주세요');if(!fv('code'))return toast('초대 코드를 입력해 주세요');const r=await sb.rpc('link_trainer',{code:fv('code')});if(r.error)throw r.error;me.p.staff_consent=true;me.p.staff_consent=true;me.linked=true;closeS();return toast('트레이너와 연결했어요')}
 if(a==='cday'){day=d.d;cm=lastDM=day.slice(0,7);return render()}
 if(a==='cprev'||a==='cnext'){cm=shiftM(cm,a==='cnext'?1:-1);return render()}
 if(a==='cprev2'||a==='cnext2'){cmC=shiftM(cmC,a==='cnext2'?1:-1);return render()}
@@ -382,11 +367,10 @@ const calCard=k=>`<section class="card">${calHTML(k)}</section>`;
 var viewAs=null;
 function overlay(){let a=$('#auth');if(!a){a=document.createElement('div');a.id='auth';a.className='au';document.body.appendChild(a)}return a}
 document.addEventListener('change',e=>{if(e.target.id==='vsel'){const o=e.target.selectedOptions[0];viewAs=mkView(o.value);setRo();showVB();dayBy={};day=baseDay();cm=lastDM=day.slice(0,7);loadAll()}});
-function linkSheet(){$('#sp').innerHTML=`<h2>담당 트레이너 연결</h2><p class="mut">트레이너에게 받은 초대 코드를 입력하세요.</p><label>초대 코드<input id="f_code" autocapitalize="characters" autocomplete="off"></label><label style="display:flex;gap:8px;align-items:flex-start;color:var(--ink)"><input id="f_ok" type="checkbox" style="width:auto;margin-top:4px">담당 트레이너가 제 모든 개인정보(식사, 운동, 체중·인바디, 수면, 생리주기, 수업 일정 포함)를 보고 필요하면 대신 입력·수정할 수 있는 것에 동의합니다.</label><button class="save" data-a="dolink">연결하기</button><button class="save" data-a="skiplink" style="background:none;color:var(--mut);margin-top:0">나중에 하기</button>`;$('#sh').hidden=false}
 
 
-/* 설정(계정) 화면: 기본 + 개인정보·탈퇴 + 동의 표시 + 애플 건강 연동 + 하단 안내 (순서대로) */
-function acctSheet(){_acctBase();acctPriv();acctConsent();acctHealth();acctFoot()}
+/* 설정(계정) 화면: 기본 + 개인정보·탈퇴 + 애플 건강 연동 + 하단 안내 (순서대로) */
+function acctSheet(){_acctBase();acctPriv();acctHealth();acctFoot()}
 </script>
 <script>
 /* ===== 생리주기추적 ===== */
@@ -719,7 +703,7 @@ const mm={};ps.forEach(p=>{mm[p.id]={p,kc:0,goal:gm[p.id]||1735,ty:new Set(),wk:
 (w.data||[]).forEach(r=>{const o=mm[r.user_id];if(!o)return;if(r.log_date===today)o.wk++;if(r.log_date>o.last)o.last=r.log_date});
 (b.data||[]).forEach(r=>{const o=mm[r.user_id];if(!o)return;if(r.log_date>o.last)o.last=r.log_date;if(r.weight!=null&&r.log_date>=from2){if(!o.w0)o.w0=r;o.wl=r}});
 const lessons=[],now=Date.now();
-(l.data||[]).forEach(r=>{const o=mm[r.member_id];if(!o||r.status==='cancelled')return;const q=sp(r.start_at),x={d:q.d,h:q.h,m:q.m,kind:r.kind,no:r.session_no,name:o.p.display_name,id:o.p.id,t:Date.parse(r.start_at)};if(q.d===today)lessons.push(x);if(!o.next&&x.t>=now-36e5)o.next=x});
+(l.data||[]).forEach(r=>{const o=mm[r.member_id];if(!o||r.status==='cancelled'||(r.kind!=='PT'&&r.kind!=='OT'))return;const q=sp(r.start_at),x={d:q.d,h:q.h,m:q.m,kind:r.kind,no:r.session_no,name:o.p.display_name,id:o.p.id,t:Date.parse(r.start_at)};if(q.d===today)lessons.push(x);if(!o.next&&x.t>=now-36e5)o.next=x});
 DASH={today,hr:seoulHour(),lessons,rows:Object.values(mm).map(o=>{const days=o.last?diff(o.last,today):null;return{...o,days,noMeal:!o.ty.size,stale:days==null||days>=3}})}}
 function dCard(r){const p=r.p,over=r.kc>r.goal*1.2,att=r.stale||over||(r.noMeal&&DASH.hr>=12),
 meals=r.ty.size?[...r.ty].sort((a,b)=>TYPES.indexOf(a)-TYPES.indexOf(b)).join(' '):'없음',
@@ -737,7 +721,7 @@ sc=r=>(r.stale?2:0)+(r.kc>r.goal*1.2?1:0)+(r.noMeal&&D.hr>=12?1:0),
 list=rows.filter(fn).sort((x,y)=>sc(y)-sc(x)||(x.p.display_name<y.p.display_name?-1:1));
 return tiles+ls+`<h3 class="dh">회원 현황</h3><div class="chips">${F.map(([v,t])=>`<button type="button" class="chip${dFilter===v?' on':''}" data-a="dfil" data-v="${v}">${t}</button>`).join('')}</div><div class="mgrid">${list.map(dCard).join('')||'<p class="empty">해당하는 회원이 없어요.</p>'}</div>`+((me.demos||[]).length?'<h3 class="dh">샘플 (체험용, 집계 제외)</h3><p class="mut" style="font-size:12px;margin:0 0 8px">보여주기용 계정이에요. 현황·확인 필요·수업 집계에 들어가지 않고, 눌러서 둘러보기만 할 수 있어요.</p>'+me.demos.map(p=>`<button class="mem" data-a="vm" data-i="${p.id}" data-n="${esc(p.display_name)}">${esc(p.display_name)} · 샘플</button>`).join(''):'')}
 function _renderDashBase(){const a=overlay(),role=me.p.role==='admin'?'관리자':'트레이너',t=DASH?DASH.today:baseDay();
-a.className='au top';a.innerHTML=`<div class="ap wide"><div class="dtop"><div><h1>회원 관리</h1><p class="mut">${md(t)} (${'일월화수목금토'[new Date(t+'T12:00:00').getDay()]}), ${role}${me.p.invite_code?', 내 초대 코드 <b>'+esc(me.p.invite_code)+'</b>':''}</p></div><span style="display:flex;gap:6px;align-items:center"><button class="cp" data-a="drefresh">새로고침</button><button class="cp" data-a="logout" style="background:none;color:var(--mut)">로그아웃</button></span></div>${dTabs()}${dView==='cal'?calDashHTML():dView==='reg'?regHTML():DASH?dashHTML():'<p class="empty">회원 현황을 불러오지 못했어요. 새로고침을 눌러 주세요.</p>'}</div>`}
+a.className='au top';a.innerHTML=`<div class="ap wide"><div class="dtop"><div><h1>회원 관리</h1><p class="mut">${md(t)} (${'일월화수목금토'[new Date(t+'T12:00:00').getDay()]}), ${role}</p></div><span style="display:flex;gap:6px;align-items:center"><button class="cp" data-a="drefresh">새로고침</button><button class="cp" data-a="logout" style="background:none;color:var(--mut)">로그아웃</button></span></div>${dTabs()}${dView==='cal'?calDashHTML():dView==='reg'?regHTML():DASH?dashHTML():'<p class="empty">회원 현황을 불러오지 못했어요. 새로고침을 눌러 주세요.</p>'}</div>`}
 async function adminUI(){document.body.classList.remove('in','ro','vw');viewAs=null;const a=overlay();a.className='au top';a.innerHTML='<div class="ap wide"><h1>회원 관리</h1><p class="mut">불러오는 중...</p></div>';
 try{await loadDash()}catch(e){DASH=null}renderDash()}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;if(b.dataset.a==='dfil'){dFilter=b.dataset.v;renderDash()}if(b.dataset.a==='drefresh')adminUI()});
@@ -770,7 +754,7 @@ var HOL={},cWarn='';
 async function loadCal(){if(!cM)cM=baseDay().slice(0,7);if(!cSel)cSel=baseDay();
 const r=await qAll(()=>sb.from('lessons').select('*').gte('start_at',cM+'-01T00:00:00+09:00').lt('start_at',mAdd(cM,1)+'-01T00:00:00+09:00').order('start_at').order('id'));
 const nm={};(me.members||[]).forEach(m=>nm[m.id]=m.display_name);
-CL=(r.data||[]).filter(l=>nm[l.member_id]).map(l=>{const q=sp(l.start_at);return{id:l.id,mid:l.member_id,name:nm[l.member_id]||'회원',d:q.d,h:q.h,m:q.m,kind:l.kind,no:l.session_no,st:l.status,by:l.trainer_id?'트레이너 등록':'회원 등록'}});
+CL=(r.data||[]).filter(l=>nm[l.member_id]&&(l.kind==='PT'||l.kind==='OT')).map(l=>{const q=sp(l.start_at);return{id:l.id,mid:l.member_id,name:nm[l.member_id]||'회원',d:q.d,h:q.h,m:q.m,kind:l.kind,no:l.session_no,st:l.status,by:l.trainer_id?'트레이너 등록':'회원 등록'}});
 HOL={};try{const h=await sb.from('trainer_holidays').select('day,note').eq('trainer_id',me.id).gte('day',cM+'-01').lt('day',mAdd(cM,1)+'-01');(Array.isArray(h.data)?h.data:[]).forEach(x=>HOL[x.day]=x.note||'휴무')}catch(e){}}
 function clash(l,list){return l.st!=='cancelled'&&list.some(o=>o.id!==l.id&&o.st!=='cancelled'&&o.d===l.d&&Math.abs((o.h*60+o.m)-(l.h*60+l.m))<50)}
 function calDashHTML(){if(!cM)cM=baseDay().slice(0,7);const[y,m]=cM.split('-').map(Number),first=new Date(Date.UTC(y,m-1,1)).getUTCDay(),dim=new Date(Date.UTC(y,m,0)).getUTCDate(),today=baseDay();
@@ -785,11 +769,6 @@ if(a==='cmprev'||a==='cmnext'){cM=mAdd(cM,a==='cmnext'?1:-1);cSel=cM+'-01';try{a
 if(a==='cdsel'){cSel=b.dataset.d;renderDash()}
 if(a==='drefresh'&&dView==='cal'){try{await loadCal()}catch(x){}renderDash()}});
 async function checkLink(){if(me.p&&me.p.role==='member'&&!me.p.staff_consent)consentSheet()};
-function acctConsent(){if(!me||me.p.role!=='member')return;
-const fix=()=>{const sp=$('#sp');if(!sp||!me.linked)return;const c=sp.querySelector('#f_sc');if(c&&c.closest('label'))c.closest('label').remove();const lb=sp.querySelector('[data-a=linksheet]');if(lb){const d=document.createElement('div');d.className='row';d.style.marginTop='12px';d.innerHTML='<span>담당 트레이너</span><b>연결됨 ✓</b>';lb.replaceWith(d)}};
-if(me.linked===true)return fix();
-sb.from('trainer_links').select('trainer_id').eq('member_id',me.id).eq('status','active').then(r=>{me.linked=!!(r.data||[]).length;fix()})};
-
 /* ===== PT 횟수, 한줄평, 캘린더에서 수업 등록 ===== */
 var PTM={},OTM={},rFil='target';
 const OTMAX=2;
@@ -920,7 +899,7 @@ try{const r=await sb.from('profiles').update({staff_consent:true,staff_edit_ok:t
 function tp5(id,v){const[h,m]=(v||'10:00').split(':').map(Number),mm=Math.floor((m||0)/5)*5;
 return`<div class="tp"><select data-tp="${id}" aria-label="시">${Array.from({length:24},(_,i)=>`<option value="${pad(i)}"${i===h?' selected':''}>${i}시</option>`).join('')}</select><select data-tp="${id}" aria-label="분">${Array.from({length:12},(_,i)=>`<option value="${pad(i*5)}"${i*5===mm?' selected':''}>${pad(i*5)}분</option>`).join('')}</select><input type="hidden" id="f_${id}" value="${pad(h)}:${pad(mm)}"></div>`}
 document.addEventListener('change',e=>{const id=e.target.dataset&&e.target.dataset.tp;if(!id)return;const s=[...document.querySelectorAll('[data-tp="'+id+'"]')];const h=$('#f_'+id);if(h)h.value=s[0].value+':'+s[1].value});
-const SAVEA=new Set(['save','upd','uwork','ubody','ucyc','ulesson','sleepsave','ptsave','regsave','rsave','nsave','olsave','csave','dolink','msave','saveg2']);
+const SAVEA=new Set(['save','upd','uwork','ubody','ucyc','ulesson','sleepsave','ptsave','regsave','rsave','nsave','olsave','csave','msave','saveg2']);
 function addClose(){const sp=$('#sp');if(!sp)return;sp.querySelectorAll('button.save').forEach(b=>{if(b.dataset.cl||!SAVEA.has(b.dataset.a))return;b.dataset.cl='1';const w=document.createElement('div');w.className='sbrow';b.replaceWith(w);w.appendChild(b);const c=document.createElement('button');c.type='button';c.className='save cls';c.dataset.a='shut';c.dataset.cl='1';c.textContent='닫기';w.appendChild(c)})}
 {const sp=$('#sp');if(sp)new MutationObserver(addClose).observe(sp,{childList:true,subtree:true})}
 
