@@ -229,6 +229,7 @@ document.addEventListener('input',e=>{if(/^f_g[cpf]$/.test(e.target.id)){const g
 addEventListener('hashchange',()=>{render();scrollTo(0,0)});render();
 
 /* ===== Supabase 연결 ===== */
+function showDemoBar(){let v=$('#vb');if(!v){v=document.createElement('div');v.id='vb';v.className='vb';document.body.appendChild(v)}v.innerHTML='<span>샘플 계정 · 둘러보기 전용</span><button class="cp" data-a="logout">로그아웃</button>'}
 function isRO(){return !!(viewAs&&!viewAs.edit)||!!(me&&me.p&&me.p.is_demo&&!viewAs)}
 function roMsg(){return (me&&me.p&&me.p.is_demo&&!viewAs)?'샘플 계정은 둘러보기만 가능해요':'이 회원은 아직 열람만 동의했어요. 회원이 계정 화면에서 동의를 다시 확인하면 입력·수정할 수 있어요'}
 const SB_URL='https://oxdnxbfwbicpueaunxgi.supabase.co',SB_KEY='sb_publishable_oBZKBi5cws0-OD-GkxiV7w_vyLuzQ-D';
@@ -257,7 +258,7 @@ const ps=S.meals.filter(x=>x.path).map(x=>x.path);
 if(ps.length){const r=await sb.storage.from('meal-photos').createSignedUrls(ps,3600);(r.data||[]).forEach(u=>{const x=S.meals.find(y=>y.path===u.path);if(x&&u.signedUrl)x.img=u.signedUrl})}
 render()}
 
-async function start(u){me={id:u.id};const r=await sb.from('profiles').select('*').eq('id',u.id).maybeSingle();me.p=r.data||{};if(['trainer','admin'].includes(me.p.role))return void await adminUI();document.body.classList.add('in');if(me.p.is_demo){try{await sb.rpc('reset_demo')}catch(_){}document.body.classList.add('ro');setTimeout(()=>toast('샘플 계정이에요. 둘러보기만 가능해요'),800)}await loadAll();const a=$('#auth');if(a)a.remove();await checkLink()}
+async function start(u){me={id:u.id};const r=await sb.from('profiles').select('*').eq('id',u.id).maybeSingle();me.p=r.data||{};if(['trainer','admin'].includes(me.p.role))return void await adminUI();document.body.classList.add('in');if(me.p.is_demo){try{await sb.rpc('reset_demo')}catch(_){}document.body.classList.add('ro');showDemoBar()}await loadAll();const a=$('#auth');if(a)a.remove();await checkLink()}
 sb.auth.onAuthStateChange((ev,s)=>{if(ev==='PASSWORD_RECOVERY'){recov=true;setTimeout(resetUI,0);return}setTimeout(()=>{if(recov)return;if(s&&s.user){if(!me||me.id!==s.user.id)start(s.user)}else{me=null;S.meals=[];S.workouts=[];S.body=[];S.cycle=[];S.dday=[];authUI()}},0)});
 
 function acctSheet(){const p=(me&&me.p)||{};$('#sp').innerHTML=`<h2>계정</h2><div class="row"><span>이름</span><b>${esc(p.display_name||'')}</b></div><div class="row"><span>유형</span><b>${p.role==='trainer'?'트레이너':'회원'}</b></div><label style="margin-top:12px">성별</label>${chips('ag',['여성','남성'],[p.gender==='male'?'남성':'여성'])}${p.role==='member'?`<div class="row" style="margin-top:12px"><span>개인정보 제공 동의</span><b>${p.staff_consent?'동의함':'동의 필요'}</b></div><p class="mut" style="margin:4px 0 0;font-size:12px">${p.staff_consent?'가입과 트레이너 연결 시 담당 트레이너의 열람·입력·수정에 동의한 상태예요.':'담당 트레이너를 연결하면 열람·입력·수정에 동의하게 돼요.'}</p>`:''}<button class="cp" data-a="saveg">설정 저장</button>${['trainer','admin'].includes(p.role)?'<button class="save" data-a="toadmin" style="margin-top:12px;background:var(--pt);color:var(--pine)">회원 관리 화면으로</button>':''}<button class="save" data-a="logout" style="margin-top:12px">로그아웃</button><button class="save" data-a="shut" style="background:none;color:var(--mut);margin-top:0">닫기</button>`;$('#sh').hidden=false}
