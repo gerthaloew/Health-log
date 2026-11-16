@@ -141,7 +141,8 @@ body:has(#auth) .sh{z-index:60}
 .wlg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11px;color:var(--mut);margin:8px 2px 0;align-items:center}.wlg i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
 .wpan{background:var(--sf);border:2px solid var(--pine);border-radius:16px;margin-top:12px;padding:14px}.wph{display:flex;gap:6px;align-items:center;margin-bottom:10px;flex-wrap:wrap}.wlk{margin-left:auto;color:var(--pine);font-weight:700;font-size:13px;background:none}
 .wdg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.wdc{background:var(--bg);border-radius:14px;padding:10px;overflow:hidden}.wdt{font-weight:700;font-size:13px}.wds{font-size:11px;color:var(--mut);margin-bottom:6px}
-.wdots{display:flex;gap:4px;justify-content:space-between;margin-top:14px}.wdd{text-align:center}.wdd span{display:block;width:16px;height:16px;border-radius:50%;background:var(--sf);border:1.5px solid var(--line);margin:0 auto 3px}.wdd span.on{background:var(--pine);border-color:var(--pine)}.wdd small{font-size:10px;color:var(--mut)}
+.wdots{margin-top:8px}.wdr{display:grid;grid-template-columns:30px repeat(7,1fr);align-items:center;justify-items:center;gap:2px;margin-top:8px}.wdr em{font-style:normal;font-size:11px;color:var(--mut);justify-self:start}.wdr small{font-size:10px;color:var(--mut)}.wdr small.td{color:var(--pine);font-weight:800}
+.wdr span{display:block;width:16px;height:16px;border-radius:50%;background:var(--sf);border:1.5px solid var(--line)}.wdr span.w{background:#2f7d57;border-color:#2f7d57}.wdr span.l{background:var(--pine);border-color:var(--pine)}
 @media (max-width:640px){.wsc{display:none}.wdg{grid-template-columns:1fr 1fr}.whm,.wth{gap:2px}.whm i,.wth span{width:15px}.whm i{height:15px;border-radius:4px}.whm i b{width:6px;height:6px}.wkt{font-size:12px}.wb{font-size:12px}.wkt th{padding:8px 3px}.wkt td{padding:8px 3px}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9"></script></head><body>
@@ -1056,12 +1057,12 @@ qAll(()=>rg(sb.from('sleep_logs').select('user_id,log_date,minutes')).order('id'
 qAll(()=>sb.from('lessons').select('member_id,kind,status,start_at').gte('start_at',wkStart+'T00:00:00+09:00').lte('start_at',to+'T23:59:59+09:00').order('start_at'))]);
 const goal={};((DASH&&DASH.rows)||[]).forEach(r=>goal[r.p.id]=r.goal);
 const dates=[0,1,2,3,4,5,6].map(i=>addDays(wkStart,i)),ix=d=>dates.indexOf(d),mm={};
-ps.forEach(p=>{mm[p.id]={p,ty:dates.map(()=>new Set()),kc:dates.map(()=>null),wo:dates.map(()=>0),wt:dates.map(()=>null),sl:dates.map(()=>null),ls:0,goal:goal[p.id]||1735}});
+ps.forEach(p=>{mm[p.id]={p,ty:dates.map(()=>new Set()),kc:dates.map(()=>null),wo:dates.map(()=>0),wt:dates.map(()=>null),sl:dates.map(()=>null),ls:0,lsd:dates.map(()=>0),goal:goal[p.id]||1735}});
 (m.data||[]).forEach(r=>{const o=mm[r.user_id],i=ix(r.log_date);if(!o||i<0)return;o.ty[i].add(r.meal_type);o.kc[i]=(o.kc[i]||0)+(+r.calories||0)});
 (w.data||[]).forEach(r=>{const o=mm[r.user_id],i=ix(r.log_date);if(o&&i>=0)o.wo[i]++});
 (b.data||[]).forEach(r=>{const o=mm[r.user_id],i=ix(r.log_date);if(o&&i>=0&&r.weight!=null)o.wt[i]=+r.weight});
 (sl.data||[]).forEach(r=>{const o=mm[r.user_id],i=ix(r.log_date);if(o&&i>=0&&r.minutes)o.sl[i]=+r.minutes});
-(l.data||[]).forEach(r=>{const o=mm[r.member_id];if(o&&r.status!=='cancelled'&&(r.kind==='PT'||r.kind==='OT')&&sp(r.start_at).d<=today)o.ls++});
+(l.data||[]).forEach(r=>{const o=mm[r.member_id];if(o&&r.status!=='cancelled'&&(r.kind==='PT'||r.kind==='OT')&&sp(r.start_at).d<=today){o.ls++;const i=ix(sp(r.start_at).d);if(i>=0)o.lsd[i]++}});
 const el=today<wkStart?0:Math.min(7,diff(wkStart,today)+1),av=a=>{const v=a.filter(x=>x!=null);return v.length?v.reduce((t,x)=>t+x,0)/v.length:null};
 WK={start:wkStart,dates,el,rows:Object.values(mm).map(o=>{const md=o.kc.filter(x=>x!=null).length,wn=o.wo.reduce((t,x)=>t+x,0),wv=o.wt.filter(x=>x!=null),a=av(o.kc);
 return{...o,md,wn,avg:a==null?null:Math.round(a),wlast:wv.length?wv[wv.length-1]:null,dw:wv.length>1?Math.round((wv[wv.length-1]-wv[0])*10)/10:null,slAvg:av(o.sl),low:el>=3&&(md*2<el||wn===0)}})}}
@@ -1076,7 +1077,9 @@ sb=r.sl.map((s,i)=>s==null?'':`<rect x="${8+i*20}" y="${(H-s/540*H).toFixed(1)}"
 slp=r.slAvg==null?'<p class="mut" style="font-size:12px;margin:30px 0">기록이 없어요</p>':`<svg width="100%" viewBox="0 0 150 ${H+4}" height="${H+4}">${sb}</svg>`;
 return{kcal,wgt,slp}}
 function wkPanel(r){if(!r)return'';const s=wkSvg(r),td=baseDay(),
-dots=WK.dates.map((d,i)=>`<div class="wdd"><span class="${r.wo[i]?'on':''}" style="${d>td?'opacity:.35':''}"></span><small>${WKD[i]}</small></div>`).join(''),
+dots=['<div class="wdr"><em></em>'+WK.dates.map((d,i)=>`<small class="${d===td?'td':''}">${WKD[i]}</small>`).join('')+'</div>',
+'<div class="wdr"><em>운동</em>'+WK.dates.map((d,i)=>`<span class="${r.wo[i]?'on w':''}" style="${d>td?'opacity:.35':''}"></span>`).join('')+'</div>',
+'<div class="wdr"><em>수업</em>'+WK.dates.map((d,i)=>`<span class="${r.lsd[i]?'on l':''}" style="${d>td?'opacity:.35':''}"></span>`).join('')+'</div>'].join(''),
 C=(t,sub,b)=>`<div class="wdc"><div class="wdt">${t}</div><div class="wds">${sub}</div>${b}</div>`,
 wv=r.wt.filter(x=>x!=null);
 return`<div class="wpan"><div class="wph"><b>${esc(r.p.display_name)}</b><span class="mut"> · ${wkLab(WK.start)}</span><button type="button" class="wlk" data-a="vm" data-i="${r.p.id}" data-n="${esc(r.p.display_name)}">회원 기록 열기 ›</button></div><div class="wdg">`
