@@ -4,6 +4,10 @@
 <title>오늘 기록</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="건강기록"><meta name="theme-color" content="#FFF5F0">
 <style>
 :root{--bg:#FFF5F0;--sf:#fff;--ink:#4A3A40;--mut:#9C8890;--line:#F8E4DE;--pine:#E8668B;--onp:#fff;--pt:#FFE4EB;--carb:#FFC15E;--prot:#8FA8FF;--fat:#FF9AA2;--rose:#F7799F;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2B2126;--sf:#3A2E34;--ink:#FFEFF3;--mut:#CDB5BD;--line:#4C3B43;--pine:#FF9DB8;--onp:#2B2126;--pt:#4D3640;--carb:#FFC96E;--prot:#A9BBFF;--fat:#FFA9B0;--rose:#FF9DB8;color-scheme:dark}}
@@ -124,6 +128,9 @@ body:has(#auth) .sh{z-index:60}
 .tos b{display:block;margin-top:10px}
 .iqrow{padding:10px 0;border-bottom:1px dashed var(--line);font-size:13px}.iqrow .meta{display:flex;justify-content:space-between;gap:8px;color:var(--mut);font-size:12px}.iqrow .bd{white-space:pre-wrap;word-break:break-all;margin:6px 0}.iqrow.done{opacity:.55}
 .iqbtn{display:flex;gap:6px}.iqbtn button{font-size:12px;padding:4px 10px;border-radius:99px;background:var(--bg);color:var(--mut)}
+
+/* 알림 설정 */
+.npbox{margin-top:12px}.npk{display:flex;align-items:center;gap:8px;font-size:14px;margin:8px 0;color:var(--ink)}.npk input[type=checkbox]{width:auto;margin:0}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9"></script></head><body>
 <main id="main"></main>
@@ -140,6 +147,8 @@ body:has(#auth) .sh{z-index:60}
 /* 운영자 설정 — 아래 한 줄만 바꾸면 하단 안내, 개인정보처리방침, 이용약관의 문의 주소가 모두 바뀌어요 */
 const SUPPORT_EMAIL='gerthaloew@gmail.com';
 const APP_VER='2026.11.16';
+/* 알림(웹 푸시) 공개 키 — 공개돼도 되는 값이에요 */
+const PUSH_PUBLIC_KEY='BCt_7likF-ePk24B-e8nXKeFZQk5sZP21psMMjqeCCP4ZgPV0yz_prTkEM7gm0XyQPPmbooJlhzQwPVg3puxgWY';
 </script>
 <script>
 const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0');
@@ -369,8 +378,8 @@ function overlay(){let a=$('#auth');if(!a){a=document.createElement('div');a.id=
 document.addEventListener('change',e=>{if(e.target.id==='vsel'){const o=e.target.selectedOptions[0];viewAs=mkView(o.value);setRo();showVB();dayBy={};day=baseDay();cm=lastDM=day.slice(0,7);loadAll()}});
 
 
-/* 설정(계정) 화면: 기본 + 개인정보·탈퇴 + 애플 건강 연동 + 하단 안내 (순서대로) */
-function acctSheet(){_acctBase();acctPriv();acctHealth();acctFoot()}
+/* 설정(계정) 화면: 기본 + 개인정보·탈퇴 + 애플 건강 연동 + 알림 + 하단 안내 (순서대로) */
+function acctSheet(){_acctBase();acctPriv();acctHealth();acctPush();acctFoot()}
 </script>
 <script>
 /* ===== 생리주기추적 ===== */
@@ -693,25 +702,28 @@ async function _loadDashBase(){const today=baseDay(),from=addDays(today,-29),fro
 pr=await sb.from('profiles').select('id,display_name,gender,staff_consent,staff_edit_ok,is_demo').eq('role','member'),
 all=(pr.data||[]).sort((x,y)=>x.display_name<y.display_name?-1:1),ps=all.filter(x=>!x.is_demo);me.members=ps;me.demos=all.filter(x=>x.is_demo);if(me.demos.length){try{await sb.rpc('reset_demo')}catch(_){}}
 const gq=await sb.from('goals').select('user_id,carb_g,protein_g,fat_g'),gm={};(Array.isArray(gq.data)?gq.data:[]).forEach(g=>gm[g.user_id]=Math.round(g.carb_g*4+g.protein_g*4+g.fat_g*9));
-const[m,w,b,l]=await Promise.all([
+const[m,w,b,l,sl]=await Promise.all([
 qAll(()=>sb.from('meal_logs').select('user_id,log_date,meal_type,calories').gte('log_date',from).order('log_date').order('id')),
 qAll(()=>sb.from('workout_logs').select('user_id,log_date').gte('log_date',from).order('log_date').order('id')),
 qAll(()=>sb.from('body_logs').select('user_id,log_date,weight').gte('log_date',from).order('log_date').order('id')),
-qAll(()=>sb.from('lessons').select('*').gte('start_at',today+'T00:00:00+09:00').lte('start_at',addDays(today,14)+'T23:59:59+09:00').order('start_at').order('id'))]);
+qAll(()=>sb.from('lessons').select('*').gte('start_at',today+'T00:00:00+09:00').lte('start_at',addDays(today,14)+'T23:59:59+09:00').order('start_at').order('id')),
+qAll(()=>sb.from('sleep_logs').select('user_id,log_date,minutes').gte('log_date',addDays(today,-3)).order('log_date').order('id'))]);
 const mm={};ps.forEach(p=>{mm[p.id]={p,kc:0,goal:gm[p.id]||1735,ty:new Set(),wk:0,last:'',wl:null,w0:null,next:null}});
 (m.data||[]).forEach(r=>{const o=mm[r.user_id];if(!o)return;if(r.log_date===today){o.ty.add(r.meal_type);o.kc+=+r.calories||0}if(r.log_date>o.last)o.last=r.log_date});
 (w.data||[]).forEach(r=>{const o=mm[r.user_id];if(!o)return;if(r.log_date===today)o.wk++;if(r.log_date>o.last)o.last=r.log_date});
 (b.data||[]).forEach(r=>{const o=mm[r.user_id];if(!o)return;if(r.log_date>o.last)o.last=r.log_date;if(r.weight!=null&&r.log_date>=from2){if(!o.w0)o.w0=r;o.wl=r}});
+(sl.data||[]).forEach(r=>{const o=mm[r.user_id];if(o)o.sl=+r.minutes});
 const lessons=[],now=Date.now();
 (l.data||[]).forEach(r=>{const o=mm[r.member_id];if(!o||r.status==='cancelled'||(r.kind!=='PT'&&r.kind!=='OT'))return;const q=sp(r.start_at),x={d:q.d,h:q.h,m:q.m,kind:r.kind,no:r.session_no,name:o.p.display_name,id:o.p.id,t:Date.parse(r.start_at)};if(q.d===today)lessons.push(x);if(!o.next&&x.t>=now-36e5)o.next=x});
 DASH={today,hr:seoulHour(),lessons,rows:Object.values(mm).map(o=>{const days=o.last?diff(o.last,today):null;return{...o,days,noMeal:!o.ty.size,stale:days==null||days>=3}})}}
 function dCard(r){const p=r.p,over=r.kc>r.goal*1.2,att=r.stale||over||(r.noMeal&&DASH.hr>=12),
 meals=r.ty.size?[...r.ty].sort((a,b)=>TYPES.indexOf(a)-TYPES.indexOf(b)).join(' '):'없음',
 dw=r.wl&&r.w0&&r.wl!==r.w0?r.wl.weight-r.w0.weight:null,
+slt=r.sl?slFmt(r.sl):'-',
 wtxt=r.wl?r.wl.weight+'kg'+(dw!=null?' ('+(dw>0?'+':'')+dw.toFixed(1)+')':''):'-',
 last=r.days==null?'기록 없음':r.days===0?'오늘':r.days+'일 전',
 nx=r.next?(r.next.d===DASH.today?'오늘':md(r.next.d))+' '+pad(r.next.h)+':'+pad(r.next.m)+' '+r.next.kind+(r.next.no?' '+r.next.no+'회차':''):'일정 없음';
-return`<button class="mc${att?' att':''}" data-a="vm" data-i="${p.id}" data-n="${esc(p.display_name)}"><div class="mh"><b>${esc(p.display_name)}</b><span class="tg">${r.stale?'기록 없음':over?'열량 초과':att?'확인 필요':''}</span></div><div class="ml"><span>오늘 식사</span><b class="${r.ty.size?'ok':'no'}">${meals}</b></div><div class="ml"><span>섭취 / 목표</span><b class="${over?'no':''}">${Math.round(r.kc)} / ${r.goal} kcal</b></div><div class="ml"><span>오늘 운동</span><b class="${r.wk?'ok':'no'}">${r.wk?r.wk+'회':'없음'}</b></div><div class="ml"><span>체중 (2주)</span><b>${wtxt}</b></div><div class="ml"><span>마지막 기록</span><b class="${r.stale?'no':''}">${last}</b></div><div class="mdiv"></div><div class="ml"><span>다음 수업</span><b>${nx}</b></div>${ptRow(p.id)}<small class="mut">${p.staff_consent?'입력·수정 가능':'열람만 가능'}</small></button>`}
+return`<button class="mc${att?' att':''}" data-a="vm" data-i="${p.id}" data-n="${esc(p.display_name)}"><div class="mh"><b>${esc(p.display_name)}</b><span class="tg">${r.stale?'기록 없음':over?'열량 초과':att?'확인 필요':''}</span></div><div class="ml"><span>오늘 식사</span><b class="${r.ty.size?'ok':'no'}">${meals}</b></div><div class="ml"><span>섭취 / 목표</span><b class="${over?'no':''}">${Math.round(r.kc)} / ${r.goal} kcal</b></div><div class="ml"><span>오늘 운동</span><b class="${r.wk?'ok':'no'}">${r.wk?r.wk+'회':'없음'}</b></div><div class="ml"><span>체중 (2주)</span><b>${wtxt}</b></div><div class="ml"><span>최근 수면</span><b>${slt}</b></div><div class="ml"><span>마지막 기록</span><b class="${r.stale?'no':''}">${last}</b></div><div class="mdiv"></div><div class="ml"><span>다음 수업</span><b>${nx}</b></div>${ptRow(p.id)}<small class="mut">${p.staff_consent?'입력·수정 가능':'열람만 가능'}</small></button>`}
 function dashHTML(){const D=DASH,rows=D.rows,att=r=>r.stale||r.kc>r.goal*1.2||(r.noMeal&&D.hr>=12),nM=rows.filter(r=>!r.noMeal).length,nW=rows.filter(r=>r.wk>0).length,nA=rows.filter(att).length;
 const tiles=`<div class="tiles"><div class="tile"><span>오늘 수업</span><b>${D.lessons.length}<small>건</small></b></div><div class="tile"><span>식사 기록</span><b>${nM}<small>/${rows.length}명</small></b></div><div class="tile"><span>운동 기록</span><b>${nW}<small>/${rows.length}명</small></b></div><div class="tile${nA?' warn':''}"><span>확인 필요</span><b>${nA}<small>명</small></b></div></div>`;
 const ls=D.lessons.length?'<h3 class="dh">오늘 수업</h3>'+D.lessons.map(l=>`<button class="dl" data-a="vm" data-i="${l.id}" data-n="${esc(l.name)}"><b>${pad(l.h)}시 ${pad(l.m)}분</b> ${esc(l.name)} ${l.kind}${l.no?' '+l.no+'회차':' 수업'}</button>`).join(''):'';
@@ -952,6 +964,56 @@ if(a==='inqsave'){const body=($('#f_iq').value||'').trim();if(!body)return toast
 const r=await sb.from('inquiries').insert({user_id:me.id,author_name:(me.p&&me.p.display_name)||'',kind:gv('iq')[0]||'문의',body,device:navigator.userAgent.slice(0,200),page:(location.hash||'#today')+' · v'+APP_VER});if(r.error)throw r.error;closeS();toast('보냈어요. 확인 후 답변드릴게요')}
 else if(a==='inqdone'){const r=await sb.from('inquiries').update({status:'done'}).eq('id',b.dataset.i);if(r.error)throw r.error;busy=false;return inqBox()}
 else if(a==='inqdel'){if(!confirm('이 문의를 삭제할까요?'))return;const r=await sb.from('inquiries').delete().eq('id',b.dataset.i);if(r.error)throw r.error;busy=false;return inqBox()}
+}catch(err){toast('처리하지 못했어요: '+(err.message||''))}finally{busy=false}});
+</script>
+<script>
+/* ===== 알림 (홈 화면에 추가한 앱에서 푸시 알림 받기) ===== */
+const PUSH_OK=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+const b64u=s=>{const p='='.repeat((4-s.length%4)%4),b=(s+p).replace(/-/g,'+').replace(/_/g,'/'),r=atob(b);return Uint8Array.from([...r].map(c=>c.charCodeAt(0)))};
+let NP=null;
+async function pushReg(){const reg=await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready;return reg}
+async function pushSub(){if(!PUSH_OK())return null;try{const reg=await navigator.serviceWorker.getRegistration();return reg?await reg.pushManager.getSubscription():null}catch(_){return null}}
+function acctPush(){
+if(!me||!me.p||viewAs)return;const sp=$('#sp'),el=sp&&sp.querySelector('[data-a="saveg"]');if(!el)return;
+const staff=['trainer','admin'].includes(me.p.role);
+const ck=(k,t)=>`<label class="npk"><input type="checkbox" data-np="${k}"> ${t}</label>`;
+el.insertAdjacentHTML('afterend',`<div id="npbox" class="npbox"><div class="row"><span>알림</span><b id="npst">확인 중...</b></div><div id="npopt" hidden>${staff?ck('inquiry','새 문의 알림'):ck('meal','저녁 식사 기록 알림')+'<label class="npk" id="nph" hidden>알림 시각 <select data-np="meal_hour" class="sel" style="width:auto;display:inline-block;margin-left:6px">'+[18,19,20,21,22].map(h=>`<option value="${h}">${h}시</option>`).join('')+'</select></label>'+ck('lesson','수업 하루 전 알림 (오후 6시)')+ck('note','트레이너 메모 알림')}<button type="button" class="cp" data-a="pushtest" style="margin-top:8px">테스트 알림 보내기</button></div><button class="save" data-a="pushon" id="npbtn" style="margin-top:8px;background:var(--pt);color:var(--pine)" hidden>알림 켜기</button><p class="mut" id="npnote" style="font-size:12px;margin:6px 0 0" hidden></p></div>`);
+pushRefresh();
+}
+async function pushRefresh(){
+const st=$('#npst'),btn=$('#npbtn'),opt=$('#npopt'),nt=$('#npnote');if(!st)return;
+if(me.p.is_demo){st.textContent='샘플은 사용 불가';return}
+if(!PUSH_OK()){st.textContent='사용할 수 없어요';nt.hidden=false;nt.textContent='아이폰은 사파리에서 홈 화면에 추가한 앱으로 열어야 알림을 켤 수 있어요. 갤럭시는 크롬에서 열어 주세요.';return}
+if(Notification.permission==='denied'){st.textContent='차단됨';nt.hidden=false;nt.textContent='기기 설정에서 이 앱의 알림을 허용해 주세요.';return}
+const sub=await pushSub();
+if(!$('#npst'))return;
+if(sub){st.textContent='켜짐';btn.hidden=false;btn.textContent='알림 끄기';btn.dataset.a='pushoff';opt.hidden=false;await pushPrefsLoad()}
+else{st.textContent='꺼짐';btn.hidden=false;btn.textContent='알림 켜기';btn.dataset.a='pushon';opt.hidden=true}
+}
+async function pushPrefsLoad(){
+try{const r=await sb.from('notif_prefs').select('*').eq('user_id',me.id).maybeSingle();NP=r.data||{meal:true,lesson:true,note:true,inquiry:true,meal_hour:20}}catch(_){NP={meal:true,lesson:true,note:true,inquiry:true,meal_hour:20}}
+document.querySelectorAll('[data-np]').forEach(i=>{const k=i.dataset.np;if(i.type==='checkbox')i.checked=NP[k]!==false;else i.value=String(NP[k]??20)});
+const h=$('#nph');if(h)h.hidden=false}
+async function pushPrefsSave(){
+const o={user_id:me.id,updated_at:new Date().toISOString()};document.querySelectorAll('[data-np]').forEach(i=>{o[i.dataset.np]=i.type==='checkbox'?i.checked:+i.value});
+const r=await sb.from('notif_prefs').upsert(o,{onConflict:'user_id'});if(r.error)throw r.error;toast('알림 설정을 저장했어요')}
+document.addEventListener('change',async e=>{if(!e.target.dataset||e.target.dataset.np==null)return;try{await pushPrefsSave()}catch(err){toast('저장하지 못했어요: '+(err.message||''))}});
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-a=pushon],[data-a=pushoff],[data-a=pushtest]');if(!b)return;const a=b.dataset.a;
+if(busy)return;busy=true;
+try{
+if(a==='pushon'){
+ if(Notification.permission!=='granted'){const p=await Notification.requestPermission();if(p!=='granted'){toast('알림을 허용하지 않았어요');return pushRefresh()}}
+ const reg=await pushReg();let sub=await reg.pushManager.getSubscription();
+ if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(PUSH_PUBLIC_KEY)});
+ const j=sub.toJSON(),r=await sb.from('push_subscriptions').upsert({user_id:me.id,endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,ua:navigator.userAgent.slice(0,200)},{onConflict:'endpoint'});if(r.error)throw r.error;
+ const q=await sb.from('notif_prefs').upsert({user_id:me.id},{onConflict:'user_id',ignoreDuplicates:true});
+ toast('알림을 켰어요');await pushRefresh()}
+else if(a==='pushoff'){
+ const sub=await pushSub();if(sub){const ep=sub.endpoint;await sub.unsubscribe();await sb.from('push_subscriptions').delete().eq('endpoint',ep)}
+ toast('알림을 껐어요');await pushRefresh()}
+else if(a==='pushtest'){
+ const r=await sb.functions.invoke('push-cron',{body:{test:true}});if(r.error)throw r.error;
+ const d=r.data||{};toast(d.sent?'테스트 알림을 보냈어요. 잠시 후 도착해요':'보낼 곳이 없어요. 알림을 다시 켜 주세요')}
 }catch(err){toast('처리하지 못했어요: '+(err.message||''))}finally{busy=false}});
 </script>
 <script>
