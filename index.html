@@ -144,6 +144,12 @@ body:has(#auth) .sh{z-index:60}
 .wdots{margin-top:8px}.wdr{display:grid;grid-template-columns:30px repeat(7,1fr);align-items:center;justify-items:center;gap:2px;margin-top:8px}.wdr em{font-style:normal;font-size:11px;color:var(--mut);justify-self:start}.wdr small{font-size:10px;color:var(--mut)}.wdr small.td{color:var(--pine);font-weight:800}
 .wdr span{display:block;width:16px;height:16px;border-radius:50%;background:var(--sf);border:1.5px solid var(--line)}.wdr span.w{background:#2f7d57;border-color:#2f7d57}.wdr span.l{background:var(--pine);border-color:var(--pine)}
 @media (max-width:640px){.wsc{display:none}.wdg{grid-template-columns:1fr 1fr}.whm,.wth{gap:2px}.whm i,.wth span{width:15px}.whm i{height:15px;border-radius:4px}.whm i b{width:6px;height:6px}.wkt{font-size:12px}.wb{font-size:12px}.wkt th{padding:8px 3px}.wkt td{padding:8px 3px}}
+
+.wdg.two{grid-template-columns:1fr 1fr}.wkc{cursor:pointer}.wkc h3 span{font-size:12px;color:var(--pine)}
+.wstrip .wth,.wstrip .whm{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.wstrip .wth{margin-bottom:4px}.wstrip .wth span,.wstrip .whm i{width:auto;height:auto;max-width:44px;justify-self:center;aspect-ratio:1;min-width:0}.wstrip .wth span{aspect-ratio:auto}.wstrip .whm i{width:100%}
+.tgs{display:flex;gap:6px;align-items:center}.tg.ls{color:var(--pine);background:var(--pt);padding:2px 8px;border-radius:99px}
+.wstrip .whm i{max-width:36px;aspect-ratio:1.1}.wstrip .whm i b{width:10px;height:10px}
+@media (max-width:640px){.wdr{grid-template-columns:26px repeat(7,1fr);gap:1px}.wdr span{width:11px;height:11px}.wdr small{font-size:9px}.wdr em{font-size:10px}.wdd{display:none}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9"></script></head><body>
 <main id="main"></main>
@@ -246,7 +252,7 @@ addEventListener('hashchange',()=>{render();scrollTo(0,0)});
 /* 화면 그리기: 기본 화면 + 운동 검색 중 표시 */
 function render(){_renderBase();const m=$('#main');if(m)m.classList.toggle('wsearching',tab()==='workouts'&&!!(wq||(wf.p||[]).length||(wf.c||[]).length))}
 /* 오늘 탭: 기본 + 트레이너 메모 카드 + 수면 카드 / 신체 탭: 기본 + 수면 카드 */
-function vToday(){return todaySleep(todayNotes(_vTodayBase()))}
+function vToday(){return weekToday(todaySleep(todayNotes(_vTodayBase())))}
 function vBody(){return bodySleep(_vBodyBase())}
 </script>
 <script>
@@ -710,32 +716,28 @@ const can=!isRO();
 return`<h2>${t}, ${a.reduce((n,x)=>n+(x.it?x.it.length:1),0)}가지</h2><div class="calc"><b>${Math.round(sum(a,'k'))}</b> kcal<div class="mut">탄수화물 ${T('c')}g, 단백질 ${T('p')}g, 지방 ${T('f')}g</div></div>`+a.map(x=>`<div class="mi">${x.img?`<img class="bimg" src="${x.img}" alt="${esc(x.n)}">`:''}<div class="row" style="border:0;padding:6px 0"><span class="n"><b>${esc(x.n)}</b><small>${x.amt?'먹은 양 '+esc(x.amt)+', ':''}탄 ${x.c||0}g 단 ${x.p||0}g 지 ${x.f||0}g</small>${x.it?x.it.map(i=>`<small style="display:block;margin-top:2px">· ${esc(i.n)}${i.amt?' '+esc(i.amt):''} · ${Math.round(i.k)} kcal</small>`).join(''):''}</span><b>${Math.round(x.k)} kcal</b>${can?`<button class="cp" data-a="edit" data-i="${x.id}">수정</button>`:''}</div></div>`).join('')}
 
 async function qAll(build){let all=[];for(let i=0;;i++){const r=await build().range(i*1000,i*1000+999);if(r.error)return r;all=all.concat(r.data);if(r.data.length<1000)return{data:all,error:null}}}
-async function _loadDashBase(){const today=baseDay(),from=addDays(today,-29),from2=addDays(today,-13),
+async function _loadDashBase(){const today=baseDay(),from=addDays(today,-29),
 pr=await sb.from('profiles').select('id,display_name,gender,staff_consent,staff_edit_ok,is_demo').eq('role','member'),
 all=(pr.data||[]).sort((x,y)=>x.display_name<y.display_name?-1:1),ps=all.filter(x=>!x.is_demo);me.members=ps;me.demos=all.filter(x=>x.is_demo);if(me.demos.length){try{await sb.rpc('reset_demo')}catch(_){}}
 const gq=await sb.from('goals').select('user_id,carb_g,protein_g,fat_g'),gm={};(Array.isArray(gq.data)?gq.data:[]).forEach(g=>gm[g.user_id]=Math.round(g.carb_g*4+g.protein_g*4+g.fat_g*9));
-const[m,w,b,l,sl]=await Promise.all([
+const[m,w,b,l]=await Promise.all([
 qAll(()=>sb.from('meal_logs').select('user_id,log_date,meal_type,calories').gte('log_date',from).order('log_date').order('id')),
 qAll(()=>sb.from('workout_logs').select('user_id,log_date').gte('log_date',from).order('log_date').order('id')),
-qAll(()=>sb.from('body_logs').select('user_id,log_date,weight').gte('log_date',from).order('log_date').order('id')),
-qAll(()=>sb.from('lessons').select('*').gte('start_at',today+'T00:00:00+09:00').lte('start_at',addDays(today,14)+'T23:59:59+09:00').order('start_at').order('id')),
-qAll(()=>sb.from('sleep_logs').select('user_id,log_date,minutes').gte('log_date',addDays(today,-3)).order('log_date').order('id'))]);
-const mm={};ps.forEach(p=>{mm[p.id]={p,kc:0,goal:gm[p.id]||1735,ty:new Set(),wk:0,last:'',wl:null,w0:null,next:null}});
+qAll(()=>sb.from('body_logs').select('user_id,log_date').gte('log_date',from).order('log_date').order('id')),
+qAll(()=>sb.from('lessons').select('*').gte('start_at',today+'T00:00:00+09:00').lte('start_at',addDays(today,14)+'T23:59:59+09:00').order('start_at').order('id'))]);
+const mm={};ps.forEach(p=>{mm[p.id]={p,kc:0,goal:gm[p.id]||1735,ty:new Set(),wk:0,last:'',next:null}});
 (m.data||[]).forEach(r=>{const o=mm[r.user_id];if(!o)return;if(r.log_date===today){o.ty.add(r.meal_type);o.kc+=+r.calories||0}if(r.log_date>o.last)o.last=r.log_date});
 (w.data||[]).forEach(r=>{const o=mm[r.user_id];if(!o)return;if(r.log_date===today)o.wk++;if(r.log_date>o.last)o.last=r.log_date});
-(b.data||[]).forEach(r=>{const o=mm[r.user_id];if(!o)return;if(r.log_date>o.last)o.last=r.log_date;if(r.weight!=null&&r.log_date>=from2){if(!o.w0)o.w0=r;o.wl=r}});
-(sl.data||[]).forEach(r=>{const o=mm[r.user_id];if(o)o.sl=+r.minutes});
+(b.data||[]).forEach(r=>{const o=mm[r.user_id];if(!o)return;if(r.log_date>o.last)o.last=r.log_date});
 const lessons=[],now=Date.now();
 (l.data||[]).forEach(r=>{const o=mm[r.member_id];if(!o||r.status==='cancelled'||(r.kind!=='PT'&&r.kind!=='OT'))return;const q=sp(r.start_at),x={d:q.d,h:q.h,m:q.m,kind:r.kind,no:r.session_no,name:o.p.display_name,id:o.p.id,t:Date.parse(r.start_at)};if(q.d===today)lessons.push(x);if(!o.next&&x.t>=now-36e5)o.next=x});
 DASH={today,hr:seoulHour(),lessons,rows:Object.values(mm).map(o=>{const days=o.last?diff(o.last,today):null;return{...o,days,noMeal:!o.ty.size,stale:days==null||days>=3}})}}
 function dCard(r){const p=r.p,over=r.kc>r.goal*1.2,att=r.stale||over||(r.noMeal&&DASH.hr>=12),
 meals=r.ty.size?[...r.ty].sort((a,b)=>TYPES.indexOf(a)-TYPES.indexOf(b)).join(' '):'없음',
-dw=r.wl&&r.w0&&r.wl!==r.w0?r.wl.weight-r.w0.weight:null,
-slt=r.sl?slFmt(r.sl):'-',
-wtxt=r.wl?r.wl.weight+'kg'+(dw!=null?' ('+(dw>0?'+':'')+dw.toFixed(1)+')':''):'-',
 last=r.days==null?'기록 없음':r.days===0?'오늘':r.days+'일 전',
+tdl=r.next&&r.next.d===DASH.today?r.next:null,
 nx=r.next?(r.next.d===DASH.today?'오늘':md(r.next.d))+' '+pad(r.next.h)+':'+pad(r.next.m)+' '+r.next.kind+(r.next.no?' '+r.next.no+'회차':''):'일정 없음';
-return`<button class="mc${att?' att':''}" data-a="vm" data-i="${p.id}" data-n="${esc(p.display_name)}"><div class="mh"><b>${esc(p.display_name)}</b><span class="tg">${r.stale?'기록 없음':over?'열량 초과':att?'확인 필요':''}</span></div><div class="ml"><span>오늘 식사</span><b class="${r.ty.size?'ok':'no'}">${meals}</b></div><div class="ml"><span>섭취 / 목표</span><b class="${over?'no':''}">${Math.round(r.kc)} / ${r.goal} kcal</b></div><div class="ml"><span>오늘 운동</span><b class="${r.wk?'ok':'no'}">${r.wk?r.wk+'회':'없음'}</b></div><div class="ml"><span>체중 (2주)</span><b>${wtxt}</b></div><div class="ml"><span>최근 수면</span><b>${slt}</b></div><div class="ml"><span>마지막 기록</span><b class="${r.stale?'no':''}">${last}</b></div><div class="mdiv"></div><div class="ml"><span>다음 수업</span><b>${nx}</b></div>${ptRow(p.id)}<small class="mut">${p.staff_consent?'입력·수정 가능':'열람만 가능'}</small></button>`}
+return`<button class="mc${att?' att':''}" data-a="vm" data-i="${p.id}" data-n="${esc(p.display_name)}"><div class="mh"><b>${esc(p.display_name)}</b><span class="tgs">${tdl?`<span class="tg ls">오늘 ${tdl.kind} ${pad(tdl.h)}:${pad(tdl.m)}</span>`:''}<span class="tg">${r.stale?'기록 없음':over?'열량 초과':att?'확인 필요':''}</span></span></div><div class="ml"><span>오늘 식사</span><b class="${r.ty.size?'ok':'no'}">${meals}</b></div><div class="ml"><span>섭취 / 목표</span><b class="${over?'no':''}">${Math.round(r.kc)} / ${r.goal} kcal</b></div><div class="ml"><span>오늘 운동</span><b class="${r.wk?'ok':'no'}">${r.wk?r.wk+'회':'없음'}</b></div><div class="ml"><span>마지막 기록</span><b class="${r.stale?'no':''}">${last}</b></div><div class="mdiv"></div><div class="ml"><span>다음 수업</span><b>${nx}</b></div>${ptRow(p.id)}<small class="mut">${p.staff_consent?'입력·수정 가능':'열람만 가능'}</small></button>`}
 function dashHTML(){const D=DASH,rows=D.rows,att=r=>r.stale||r.kc>r.goal*1.2||(r.noMeal&&D.hr>=12),nM=rows.filter(r=>!r.noMeal).length,nW=rows.filter(r=>r.wk>0).length,nA=rows.filter(att).length;
 const tiles=`<div class="tiles"><div class="tile"><span>오늘 수업</span><b>${D.lessons.length}<small>건</small></b></div><div class="tile"><span>식사 기록</span><b>${nM}<small>/${rows.length}명</small></b></div><div class="tile"><span>운동 기록</span><b>${nW}<small>/${rows.length}명</small></b></div><div class="tile${nA?' warn':''}"><span>확인 필요</span><b>${nA}<small>명</small></b></div></div>`;
 const ls=D.lessons.length?'<h3 class="dh">오늘 수업</h3>'+D.lessons.map(l=>`<button class="dl" data-a="vm" data-i="${l.id}" data-n="${esc(l.name)}"><b>${pad(l.h)}시 ${pad(l.m)}분</b> ${esc(l.name)} ${l.kind}${l.no?' '+l.no+'회차':' 수업'}</button>`).join(''):'';
@@ -743,7 +745,7 @@ const F=[['all','전체'],['meal','오늘 식사 없음'],['work','오늘 운동
 fn={all:()=>true,meal:r=>r.noMeal,work:r=>!r.wk,stale:r=>r.stale}[dFilter]||(()=>true),
 sc=r=>(r.stale?2:0)+(r.kc>r.goal*1.2?1:0)+(r.noMeal&&D.hr>=12?1:0),
 list=rows.filter(fn).sort((x,y)=>sc(y)-sc(x)||(x.p.display_name<y.p.display_name?-1:1));
-return tiles+ls+`<h3 class="dh">회원 현황</h3><div class="chips">${F.map(([v,t])=>`<button type="button" class="chip${dFilter===v?' on':''}" data-a="dfil" data-v="${v}">${t}</button>`).join('')}</div><div class="mgrid">${list.map(dCard).join('')||'<p class="empty">해당하는 회원이 없어요.</p>'}</div>`+((me.demos||[]).length?'<h3 class="dh">샘플 (체험용, 집계 제외)</h3><p class="mut" style="font-size:12px;margin:0 0 8px">보여주기용 계정이에요. 현황·확인 필요·수업 집계에 들어가지 않고, 눌러서 둘러보기만 할 수 있어요.</p>'+me.demos.map(p=>`<button class="mem" data-a="vm" data-i="${p.id}" data-n="${esc(p.display_name)}">${esc(p.display_name)} · 샘플</button>`).join(''):'')}
+return tiles+ls+`<h3 class="dh">회원별 오늘 현황</h3><div class="chips">${F.map(([v,t])=>`<button type="button" class="chip${dFilter===v?' on':''}" data-a="dfil" data-v="${v}">${t}</button>`).join('')}</div><div class="mgrid">${list.map(dCard).join('')||'<p class="empty">해당하는 회원이 없어요.</p>'}</div>`+((me.demos||[]).length?'<h3 class="dh">샘플 (체험용, 집계 제외)</h3><p class="mut" style="font-size:12px;margin:0 0 8px">보여주기용 계정이에요. 현황·확인 필요·수업 집계에 들어가지 않고, 눌러서 둘러보기만 할 수 있어요.</p>'+me.demos.map(p=>`<button class="mem" data-a="vm" data-i="${p.id}" data-n="${esc(p.display_name)}">${esc(p.display_name)} · 샘플</button>`).join(''):'')}
 function _renderDashBase(){const a=overlay(),role=me.p.role==='admin'?'관리자':'트레이너',t=DASH?DASH.today:baseDay();
 a.className='au top';a.innerHTML=`<div class="ap wide"><div class="dtop"><div><h1>회원 관리</h1><p class="mut">${md(t)} (${'일월화수목금토'[new Date(t+'T12:00:00').getDay()]}), ${role}</p></div><span style="display:flex;gap:6px;align-items:center"><button class="cp" data-a="drefresh">새로고침</button><button class="cp" data-a="logout" style="background:none;color:var(--mut)">로그아웃</button></span></div>${dTabs()}${dView==='cal'?calDashHTML():dView==='wk'?weekHTML():dView==='reg'?regHTML():DASH?dashHTML():'<p class="empty">회원 현황을 불러오지 못했어요. 새로고침을 눌러 주세요.</p>'}</div>`}
 async function adminUI(){document.body.classList.remove('in','ro','vw');viewAs=null;const a=overlay();a.className='au top';a.innerHTML='<div class="ap wide"><h1>회원 관리</h1><p class="mut">불러오는 중...</p></div>';
@@ -772,7 +774,7 @@ if(a==='ndel'){if(busy)return;busy=true;try{const r=await sb.from('trainer_notes
 
 /* ===== 트레이너 수업 캘린더, 계정 화면 정리 ===== */
 var SHOW_REG=false,dView='list',cM='',cSel='',CL=[];
-function dTabs(){return`<div class="dtabs"><button data-a="dview" data-v="list" class="${dView==='list'?'on':''}">회원 현황</button><button data-a="dview" data-v="wk" class="${dView==='wk'?'on':''}">주간 요약</button><button data-a="dview" data-v="cal" class="${dView==='cal'?'on':''}">수업 캘린더</button>${SHOW_REG?`<button data-a="dview" data-v="reg" class="${dView==='reg'?'on':''}">등록 관리${regN()?' ('+regN()+')':''}</button>`:''}</div>`}
+function dTabs(){return`<div class="dtabs"><button data-a="dview" data-v="list" class="${dView==='list'?'on':''}">오늘 현황</button><button data-a="dview" data-v="wk" class="${dView==='wk'?'on':''}">주간 요약</button><button data-a="dview" data-v="cal" class="${dView==='cal'?'on':''}">수업 캘린더</button>${SHOW_REG?`<button data-a="dview" data-v="reg" class="${dView==='reg'?'on':''}">등록 관리${regN()?' ('+regN()+')':''}</button>`:''}</div>`}
 function mAdd(ym,n){const[y,m]=ym.split('-').map(Number),d=new Date(Date.UTC(y,m-1+n,1));return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)}
 var HOL={},cWarn='';
 async function loadCal(){if(!cM)cM=baseDay().slice(0,7);if(!cSel)cSel=baseDay();
@@ -1042,7 +1044,7 @@ if(r.error)throw r.error;(r.data||[]).forEach(x=>S.meals.push(mapMeal(x)));rende
 catch(x){toast('가져오지 못했어요: '+(x.message||''))}finally{busy=false}});
 
 /* --- 트레이너 주간 요약: 월~일 한 주를 색 칸으로 훑고, 회원을 누르면 아래에 그래프 --- */
-var WK=null,wkStart='',wkSel='';
+var WK=null,wkStart='',wkSel='',repCtx=null,mwStart='';
 const WKD=['월','화','수','목','금','토','일'];
 function monOf(d){const w=new Date(d+'T12:00:00').getDay();return addDays(d,-((w+6)%7))}
 const slHM=m=>Math.floor(m/60)+'시간 '+String(Math.round(m%60)).padStart(2,'0')+'분';
@@ -1063,9 +1065,21 @@ ps.forEach(p=>{mm[p.id]={p,ty:dates.map(()=>new Set()),kc:dates.map(()=>null),wo
 (b.data||[]).forEach(r=>{const o=mm[r.user_id],i=ix(r.log_date);if(o&&i>=0&&r.weight!=null)o.wt[i]=+r.weight});
 (sl.data||[]).forEach(r=>{const o=mm[r.user_id],i=ix(r.log_date);if(o&&i>=0&&r.minutes)o.sl[i]=+r.minutes});
 (l.data||[]).forEach(r=>{const o=mm[r.member_id];if(o&&r.status!=='cancelled'&&(r.kind==='PT'||r.kind==='OT')&&sp(r.start_at).d<=today){o.ls++;const i=ix(sp(r.start_at).d);if(i>=0)o.lsd[i]++}});
-const el=today<wkStart?0:Math.min(7,diff(wkStart,today)+1),av=a=>{const v=a.filter(x=>x!=null);return v.length?v.reduce((t,x)=>t+x,0)/v.length:null};
-WK={start:wkStart,dates,el,rows:Object.values(mm).map(o=>{const md=o.kc.filter(x=>x!=null).length,wn=o.wo.reduce((t,x)=>t+x,0),wv=o.wt.filter(x=>x!=null),a=av(o.kc);
-return{...o,md,wn,avg:a==null?null:Math.round(a),wlast:wv.length?wv[wv.length-1]:null,dw:wv.length>1?Math.round((wv[wv.length-1]-wv[0])*10)/10:null,slAvg:av(o.sl),low:el>=3&&(md*2<el||wn===0)}})}}
+const el=today<wkStart?0:Math.min(7,diff(wkStart,today)+1);
+WK={start:wkStart,dates,el,rows:Object.values(mm).map(o=>wkCalc(o,el))}}
+/* 한 주치 원자료(o) -> 표에 쓰는 값들 (트레이너 표와 회원 화면이 같이 써요) */
+function wkCalc(o,el){const av=a=>{const v=a.filter(x=>x!=null);return v.length?v.reduce((t,x)=>t+x,0)/v.length:null},
+md=o.kc.filter(x=>x!=null).length,wn=o.wo.reduce((t,x)=>t+x,0),wv=o.wt.filter(x=>x!=null),a=av(o.kc);
+return{...o,md,wn,avg:a==null?null:Math.round(a),wlast:wv.length?wv[wv.length-1]:null,dw:wv.length>1?Math.round((wv[wv.length-1]-wv[0])*10)/10:null,slAvg:av(o.sl),low:el>=3&&(md*2<el||wn===0)}}
+/* 회원 본인(또는 트레이너가 열어 둔 회원)의 한 주: 이미 불러온 기록으로 계산해요 */
+function memWeek(start){const td=baseDay(),dates=[0,1,2,3,4,5,6].map(i=>addDays(start,i)),ix=d=>dates.indexOf(d),z=v=>dates.map(()=>v),
+o={p:{id:OID(),display_name:(viewAs?viewAs.name:(me.p&&me.p.display_name))||''},ty:dates.map(()=>new Set()),kc:z(null),wo:z(0),wt:z(null),sl:z(null),ls:0,lsd:z(0),goal:(S.goal&&S.goal.k)||1735};
+S.meals.forEach(x=>{const i=ix(x.d);if(i<0)return;o.ty[i].add(x.t);o.kc[i]=(o.kc[i]||0)+(+x.k||0)});
+S.workouts.forEach(x=>{const i=ix(x.d);if(i>=0)o.wo[i]++});
+[...S.body].sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0).forEach(x=>{const i=ix(x.d);if(i>=0&&x.w!=null)o.wt[i]=x.w});
+(S.sleep||[]).forEach(x=>{const i=ix(x.d);if(i>=0&&x.m)o.sl[i]=x.m});
+(S.lessons||[]).forEach(x=>{const i=ix(x.d);if(i>=0&&x.status!=='cancelled'&&(x.kind==='PT'||x.kind==='OT')&&x.d<=td){o.ls++;o.lsd[i]++}});
+const el=td<start?0:Math.min(7,diff(start,td)+1);return{start,dates,el,row:wkCalc(o,el)}}
 const WKC=['var(--line)','#f6b8c9','#ee8ba9','var(--pine)'];
 function wkSvg(r){const H=90,V=r.kc.filter(x=>x!=null),mx=Math.max(...V,r.goal)*1.15,gy=H-r.goal/mx*H,
 kb=r.kc.map((k,i)=>k==null?'':`<rect x="${8+i*20}" y="${(H-k/mx*H).toFixed(1)}" width="14" height="${(k/mx*H).toFixed(1)}" rx="3" fill="${k>r.goal*1.2?'#d9534f':'var(--pine)'}"/>`).join(''),
@@ -1076,17 +1090,17 @@ wgt=wv.length?`<svg width="100%" viewBox="0 0 150 ${H}" height="${H}">${pt.lengt
 sb=r.sl.map((s,i)=>s==null?'':`<rect x="${8+i*20}" y="${(H-s/540*H).toFixed(1)}" width="14" height="${(s/540*H).toFixed(1)}" rx="3" fill="#6C8EBF"/>`).join(''),
 slp=r.slAvg==null?'<p class="mut" style="font-size:12px;margin:30px 0">기록이 없어요</p>':`<svg width="100%" viewBox="0 0 150 ${H+4}" height="${H+4}">${sb}</svg>`;
 return{kcal,wgt,slp}}
-function wkPanel(r){if(!r)return'';const s=wkSvg(r),td=baseDay(),
-dots=['<div class="wdr"><em></em>'+WK.dates.map((d,i)=>`<small class="${d===td?'td':''}">${WKD[i]}</small>`).join('')+'</div>',
-'<div class="wdr"><em>운동</em>'+WK.dates.map((d,i)=>`<span class="${r.wo[i]?'on w':''}" style="${d>td?'opacity:.35':''}"></span>`).join('')+'</div>',
-'<div class="wdr"><em>수업</em>'+WK.dates.map((d,i)=>`<span class="${r.lsd[i]?'on l':''}" style="${d>td?'opacity:.35':''}"></span>`).join('')+'</div>'].join(''),
+function wkPanel(r,dates,link){if(!r)return'';const s=wkSvg(r),td=baseDay(),
+dots=['<div class="wdr"><em></em>'+dates.map((d,i)=>`<small class="${d===td?'td':''}">${WKD[i]}</small>`).join('')+'</div>',
+'<div class="wdr"><em>운동</em>'+dates.map((d,i)=>`<span class="${r.wo[i]?'on w':''}" style="${d>td?'opacity:.35':''}"></span>`).join('')+'</div>',
+'<div class="wdr"><em>수업</em>'+dates.map((d,i)=>`<span class="${r.lsd[i]?'on l':''}" style="${d>td?'opacity:.35':''}"></span>`).join('')+'</div>'].join(''),
 C=(t,sub,b)=>`<div class="wdc"><div class="wdt">${t}</div><div class="wds">${sub}</div>${b}</div>`,
 wv=r.wt.filter(x=>x!=null);
-return`<div class="wpan"><div class="wph"><b>${esc(r.p.display_name)}</b><span class="mut"> · ${wkLab(WK.start)}</span><button type="button" class="wlk" data-a="vm" data-i="${r.p.id}" data-n="${esc(r.p.display_name)}">회원 기록 열기 ›</button></div><div class="wdg">`
+return`<div class="wpan"><div class="wph"><b>${esc(r.p.display_name)}</b><span class="mut"> · ${wkLab(dates[0])}</span>${link?`<button type="button" class="wlk" data-a="vm" data-i="${r.p.id}" data-n="${esc(r.p.display_name)}">회원 기록 열기 ›</button>`:''}</div><div class="wdg${link?'':' two'}">`
 +C('식사 열량 (kcal)','점선 = 목표 '+r.goal.toLocaleString()+' kcal',s.kcal)
 +C('체중 (kg)',wv.length>1?wv[0]+' → '+wv[wv.length-1]+' kg':wv.length?wv[0]+' kg':'-',s.wgt)
 +C('수면',r.slAvg==null?'-':'하루 평균 '+slHM(r.slAvg),s.slp)
-+C('운동 / 수업 (회)','운동 '+r.wn+'회 · 수업 '+r.ls+'회','<div class="wdots">'+dots+'</div>')+'</div></div>'}
++C('운동 / 수업 (회)','운동 '+r.wn+'회 · 수업 '+r.ls+'회','<div class="wdots">'+dots+'</div>')+'</div><button type="button" class="cp" data-a="wrep" style="margin-top:12px">리포트 이미지로 저장</button></div>'}
 function weekHTML(){if(!WK)return'<p class="empty">주간 요약을 불러오지 못했어요. 새로고침을 눌러 주세요.</p>';
 const R=WK.rows,tot=R.length,el=WK.el,td=baseDay(),cur=WK.start>=monOf(td),nLow=R.filter(r=>r.low).length,sumW=R.reduce((t,r)=>t+r.wn,0),sumL=R.reduce((t,r)=>t+r.ls,0),
 avgMd=tot&&el?(R.reduce((t,r)=>t+r.md,0)/tot).toFixed(1):'0';
@@ -1097,12 +1111,61 @@ const row=r=>{const cells=WK.dates.map((d,i)=>`<i class="${d>td?'fu':''}${d===td
 over=r.avg!=null&&r.avg>r.goal*1.2;
 return`<tr class="${r.low?'lw ':''}${wkSel===r.p.id?'sel':''}" data-a="wksel" data-i="${r.p.id}"><td class="l"><b>${esc(r.p.display_name)}</b></td><td><div class="whm">${cells}</div></td><td><b class="wb${over?' up':''}">${r.avg==null?'-':r.avg.toLocaleString()}</b><small class="wsm">목표 ${r.goal.toLocaleString()}</small></td><td><b class="wb">${r.wlast==null?'-':r.wlast}</b><small class="wsm">${r.dw==null?'&nbsp;':'주간 '+(r.dw>0?'+':'')+r.dw}</small></td><td class="wsc"><b class="wb">${r.slAvg==null?'-':slHM(r.slAvg)}</b></td><td><b class="wb">${r.wn} / ${r.ls}</b></td></tr>`};
 const leg=`<div class="wlg"><span><i style="background:var(--line)"></i>기록 없음</span><span><i style="background:#f6b8c9"></i>1끼</span><span><i style="background:#ee8ba9"></i>2끼</span><span><i style="background:var(--pine)"></i>3끼 이상</span><span><i style="background:#2f7d57;border-radius:50%"></i>운동한 날</span><span><i class="fu"></i>아직 안 온 날</span></div>`;
-const sel=R.find(r=>r.p.id===wkSel);
-return nav+tiles+(tot?`<div class="wkscroll"><table class="wkt"><thead><tr><th class="l">회원</th><th><div class="wth">${hd}</div></th><th>평균 섭취 (kcal)</th><th>체중 (kg)</th><th class="wsc">평균 수면</th><th>운동/수업 (회)</th></tr></thead><tbody>${[...R].sort((x,y)=>(y.low-x.low)||(x.p.display_name<y.p.display_name?-1:1)).map(row).join('')}</tbody></table></div>${leg}${wkPanel(sel)}<p class="mut" style="font-size:12px;margin-top:10px">오늘까지만 집계해요. 줄을 누르면 아래에 그 회원의 그래프가 펼쳐져요. 샘플 계정은 제외돼요.</p>`:'<p class="empty">회원이 없어요.</p>')}
+const sel=R.find(r=>r.p.id===wkSel);repCtx=sel?{r:sel,dates:WK.dates,el:WK.el}:null;
+return nav+tiles+(tot?`<div class="wkscroll"><table class="wkt"><thead><tr><th class="l">회원</th><th><div class="wth">${hd}</div></th><th>평균 섭취 (kcal)</th><th>체중 (kg)</th><th class="wsc">평균 수면</th><th>운동/수업 (회)</th></tr></thead><tbody>${[...R].sort((x,y)=>(y.low-x.low)||(x.p.display_name<y.p.display_name?-1:1)).map(row).join('')}</tbody></table></div>${leg}${wkPanel(sel,WK.dates,true)}<p class="mut" style="font-size:12px;margin-top:10px">오늘까지만 집계해요. 줄을 누르면 아래에 그 회원의 그래프가 펼쳐져요. 샘플 계정은 제외돼요.</p>`:'<p class="empty">회원이 없어요.</p>')}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a=wkmv],tr[data-a=wksel]');if(!b||b.disabled)return;
 if(b.dataset.a==='wksel'){wkSel=wkSel===b.dataset.i?'':b.dataset.i;renderDash();const p=document.querySelector('.wpan');if(p&&wkSel)p.scrollIntoView({block:'nearest',behavior:'smooth'});return}
 wkStart=addDays(WK?WK.start:monOf(baseDay()),+b.dataset.v);if(wkStart>monOf(baseDay()))wkStart=monOf(baseDay());
 try{await loadWeek()}catch(x){WK=null}renderDash()});
+
+/* --- 회원 화면: 오늘 탭의 '이번 주' 카드와 주간 요약 시트 --- */
+const wkCells=(r,dates)=>{const td=baseDay();return'<div class="wstrip"><div class="wth">'+dates.map((d,i)=>`<span class="${d===td?'td':''}">${WKD[i]}</span>`).join('')+'</div><div class="whm">'+dates.map((d,i)=>`<i class="${d>td?'fu':''}${d===td?' td':''}" style="${d>td?'':'background:'+WKC[Math.min(3,r.ty[i].size)]}">${r.wo[i]?'<b></b>':''}</i>`).join('')+'</div></div>'};
+function weekToday(h){if(!me)return h;const w=memWeek(monOf(baseDay())),r=w.row;return h+`<section class="card wkc" role="button" tabindex="0" data-a="mwopen"><h3>이번 주<span>자세히 ›</span></h3>${wkCells(r,w.dates)}<p class="mut" style="margin:8px 0 0">식사 ${r.md}/${w.el}일 · 운동 ${r.wn}회 · 수업 ${r.ls}회</p></section>`}
+function mwSheet(){const td=baseDay();if(!mwStart)mwStart=monOf(td);const w=memWeek(mwStart),r=w.row,cur=mwStart>=monOf(td);repCtx={r,dates:w.dates,el:w.el};
+$('#sp').innerHTML=`<h2>주간 요약</h2><div class="wknav"><button type="button" class="cp" data-a="mwmv" data-v="-7">◀ 이전 주</button><b>${wkLab(mwStart)}</b><button type="button" class="cp" data-a="mwmv" data-v="7" ${cur?'disabled':''}>다음 주 ▶</button></div>
+<div style="margin:12px 0 4px">${wkCells(r,w.dates)}</div>
+<div class="row"><span>평균 섭취 (kcal)</span><b>${r.avg==null?'-':r.avg.toLocaleString()} <small class="mut">/ 목표 ${r.goal.toLocaleString()}</small></b></div>
+<div class="row"><span>체중 (kg)</span><b>${r.wlast==null?'-':r.wlast}${r.dw==null?'':' <small class="mut">주간 '+(r.dw>0?'+':'')+r.dw+'</small>'}</b></div>
+<div class="row"><span>평균 수면</span><b>${r.slAvg==null?'-':slHM(r.slAvg)}</b></div>
+<div class="row"><span>운동 / 수업 (회)</span><b>${r.wn} / ${r.ls}</b></div>
+${wkPanel(r,w.dates,false)}<button type="button" class="save" data-a="shut" style="background:none;color:var(--mut);margin-top:6px">닫기</button>`;$('#sh').hidden=false}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a=mwopen],[data-a=mwmv]');if(!b||b.disabled)return;
+if(b.dataset.a==='mwopen'){mwStart='';mwSheet();return}
+mwStart=addDays(mwStart,+b.dataset.v);if(mwStart>monOf(baseDay()))mwStart=monOf(baseDay());mwSheet()});
+document.addEventListener('keydown',e=>{const b=e.target.closest&&e.target.closest('.wkc[data-a=mwopen]');if(b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();b.click()}});
+
+/* --- 주간 리포트 이미지 (캔버스로 그려서 저장/공유) --- */
+function wkReportBlob(r,dates,el){const W=1080,H=1560,cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d'),F="'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR','Noto Sans CJK KR',sans-serif",
+rr=(x,y,w,h,rad,fill,stroke)=>{g.beginPath();g.roundRect(x,y,w,h,rad);if(fill){g.fillStyle=fill;g.fill()}if(stroke){g.strokeStyle=stroke;g.lineWidth=3;g.stroke()}},
+tx=(t,x,y,size,col,wt,al)=>{g.font=(wt||'400')+' '+size+'px '+F;g.fillStyle=col;g.textAlign=al||'left';g.textBaseline='alphabetic';g.fillText(t,x,y)},
+P='#E8668B',INK='#4A3A40',MUT='#9C8890',LINE='#F8E4DE',td=baseDay();
+g.fillStyle='#FFF5F0';g.fillRect(0,0,W,H);rr(40,40,W-80,H-80,40,'#fff');
+tx('주간 리포트',90,130,38,P,'700');tx(r.p.display_name||'',90,200,60,INK,'700');tx(wkLab(dates[0]),90,255,34,MUT);
+// 7일 칸
+const cols=['#F8E4DE','#f6b8c9','#ee8ba9',P],x0=90,cw=(W-180)/7;
+dates.forEach((d,i)=>{const cx=x0+cw*i+cw/2;tx(WKD[i],cx,340,30,d===td?P:MUT,d===td?'800':'500','center');
+if(d>td)rr(cx-36,365,72,72,16,'#faf2ee','#F0C9D4');else rr(cx-36,365,72,72,16,cols[Math.min(3,r.ty[i].size)]);
+if(r.wo[i]&&d<=td){g.beginPath();g.arc(cx+30,431,14,0,7);g.fillStyle='#2f7d57';g.fill();g.lineWidth=4;g.strokeStyle='#fff';g.stroke()}
+if(r.lsd[i]&&d<=td){g.beginPath();g.arc(cx-30,371,11,0,7);g.fillStyle='#fff';g.fill();g.beginPath();g.arc(cx-30,371,8,0,7);g.fillStyle='#4A3A40';g.fill()}});
+tx('색 칸 = 식사 기록(진할수록 끼니 수↑) · 초록 점 = 운동 · 검은 점 = 수업',90,490,26,MUT);
+// 숫자 4칸
+const box=(x,y,t,v,s)=>{rr(x,y,450,200,28,'#FFF5F0');tx(t,x+30,y+56,28,MUT,'600');tx(v,x+30,y+125,52,INK,'700');if(s)tx(s,x+30,y+168,26,MUT)};
+box(90,530,'평균 섭취 (kcal)',r.avg==null?'-':r.avg.toLocaleString(),'목표 '+r.goal.toLocaleString()+' kcal');
+box(540,530,'체중 (kg)',r.wlast==null?'-':String(r.wlast),r.dw==null?'':'주간 '+(r.dw>0?'+':'')+r.dw+' kg');
+box(90,760,'평균 수면',r.slAvg==null?'-':slHM(r.slAvg),'');
+box(540,760,'운동 / 수업 (회)',r.wn+' / '+r.ls,'식사 기록 '+r.md+'/'+el+'일');
+// 식사 열량 막대
+tx('일별 섭취 열량 (kcal)',90,1030,32,INK,'700');
+const V=r.kc.filter(x=>x!=null),mx=Math.max(...V,r.goal)*1.15,by=1400,bh=300,bw=70;
+dates.forEach((d,i)=>{const k=r.kc[i],cx=x0+cw*i+cw/2;if(k!=null){const h=k/mx*bh;rr(cx-bw/2,by-h,bw,h,14,k>r.goal*1.2?'#d9534f':P);tx(Math.round(k).toLocaleString(),cx,by-h-12,24,MUT,'500','center')}tx(WKD[i],cx,by+40,26,MUT,'500','center')});
+const gy=by-r.goal/mx*bh;g.setLineDash([10,8]);g.strokeStyle=MUT;g.lineWidth=2;g.beginPath();g.moveTo(90,gy);g.lineTo(W-90,gy);g.stroke();g.setLineDash([]);tx('목표',W-90,gy-10,24,MUT,'500','right');
+tx('건강 기록 · '+td.replace(/-/g,'.')+' 작성',W/2,H-70,24,MUT,'400','center');
+return new Promise(ok=>cv.toBlob(ok,'image/png'))}
+document.addEventListener('click',async e=>{if(!e.target.closest('[data-a=wrep]'))return;if(!repCtx)return toast('먼저 회원을 선택해 주세요');if(busy)return;busy=true;
+try{const{r,dates,el}=repCtx,blob=await wkReportBlob(r,dates,el),name='주간리포트_'+(r.p.display_name||'')+'_'+dates[0].slice(5).replace('-','')+'.png',file=new File([blob],name,{type:'image/png'});
+if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file]})}catch(x){if(x&&x.name!=='AbortError')throw x}}
+else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('이미지를 저장했어요')}}
+catch(x){toast('저장하지 못했어요: '+(x.message||''))}finally{busy=false}});
 
 /* --- 비밀번호 변경 (설정 화면) --- */
 function acctPw(){const sp=$('#sp');if(!sp||!me||(me.p&&me.p.is_demo))return;sp.insertAdjacentHTML('beforeend','<button type="button" class="cp" data-a="pwform" style="margin:12px 0 0">비밀번호 변경</button>')}
