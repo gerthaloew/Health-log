@@ -152,6 +152,7 @@ body:has(#auth) .sh{z-index:60}
 .gt small+small{font-size:11px;letter-spacing:-.2px}
 .ld{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
 .thb{position:relative;display:block;flex:none}.thb em{position:absolute;left:2px;bottom:2px;font-size:9px;font-weight:600;line-height:1;font-style:normal;background:rgba(0,0,0,.55);color:#fff;border-radius:6px;padding:2px 4px;pointer-events:none}
+.sp{overscroll-behavior:contain}.sh{overscroll-behavior:contain}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9"></script></head><body>
 <main id="main"></main>
@@ -1240,6 +1241,12 @@ try{const r=await sb.auth.updateUser({password:p1});if(r.error)throw r.error;clo
 let hideAt=0;
 document.addEventListener('visibilitychange',()=>{if(document.hidden){hideAt=Date.now();return}
 if(!me||!me.p||!hideAt||Date.now()-hideAt<300000||busy||!$('#sh').hidden||(me.p.role!=='member'&&!viewAs))return;hideAt=0;loadAll().catch(()=>{})});
+
+/* --- 팝업이 열려 있는 동안 뒤 화면은 스크롤되지 않게 고정하고, 닫으면 원래 위치로 --- */
+(function(){const sh=$('#sh');if(!sh)return;let y=0,on=false;const bs=document.body.style;
+new MutationObserver(()=>{const open=!sh.hidden;if(open===on)return;on=open;
+if(open){y=window.scrollY;bs.position='fixed';bs.top='-'+y+'px';bs.left=bs.right='0';bs.width='100%'}
+else{bs.position=bs.top=bs.left=bs.right=bs.width='';window.scrollTo(0,y)}}).observe(sh,{attributes:true,attributeFilter:['hidden']})})();
 </script>
 <script>
 /* 모든 파일이 불러와진 뒤 첫 화면을 그려요 */
