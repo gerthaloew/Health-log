@@ -643,14 +643,14 @@ const ym=isC?cmC:isS?cmS:cm,y=+ym.slice(0,4),m=+ym.slice(5,7),first=new Date(y,m
 let cells='';for(let i=0;i<first;i++)cells+='<span></span>';
 for(let d=1;d<=n;d++){const k=ym+'-'+pad(d);let cls='cc',inner='<b>'+d+'</b>';if(k===t)cls+=' td';
 if(kind==='meals'){const a=dm(k);if(a.length){const kc=Math.round(sum(a,'k'));inner+=`<small class="${kc>S.goal.k+sum(dw(k),'k')?'ov':''}">${kc}</small>`}}
-else if(kind==='workouts'){const a=dw(k);if(a.length)inner+='<span class="dots">'+[...new Set(a.flatMap(x=>[...wt(x),...((x.g||[]).includes('PT')?['PT']:[])]))].slice(0,4).map(x=>`<i style="background:${wcol(x)}"></i>`).join('')+'</span>'}
+else if(kind==='workouts'){const a=dw(k);if(a.length)inner+='<span class="dots">'+[...new Set(a.flatMap(x=>{const t=wt(x);return t.length?t:(x.g||[]).includes('PT')?['웨이트']:[]}))].slice(0,4).map(x=>`<i style="background:${wcol(x)}"></i>`).join('')+'</span>'}
 else if(isS){const a=lessonsOn(k);if(a.length)inner+='<span class="dots">'+a.slice(0,3).map(l=>`<i style="background:${wcol(l.kind)}"></i>`).join('')+'</span>'}
 else if(cy.p.has(k))cls+=' pr';else if(cy.f.has(k))cls+=' pd';else if(cy.o.has(k))cls+=' og';else if(cy.w.has(k))cls+=' fw';
 if(k===sel)cls+=' sel';
 cells+=`<button class="${cls}" data-a="${isC?'cycday':isS?'sday':'cday'}" data-d="${k}">${inner}</button>`}
 const pa=isC?'cprev2':isS?'cprevS':'cprev',na=isC?'cnext2':isS?'cnextS':'cnext',
 nav=`<div class="cn"><button data-a="${pa}" aria-label="이전 달">‹</button><b>${y}년 ${m}월</b><button data-a="${na}" aria-label="다음 달">›</button><button class="tdy" data-a="ctoday" data-k="${kind}">오늘</button></div>`,
-lg=kind==='workouts'?'<div class="lgd">'+['웨이트','PT','유산소','요가','필라테스','기타'].map(x=>`<span><i style="background:${wcol(x)}"></i>${x}</span>`).join('')+'</div>':kind==='meals'?'<div class="lgd"><span>숫자는 그날 섭취 kcal</span></div>':isS?'<div class="lgd">'+[[ptKinds().join('·'),ptKinds()[0]],['요가','요가'],['필라테스','필라테스'],['기타','기타']].map(([t,k])=>`<span><i style="background:${wcol(k)}"></i>${t}</span>`).join('')+'</div>':'<div class="lgd"><span><i style="background:color-mix(in srgb,#F7799F 45%,transparent)"></i>생리</span><span><i style="border:1.5px dashed #F7799F"></i>생리 예정</span><span><i style="background:color-mix(in srgb,#8FA8FF 55%,transparent)"></i>배란 예상</span><span><i style="background:color-mix(in srgb,#8FA8FF 20%,transparent)"></i>가임기 추정</span></div>';
+lg=kind==='workouts'?'<div class="lgd">'+['웨이트','유산소','요가','필라테스','기타'].map(x=>`<span><i style="background:${wcol(x)}"></i>${x}</span>`).join('')+'</div>':kind==='meals'?'<div class="lgd"><span>숫자는 그날 섭취 kcal</span></div>':isS?'<div class="lgd">'+[[ptKinds().join('·'),ptKinds()[0]],['요가','요가'],['필라테스','필라테스'],['기타','기타']].map(([t,k])=>`<span><i style="background:${wcol(k)}"></i>${t}</span>`).join('')+'</div>':'<div class="lgd"><span><i style="background:color-mix(in srgb,#F7799F 45%,transparent)"></i>생리</span><span><i style="border:1.5px dashed #F7799F"></i>생리 예정</span><span><i style="background:color-mix(in srgb,#8FA8FF 55%,transparent)"></i>배란 예상</span><span><i style="background:color-mix(in srgb,#8FA8FF 20%,transparent)"></i>가임기 추정</span></div>';
 return nav+'<div class="cw">'+'일월화수목금토'.split('').map(x=>`<span>${x}</span>`).join('')+'</div><div class="cg">'+cells+'</div>'+lg}
 /* ===== 생리 달력 날짜 선택, 오늘 버튼, + 버튼 스크롤 숨김 ===== */
 var cdayC='',cycAll=false;
