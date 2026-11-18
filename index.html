@@ -1426,7 +1426,7 @@ document.addEventListener('click',e=>{if(!inSp(e))return;if(e.target.closest('.c
 new MutationObserver(()=>{dirty=false;rmPill()}).observe(sp,{childList:true});
 new MutationObserver(()=>{if(!sh.hidden){rmPill()}else if(!stashing){dirty=false;rmPill()}}).observe(sh,{attributes:true,attributeFilter:['hidden']});
 function stash(){
-  if(!dirty||sp.querySelector('input[type=password]'))return false;
+  if(!dirty||sp.querySelector('input[type=password],#thm,[data-a=hrng]'))return false;
   stashing=true;sh.hidden=true;setTimeout(()=>{stashing=false},0);
   rmPill();const p=document.createElement('div');p.id='resume';
   p.innerHTML='<button type="button" data-r="go">✎ 작성 중인 기록 이어쓰기</button><button type="button" data-r="x" aria-label="작성 내용 지우기">✕</button>';
