@@ -21,7 +21,7 @@ main{max-width:480px;margin:0 auto;padding:8px 16px 130px}
 .dn button{width:34px;height:34px;border-radius:50%;background:var(--sf);font-size:20px;line-height:1}.dn button:disabled{opacity:.35}
 .dn span{min-width:150px;text-align:center;color:var(--ink);font-weight:500}
 .card{background:var(--sf);border-radius:20px;padding:16px;margin-bottom:12px}
-.card h3{margin:0 0 10px;font-size:15px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline}
+.card h3{margin:0 0 16px;font-size:15px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;position:relative}.card h3:after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:3px;border-radius:3px;background:var(--carb)}
 .card h3 a{font-weight:400;font-size:13px;color:var(--mut);text-decoration:none}
 .hero{display:flex;align-items:center;gap:16px}
 .rw{position:relative;width:140px;height:140px;flex:none}.rw svg{width:100%;height:100%}
@@ -33,7 +33,7 @@ main{max-width:480px;margin:0 auto;padding:8px 16px 130px}
 .bt{height:8px;border-radius:8px;background:var(--pt)}.bf{height:100%;border-radius:8px}
 .c1{background:var(--carb)}.c2{background:var(--prot)}.c3{background:var(--fat)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two .card{margin:0}.big{font-size:26px;font-weight:700}.mut{color:var(--mut);font-size:13px}
-.sec{margin-bottom:12px}.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.sec{margin-bottom:12px}.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-top:1px dashed var(--line)}
 .row:first-of-type{border-top:0}.row .n{flex:1;min-width:0}.row .n small{display:block;color:var(--mut);font-size:12px}.row b{white-space:nowrap}
 .x{color:var(--mut);width:28px;height:28px;border-radius:50%}
 .empty{color:var(--mut);margin:4px 0}
@@ -73,7 +73,7 @@ textarea{width:100%;margin-top:4px;padding:11px 12px;border-radius:12px;border:1
 
 /* ===== 귀여운 테마 ===== */
 h1,h2,h3,.big,.rc b,.calc b{font-family:"Jua","Gowun Dodum",system-ui,sans-serif;font-weight:400}
-.card{border-radius:28px;box-shadow:0 4px 14px color-mix(in srgb,var(--pine) 10%,transparent)}
+.card{border-radius:20px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
 .chip{border-radius:99px}.calc{border-radius:20px}
 .save,.cp{border-radius:99px}
 .tabs{border-top:0;border-radius:26px 26px 0 0;box-shadow:0 -4px 16px color-mix(in srgb,var(--pine) 12%,transparent)}
@@ -204,7 +204,15 @@ body:has(#auth) .sh{z-index:60}
 :root[data-theme="mono"]{--kw:#22211F;--kpt:#5C5B58;--kc:#A9A6A2;--ky:#E5E3E0;--kp:#F7F6F5;--ko:#FFFFFF}
 @media (prefers-color-scheme:dark){
 :root[data-theme="mono"]{--kw:#F7F6F5;--kpt:#E5E3E0;--kc:#A9A6A2;--ky:#5C5B58;--kp:#22211F;--ko:#FFFFFF}}
-.dots i,.lgd i,.ld{box-shadow:0 0 0 1px rgba(0,0,0,.16)}
+
+/* ===== 카드 디자인: 흰 카드 + 점선 구분 ===== */
+.row{border-top:1px dashed var(--line)}
+.row:first-child{border-top:0}
+
+/* ===== 메모지(.tip)·형광펜(.hl) ===== */
+.tip{border-left:4px solid var(--carb);background:color-mix(in srgb,var(--carb) 22%,var(--sf));border-radius:0 12px 12px 0;padding:10px 12px;margin:8px 0 2px;font-size:15px;line-height:1.55;white-space:pre-wrap}
+.hl{background:color-mix(in srgb,var(--carb) 55%,transparent);color:inherit;padding:0 2px;border-radius:2px}
+.wmemo{border-left:4px solid var(--carb);border-radius:0 14px 14px 0}
 </style>
 </head><body>
 <div id="auth" class="au"><div class="ap"><h1>건강 기록</h1><p class="mut">불러오는 중...</p></div></div>
@@ -493,7 +501,7 @@ const N=v=>v==null||v===''||isNaN(+v)?0:+v,vol=(x.sets||[]).reduce((a,s)=>a+N(s.
 ex=Object.keys(g).map((n,i)=>{const a=g[n],rm=Math.max(0,...a.map(s=>N(s.w)>0&&N(s.r)>0?N(s.w)*(1+N(s.r)/30):0)),pt=partOf(n);let k=0;
 return`<div class="exc"><div class="exh"><span class="no">${i+1}</span><div class="n">${esc(n)}${pt?`<small>${esc(pt)}</small>`:''}</div></div>${rm?`<div class="rm">추정 1RM ${Math.round(rm*10)/10}kg</div>`:''}<table class="wtb"><tr><th>세트</th><th>무게</th><th>횟수</th></tr>${a.map(s=>{if(!(s.dn>0))k++;return`<tr><td class="s">${s.dn>0?'드롭':k}</td><td><b>${s.w!=null&&s.w!==''?esc(s.w)+'kg':'-'}</b></td><td><b>${s.r!=null&&s.r!==''?esc(s.r)+'회':'-'}</b></td></tr>`}).join('')}</table>${mxStrip(x,n)}</div>`}).join(''),
 cd=(x.cardio||[]).map(c=>`<div class="row"><span class="n">${esc(c.n)}<small>${esc(c.i||'')}</small></span><b>${c.t?hms(c.t)+' ':''}${c.k?c.k+' kcal':''}</b></div>`).join(''),h3=t=>`<h3 class="wsec">${t}</h3>`;
-$('#sp').innerHTML=`<h2>${esc(wName(x))}</h2><div class="mut" style="margin:-6px 0 8px">${md(x.d)}</div><div>${[...wt(x),...(x.g||[]),...(x.b||[]),x.c?'컨디션 '+x.c:''].filter(Boolean).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>${x.n?`<p style="margin:10px 0 0"><b>메인</b> ${esc(x.n)}</p>`:''}${vol?`<div class="wvol"><small>총 운동 볼륨</small><div>${Math.round(vol).toLocaleString('ko-KR')}<span> kg</span></div></div>`:''}${ex?h3('웨이트')+ex:''}${cd?h3('유산소')+cd:''}${mxGeneral(x)}${x.notes?h3('수업 메모')+`<div class="wmemo">${esc(x.notes)}</div>`:''}<div class="row" style="margin-top:10px"><span>소모 열량</span><b>${x.k||0} kcal</b></div><button class="save" data-a="wedit" data-i="${x.id}" style="margin-top:12px;background:var(--pt);color:var(--pine)">수정</button><button class="save" data-a="shut" style="margin-top:8px;background:none;color:var(--mut)">닫기</button>`;$('#sh').hidden=false;mxSign(x)}
+$('#sp').innerHTML=`<h2>${esc(wName(x))}</h2><div class="mut" style="margin:-6px 0 8px">${md(x.d)}</div><div>${[...wt(x),...(x.g||[]),...(x.b||[]),x.c?'컨디션 '+x.c:''].filter(Boolean).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>${x.n?`<p style="margin:10px 0 0"><b>메인</b> ${esc(x.n)}</p>`:''}${vol?`<div class="wvol"><small>총 운동 볼륨</small><div>${Math.round(vol).toLocaleString('ko-KR')}<span> kg</span></div></div>`:''}${ex?h3('웨이트')+ex:''}${cd?h3('유산소')+cd:''}${mxGeneral(x)}${x.notes?h3('수업 메모')+`<div class="wmemo">${hlText(x.notes)}</div>`:''}<div class="row" style="margin-top:10px"><span>소모 열량</span><b>${x.k||0} kcal</b></div><button class="save" data-a="wedit" data-i="${x.id}" style="margin-top:12px;background:var(--pt);color:var(--pine)">수정</button><button class="save" data-a="shut" style="margin-top:8px;background:none;color:var(--mut)">닫기</button>`;$('#sh').hidden=false;mxSign(x)}
 const WPARTS=['하체','어깨','가슴','등','팔','복근'];
 /* 검색어에서 부위(하체 등)와 컨디션(상·중·하, '컨디션 상')을 알아보고, 나머지는 글자 검색 */
 function wParse(){const P=[],C=[],q=[];(wq||'').trim().split(/\s+/).filter(Boolean).forEach(w=>{const l=w.replace(/^컨디션/,'');if(WPARTS.includes(w))P.push(w);else if(w==='컨디션')return;else if(['상','중','하'].includes(l))C.push(l);else q.push(w.toLowerCase())});return{P,C,q}}
@@ -879,9 +887,11 @@ function ptCard(){const st=isStaff()&&viewAs,p=S.pt;if(!p&&!st)return'';const u=
 const mem=p&&p.mem_end?`<div class="row"><span>회원권</span><b${dl!=null&&dl<=30?' style="color:var(--fat)"':''}>${p.mem_start?ymd(p.mem_start)+' ~ ':'~ '}${ymd(p.mem_end)} <small>${memTxt(dl,p.mem_end).replace(/ \(.*/,'')}</small></b></div>`:'';
 const pt=t!=null?`<div class="row"><span>PT 남은 횟수</span><b${t-u<5?' style="color:var(--fat)"':''}>${Math.max(t-u,0)}회 <small>(총 ${t}회 중 ${u}회 진행)</small></b></div>`:'';
 return`<section class="card"><h3>회원권 · PT${st?'<button class="cp" data-a="ptset">'+(p?'수정':'설정')+'</button>':''}</h3>${mem}${pt}${t==null?`<div class="row"><span>이번 달 OT</span><b>${ot} / ${OTMAX}회 <small>(회원권 등록 시 월 ${OTMAX}회 무료)</small></b></div>`:''}${!p?'<p class="empty">아직 등록 정보가 없어요.</p>':''}${(S.pay||[]).length?`<h4 style="margin:12px 0 4px;font-size:13px;color:var(--mut)">등록 이력</h4>${S.pay.map(x=>`<div class="row" style="align-items:flex-start"><span class="n"><b>${ymd(x.paid_at)}</b><small>PT +${x.pt_count}회${x.mem_end?' · ~'+ymd(x.mem_end):''}${x.note?' · '+esc(x.note):''}</small></span></div>`).join('')}`:''}</section>`}
+/* 메모에서 ==이렇게== 감싼 글자는 형광펜으로 보여요 */
+function hlText(t){return esc(t).replace(/==(.+?)==/g,'<mark class="hl">$1</mark>')}
 function onelineCard(){const st=isStaff()&&viewAs,n=(S.notes||[]).find(x=>x.kind==='oneline'&&x.note_date===day);if(!n&&!st)return'';
-return`<section class="card"><h3>오늘의 한줄평${st?'<button class="cp" data-a="olset">'+(n?'수정':'+ 작성')+'</button>':''}</h3>${n?`<p style="font-size:16px;margin:4px 0">${esc(n.body)}</p>`:'<p class="empty">아직 한줄평이 없어요.</p>'}</section>`}
-function notesCard(){const a=(S.notes||[]).filter(x=>x.kind!=='oneline').slice(0,5),st=isStaff()&&viewAs;let m='';if(a.length||st)m=`<section class="card"><h3>${st?'트레이너 메모':'트레이너 피드백'}${st?'<button class="cp" data-a="noteadd">+ 메모</button>':''}</h3>${a.map(n=>`<div class="row" style="align-items:flex-start"><span class="n"><b>${md(n.note_date)}</b><small style="white-space:pre-wrap;color:var(--ink);font-size:14px">${esc(n.body)}</small></span>${n.author_id===me.id?`<button class="x" data-a="ndel" data-i="${n.id}" aria-label="삭제">×</button>`:''}</div>`).join('')||'<p class="empty">아직 메모가 없어요.</p>'}</section>`;
+return`<section class="card"><h3>오늘의 한줄평${st?'<button class="cp" data-a="olset">'+(n?'수정':'+ 작성')+'</button>':''}</h3>${n?`<div class="tip">${hlText(n.body)}</div>`:'<p class="empty">아직 한줄평이 없어요.</p>'}</section>`}
+function notesCard(){const a=(S.notes||[]).filter(x=>x.kind!=='oneline').slice(0,5),st=isStaff()&&viewAs;let m='';if(a.length||st)m=`<section class="card"><h3>${st?'트레이너 메모':'트레이너 피드백'}${st?'<button class="cp" data-a="noteadd">+ 메모</button>':''}</h3>${a.map(n=>`<div class="row" style="align-items:flex-start"><span class="n"><b>${md(n.note_date)}</b><small style="white-space:pre-wrap;color:var(--ink);font-size:14px">${hlText(n.body)}</small></span>${n.author_id===me.id?`<button class="x" data-a="ndel" data-i="${n.id}" aria-label="삭제">×</button>`:''}</div>`).join('')||'<p class="empty">아직 메모가 없어요.</p>'}</section>`;
 return onelineCard()+ptCard()+m}
 function todayNotes(h){const i=h.indexOf('<section'),j=h.indexOf('</header>');const nc=notesCard();if(!nc)return h;const k=h.indexOf('<section class="card hero"');return k>0?h.slice(0,k)+nc+h.slice(k):h+nc};
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,d=b.dataset;
