@@ -291,8 +291,8 @@ return head('오늘')+lessonCard()+ddCard()+`<section class="card hero"><div cla
 <div class="lg"><div>섭취<b>${eat}</b></div><div>운동 소모<b>${burn}</b></div><div>목표<b>${S.goal.k}</b></div></div></section>
 <section class="card"><h3>영양소</h3>${bar('탄수화물',sum(m,'c'),S.goal.c,'c1')}${bar('단백질',sum(m,'p'),S.goal.p,'c2')}${bar('지방',sum(m,'f'),S.goal.f,'c3')}</section>
 <section class="card tap wsq" role="button" tabindex="0" data-a="det" data-k="body"><h3>체중</h3><div class="big">${bw?bw.w:'-'}<small class="mut"> kg</small></div>${bw?'':'<div class="mut">기록 없음</div>'}${ib?`<div class="mut" style="margin-top:8px">${ib.d!==day?'인바디 '+md(ib.d)+'<br>':''}골격근 ${ib.m||'-'} kg<br>체지방 ${ib.f||'-'} kg<br>체지방률 ${bp?bp+'%':'-'}</div>`:''}</section>
-<section class="card tap" role="button" tabindex="0" data-a="det" data-k="work"><h3>운동<span>${w.length?burn+' kcal':''}</span></h3>${w.map(todayWk).join('')||'<p class="empty">기록 없음</p>'}</section>
-<section class="card"><h3>식사 <a href="#meals">전체 보기</a></h3>${ph(m)}${rows||'<p class="empty">아직 기록이 없어요. 아래 + 버튼으로 추가해 보세요.</p>'}</section>`}
+<section class="card"><h3>식사 <a href="#meals">전체 보기</a></h3>${ph(m)}${rows||'<p class="empty">아직 기록이 없어요. 아래 + 버튼으로 추가해 보세요.</p>'}</section>
+<section class="card tap" role="button" tabindex="0" data-a="det" data-k="work"><h3>운동<span>${w.length?burn+' kcal':''}</span></h3>${w.map(todayWk).join('')||'<p class="empty">기록 없음</p>'}</section>`}
 function vWork(){const a=dw(day);
 return head('운동')+wSearchBox()+calCard('workouts')+`<section class="card"><h3>기록<span>${sum(a,'k')} kcal</span></h3>${a.map(x=>`<div class="row"><span class="n tap" data-a="wdet" data-i="${x.id}">${esc(wName(x))}<small>${wt(x).map(g=>`<span class="tag">${esc(g)}</span>`).join('')}${(x.g||[]).map(g=>`<span class="tag">${esc(g)}</span>`).join('')}${(x.b||[]).map(g=>`<span class="tag">${esc(g)}</span>`).join('')}${x.c?`<span class="tag">컨디션 ${esc(x.c)}</span>`:''}</small></span><b>${x.k||0} kcal</b><button class="x" data-a="del" data-k="workouts" data-i="${x.id}" aria-label="삭제">×</button></div>`).join('')||'<p class="empty">이 날은 운동 기록이 없어요.</p>'}</section>
 `}
