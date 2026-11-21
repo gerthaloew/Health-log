@@ -309,7 +309,7 @@ return head('오늘')+lessonCard()+ddCard()+`<section class="card hero"><div cla
 <section class="card"><h3>영양소</h3>${bar('탄수화물',sum(m,'c'),S.goal.c,'c1')}${bar('단백질',sum(m,'p'),S.goal.p,'c2')}${bar('지방',sum(m,'f'),S.goal.f,'c3')}</section>
 <section class="card tap wsq" role="button" tabindex="0" data-a="det" data-k="body"><h3>체중</h3><div class="big">${bw?bw.w:'-'}<small class="mut"> kg</small></div>${bw?'':'<div class="mut">기록 없음</div>'}${ib?`<div class="mut" style="margin-top:8px">${ib.d!==day?'인바디 '+md(ib.d)+'<br>':''}골격근 ${ib.m||'-'} kg<br>체지방 ${ib.f||'-'} kg<br>체지방률 ${bp?bp+'%':'-'}</div>`:''}</section>
 <section class="card"><h3>식사 <a href="#meals">전체 보기</a></h3>${ph(m)}${rows||'<p class="empty">아직 기록이 없어요. 아래 + 버튼으로 추가해 보세요.</p>'}</section>
-${todayWkCard(w,burn)}`}
+${todayWkCard(w,burn)}<button class="save" data-a="tshare" style="margin:4px 0 14px;background:var(--pt);color:var(--pine)">오늘 기록 이미지로 저장</button>`}
 function vWork(){const a=dw(day);
 return head('운동')+wSearchBox()+calCard('workouts')+`<section class="card"><h3>기록<span>${sum(a,'k')} kcal</span></h3>${a.map(x=>`<div class="row"><span class="n tap" data-a="wdet" data-i="${x.id}">${esc(wName(x))}<small>${wt(x).map(g=>`<span class="tag">${esc(g)}</span>`).join('')}${(x.g||[]).map(g=>`<span class="tag">${esc(g)}</span>`).join('')}${(x.b||[]).map(g=>`<span class="tag">${esc(g)}</span>`).join('')}${x.c?`<span class="tag">컨디션 ${esc(x.c)}</span>`:''}</small></span><b>${x.k||0} kcal</b><button class="x" data-a="del" data-k="workouts" data-i="${x.id}" aria-label="삭제">×</button></div>`).join('')||'<p class="empty">이 날은 운동 기록이 없어요.</p>'}${a.length?`<button class="save" data-a="wshare" style="margin-top:12px;background:var(--pt);color:var(--pine)">${day===baseDay()?'오늘':'이 날'} 기록 이미지로 저장</button>`:''}</section>
 `}
@@ -323,7 +323,7 @@ function freqFoods(){const g={};S.meals.forEach(x=>{const o=g[x.n]||(g[x.n]={n:x
 function nextMeal(d){const have=new Set(dm(d).map(x=>x.t));return['아침','점심','저녁'].find(t=>!have.has(t))||'간식'}
 function vMeals3(){const rec=freqFoods(),all=TYPES.flatMap(t=>dm(day).filter(x=>x.t===t));
 const sub=TYPES.map(t=>{const a=dm(day).filter(x=>x.t===t);return a.length?t+' '+sum(a,'k')+' kcal':''}).filter(Boolean).join(', ');
-return head('식사')+calCard('meals')+(rec.length?`<section class="card"><h3>자주 먹는 음식</h3><div class="chips" style="margin:0">${rec.map(x=>`<button class="chip" data-a="qa" data-i="${x.id}">${esc(x.n)}</button>`).join('')}</div><p class="mut" style="margin:8px 0 0">누르면 ${nextMeal(day)}에 바로 추가돼요.</p></section>`:'')+`<section class="card"><h3>식사 기록<span>${sum(all,'k')} kcal</span></h3>${sub?`<p class="mut" style="margin:0 0 10px">${sub}</p>`:''}${all.length?`<div class="gal">${all.map(x=>`<button class="gi" data-a="mview" data-i="${x.id}">${x.img?`<img src="${x.img}" alt="${esc(x.n)}">`:`<span class="ph0">${esc(x.n.slice(0,2))}</span>`}<span class="bd">${x.t}</span><span class="gt">${esc(x.n)}<small>🔥 ${Math.round(x.k)} kcal</small><small>${macIc(x)}</small></span></button>`).join('')}</div>`:'<p class="empty">아직 기록이 없어요.</p>'}${isRO()?'':'<button type="button" class="save" data-a="pick" data-k="meal" style="background:var(--pt);color:var(--pine);margin:12px 0 0">+ 식사 등록</button>'}${ycopyBtn()}</section>`}
+return head('식사')+calCard('meals')+(rec.length?`<section class="card"><h3>자주 먹는 음식</h3><div class="chips" style="margin:0">${rec.map(x=>`<button class="chip" data-a="qa" data-i="${x.id}">${esc(x.n)}</button>`).join('')}</div><p class="mut" style="margin:8px 0 0">누르면 ${nextMeal(day)}에 바로 추가돼요.</p></section>`:'')+`<section class="card"><h3>식사 기록<span>${sum(all,'k')} kcal</span></h3>${sub?`<p class="mut" style="margin:0 0 10px">${sub}</p>`:''}${all.length?`<div class="gal">${all.map(x=>`<button class="gi" data-a="mview" data-i="${x.id}">${x.img?`<img src="${x.img}" alt="${esc(x.n)}">`:`<span class="ph0">${esc(x.n.slice(0,2))}</span>`}<span class="bd">${x.t}</span><span class="gt">${esc(x.n)}<small>🔥 ${Math.round(x.k)} kcal</small><small>${macIc(x)}</small></span></button>`).join('')}</div>`:'<p class="empty">아직 기록이 없어요.</p>'}${isRO()?'':'<button type="button" class="save" data-a="pick" data-k="meal" style="background:var(--pt);color:var(--pine);margin:12px 0 0">+ 식사 등록</button>'}${ycopyBtn()}${all.length?'<button class="save" data-a="mshare" style="margin-top:8px;background:var(--pt);color:var(--pine)">식사만 이미지로 저장</button>':''}</section>`}
 let rmImg=false;
 /* 탄수화물·단백질·지방을 '탄 00g · 단 00g · 지 00g' 한 줄로 (식사 목록, 확인 팝업 공통) */
 const macIc=o=>`탄 ${Math.round((+o.c||0)*10)/10}g · 단 ${Math.round((+o.p||0)*10)/10}g · 지 ${Math.round((+o.f||0)*10)/10}g`;
@@ -1492,14 +1492,15 @@ const m=(x.media||[]).find(y=>String(y.id)===b.dataset.m);if(!m)return;(async()=
 const SHW=1080,SHM=56,SHP=48,SHI=SHW-2*SHM-2*SHP,SHD='일월화수목금토';
 const SHF='"Gowun Dodum","Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif',SHJ='"Jua","Gowun Dodum","Apple SD Gothic Neo",system-ui,sans-serif';
 const SHK={'웨이트':null,'유산소':'#8FA8FF','요가':'#FFC15E','필라테스':'#7ED6B0','기타':'#B8A9C9'};
-let shUrl='',shBlob=null,shName='';
+let shUrls=[],shFiles=[];
 function shHex(v){const c=document.createElement('canvas').getContext('2d');c.fillStyle='#E8668B';c.fillStyle=v||'#E8668B';return c.fillStyle}
 function shMix(h,t){const n=parseInt(h.slice(1),16),m=v=>Math.round(255-(255-v)*t);return'rgb('+m(n>>16)+','+m(n>>8&255)+','+m(n&255)+')'}
 function shRR(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
 function shFit(c,t,w){t=String(t);if(c.measureText(t).width<=w)return t;while(t.length>1&&c.measureText(t+'…').width>w)t=t.slice(0,-1);return t+'…'}
 function shWrap(c,t,w){const o=[];String(t).split('\n').forEach(p=>{let l='';for(const ch of p){if(c.measureText(l+ch).width>w&&l){o.push(l);l=ch}else l+=ch}o.push(l)});return o}
 const shTitle=x=>{const b=(x.b||[]).filter(p=>p!=='유산소'&&p!=='필라테스'),k=wt(x);return(k.length?k.join('·'):'운동')+(b.length?' · '+b.join('·'):'')};
-const shTime=x=>{const d=new Date(x.st||x.ts);if(isNaN(d))return'';const p=new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',hour:'numeric',minute:'2-digit',hour12:true}).format(d);return p};
+const shClock=v=>{const d=new Date(v);return isNaN(d)?'':new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',hour:'numeric',minute:'2-digit',hour12:true}).format(d)},shTime=x=>shClock(x.st||x.ts);
+const shT=(c,t,x,y,sz,col,al,f,w)=>{c.font=(w||400)+' '+sz+'px '+(f||SHF);c.fillStyle=col;c.textAlign=al||'left';c.fillText(t,x,y)};
 /* 운동 종류별 칼로리: 유산소 기록은 유산소로, 나머지는 고른 종류로 */
 function shSplit(x){const cs=(x.cardio||[]).reduce((t,c)=>t+(+c.k||0),0),k=wt(x),o=k.filter(v=>v!=='유산소'),rest=Math.max(0,(+x.k||0)-cs),r={};
 if(cs)r['유산소']=cs;if(rest)r[o.length?o.join('·'):k.includes('유산소')?'유산소':'운동']=(r[o.length?o.join('·'):k.includes('유산소')?'유산소':'운동']||0)+rest;return r}
@@ -1510,13 +1511,14 @@ async function shLoad(list){const im={};for(const x of list){const ms=(x.media||
 function shDraw(c,P){const ac=P.ac,bgc=shMix(ac,.07),pt=shMix(ac,.17),ln=shMix(ac,.15),INK='#4A3A40',MUT='#9C8890',X=SHM+SHP,L=P.list,one=L.length===1;let y=SHM+SHP;
 if(P.H){c.fillStyle=bgc;c.fillRect(0,0,SHW,P.H);c.fillStyle='#fff';shRR(c,SHM,SHM,SHW-2*SHM,P.H-2*SHM,36);c.fill();c.strokeStyle=ln;c.lineWidth=2;c.stroke()}
 c.textBaseline='top';
-const T=(t,x,yy,sz,col,al,f,w)=>{c.font=(w||400)+' '+sz+'px '+(f||SHF);c.fillStyle=col;c.textAlign=al||'left';c.fillText(t,x,yy)},
+const T=(t,x,yy,sz,col,al,f,w)=>shT(c,t,x,yy,sz,col,al,f,w),
 kcol=k=>SHK[k]===undefined?MUT:SHK[k]||ac,
 pill=(t,x0,yy)=>{c.font='700 26px '+SHF;const w=c.measureText(t).width+48;shRR(c,x0,yy,w,52,26);c.fillStyle=pt;c.fill();T(t,x0+24,yy+11,26,ac,'left',SHF,700);return w},
 table=(cols,rows,sz)=>{shRR(c,X,y,SHI,52,16);c.fillStyle=pt;c.fill();let cx=X;cols.forEach(o=>{T(o.t,o.al==='l'?cx+18:cx+o.w/2,y+13,22,MUT,o.al==='l'?'left':'center');cx+=o.w});y+=52;
 rows.forEach(r=>{cx=X;cols.forEach((o,i)=>{const t=r[i]==null?'':String(r[i]);if(t){let s=i===0?26:sz||25;c.font=(i===0?700:i===cols.length-1||sz?700:400)+' '+s+'px '+SHF;while(s>16&&c.measureText(t).width>o.w-(o.al==='l'?24:8)){s--;c.font='700 '+s+'px '+SHF}T(i===0?shFit(c,t,o.w-24):t,o.al==='l'?cx+18:cx+o.w/2,y+17,s,INK,o.al==='l'?'left':'center',SHF,i===0||sz?700:400)}cx+=o.w});y+=64;c.fillStyle=ln;c.fillRect(X,y-2,SHI,2)})},
 h2=(t,r)=>{shRR(c,X,y+3,12,34,6);c.fillStyle=ac;c.fill();T(t,X+26,y,34,INK,'left',SHJ);if(r)T(r,X+SHI,y+8,24,MUT,'right');y+=56};
 
+if(P.pg)T('건강 기록 앱 · '+P.pg,X+SHI,y+8,22,MUT,'right');
 const dt=new Date(P.day+'T00:00:00');T(dt.getFullYear()+'년 '+(dt.getMonth()+1)+'월 '+dt.getDate()+'일 ('+SHD[dt.getDay()]+')',X,y,28,MUT);y+=42;
 T(one?shTitle(L[0]):P.day===baseDay()?'오늘의 운동 기록':'운동 기록',X,y,60,INK,'left',SHJ);y+=84;
 if(one){const t=[...(L[0].g||[]),...wt(L[0]),...(L[0].b||[]),L[0].c?'컨디션 '+L[0].c:''].filter(Boolean);let px=X;t.forEach(s=>{c.font='700 26px '+SHF;const w=c.measureText(s).width+48;if(px+w>X+SHI){px=X;y+=64}px+=pill(s,px,y)+12});y+=52+34}else y+=6;
@@ -1556,19 +1558,53 @@ L.forEach(x=>{let ind=0;
 });
 y+=44;T('건강 기록 앱',SHW/2,y,22,MUT,'center');y+=30;return y+SHP+SHM}
 
-async function shMake(list,day){if(!list.length)return toast('내보낼 운동 기록이 없어요');toast('이미지 만드는 중…');
+/* ---- 오늘 요약 (1장): 통계 + 식사 ---- */
+const shPrev=d=>{const t=new Date(+d.slice(0,4),+d.slice(5,7)-1,+d.slice(8)-1);return fmt(t)};
+const shHM=m=>Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m';
+function shDayData(d){const ms=dm(d),bw=[...S.body].filter(b=>b.w&&b.d<=d).sort((a,b)=>a.d<b.d?1:-1),w0=bw[0],w1=w0&&bw.find(b=>b.d<w0.d),sl=slOf(d),sy=slOf(shPrev(d)),wk=dw(d),tg={};ms.forEach(m=>(tg[m.t]=tg[m.t]||[]).push(m));
+const g=Object.keys(tg).map(t=>({t,a:tg[t],ts:Math.min(...tg[t].map(m=>m.ts||0))})).sort((a,b)=>a.ts-b.ts);
+return{ms,g,w0,w1,sl,sy,burn:sum(wk,'k'),hasW:wk.length>0,eat:sum(ms,'k'),mac:{c:sum(ms,'c'),p:sum(ms,'p'),f:sum(ms,'f')}}}
+function shDrawDay(c,P){const ac=P.ac,bgc=shMix(ac,.07),pt=shMix(ac,.17),ln=shMix(ac,.15),INK='#4A3A40',MUT='#9C8890',X=SHM+SHP,D=P.D,gl=S.goal||{};let y=SHM+SHP;
+if(P.H){c.fillStyle=bgc;c.fillRect(0,0,SHW,P.H);c.fillStyle='#fff';shRR(c,SHM,SHM,SHW-2*SHM,P.H-2*SHM,36);c.fill();c.strokeStyle=ln;c.lineWidth=2;c.stroke()}
+c.textBaseline='top';const T=(t,x,yy,sz,col,al,f,w)=>shT(c,t,x,yy,sz,col,al,f,w);
+T('건강 기록 앱'+(P.pg?' · '+P.pg:''),X+SHI,y+8,22,MUT,'right');
+const dt=new Date(P.day+'T00:00:00');T(dt.getFullYear()+'년 '+(dt.getMonth()+1)+'월 '+dt.getDate()+'일 ('+SHD[dt.getDay()]+')',X,y,28,MUT);y+=42;T(P.title,X,y,60,INK,'left',SHJ);y+=84;
+const cd=[];if(D.ms.length)cd.push(['섭취 칼로리',Math.round(D.eat).toLocaleString('ko-KR'),' kcal',ac,gl.k?'목표 '+gl.k.toLocaleString('ko-KR'):'']);
+if(D.hasW)cd.push(['소모 칼로리',Math.round(D.burn).toLocaleString('ko-KR'),' kcal','#8FA8FF',S.goal&&S.goal.bg?'목표 '+S.goal.bg+(D.burn>=S.goal.bg?' 달성':''):'']);
+if(D.w0){const df=D.w1?Math.round((D.w0.w-D.w1.w)*10)/10:null;cd.push(['체중',String(D.w0.w),' kg',INK,D.w0.d!==P.day?md(D.w0.d)+' 기록':df==null?'':(D.w1.d===shPrev(P.day)?'어제':'이전')+' 대비 '+(df>0?'+':df<0?'−':'')+Math.abs(df)])}
+if(D.sl)cd.push(['수면',shHM(D.sl.m),'',INK,D.sy?'어제 '+shHM(D.sy.m):'']);
+if(cd.length){const w=(SHI-12*(cd.length-1))/cd.length;cd.forEach((q,i)=>{const sx=X+i*(w+12);shRR(c,sx,y,w,138,24);c.fillStyle=bgc;c.fill();T(q[0],sx+w/2,y+16,22,MUT,'center');c.font='900 '+(cd.length>3?40:48)+'px '+SHF;const a=q[1],aw=c.measureText(a).width;c.font='500 20px '+SHF;const bw=c.measureText(q[2]).width,x0=sx+(w-aw-bw)/2;T(a,x0,y+48,cd.length>3?40:48,q[3],'left',SHF,900);T(q[2],x0+aw,y+68,20,MUT);if(q[4])T(q[4],sx+w/2,y+104,20,MUT,'center')});y+=138+22}
+if(D.ms.length){shRR(c,X,y+3,12,34,6);c.fillStyle=ac;c.fill();T('식사',X+26,y,34,INK,'left',SHJ);y+=56;
+ const mc=[['탄수','c','#FFC15E',gl.c],['단백질','p','#8FA8FF',gl.p],['지방','f','#FF9AA2',gl.f]],tt=D.mac.c+D.mac.p+D.mac.f||1;shRR(c,X,y,SHI,52+mc.length*42,24);c.fillStyle=bgc;c.fill();
+ mc.forEach((q,i)=>{const v=Math.round(D.mac[q[1]]),yy=y+20+i*42,bx=X+26+110,bw=SHI-26-110-26-190;T(q[0],X+26,yy-2,24,INK);shRR(c,bx,yy+2,bw,18,9);c.fillStyle=pt;c.fill();const fr=q[3]?Math.min(1,v/q[3]):D.mac[q[1]]/tt;if(fr>0){shRR(c,bx,yy+2,Math.max(18,bw*fr),18,9);c.fillStyle=q[2];c.fill()}
+  c.font='400 18px '+SHF;const gt=q[3]?' /'+q[3]+'g':' g',gw=c.measureText(gt).width;T(gt,X+SHI-26,yy+3,18,MUT,'right');T(String(v),X+SHI-26-gw,yy-3,24,INK,'right',SHF,900)});y+=52+mc.length*42+14;
+ D.g.forEach(q=>{const it=q.a.slice(0,4),more=q.a.length-it.length,bm=q.a.map(m=>P.imgs[m.id]).find(Boolean),th=bm?168:0,tx=X+16+(th?th+20:0),tw=X+SHI-16-tx,h=Math.max(th,52+(it.length+(more?1:0))*44)+32;
+  shRR(c,X,y,SHI,h,24);c.strokeStyle=ln;c.lineWidth=2;c.stroke();
+  if(bm){c.save();shRR(c,X+16,y+16,th,th,18);c.clip();const s=Math.max(th/bm.width,th/bm.height),w=bm.width*s,hh=bm.height*s;c.drawImage(bm,X+16+(th-w)/2,y+16+(th-hh)/2,w,hh);c.restore()}
+  const k=Math.round(sum(q.a,'k'));T(q.t,tx,y+16,32,INK,'left',SHJ);c.font='400 32px '+SHJ;const nw=c.measureText(q.t).width;T(shClock(q.ts),tx+nw+14,y+26,22,MUT);T(' kcal',X+SHI-16,y+26,18,MUT,'right');c.font='400 18px '+SHF;const kw=c.measureText(' kcal').width;T(String(k),X+SHI-16-kw,y+18,28,ac,'right',SHJ);
+  let iy=y+60;it.forEach(m=>{c.fillStyle=ln;c.fillRect(tx,iy-4,tw,2);c.font='400 22px '+SHF;T(shFit(c,m.n+(m.amt?' '+m.amt:''),tw-90),tx,iy+6,22,INK);T(String(Math.round(m.k)),tx+tw,iy+8,20,MUT,'right');iy+=44});
+  if(more){c.fillStyle=ln;c.fillRect(tx,iy-4,tw,2);T('외 '+more+'개',tx,iy+8,19,MUT)}y+=h+12})}
+return y+SHP+SHM-12}
+
+async function shRender(draw,P){const sc=document.createElement('canvas');sc.width=SHW;sc.height=100;const H=Math.ceil(draw(sc.getContext('2d'),P)),cv=document.createElement('canvas');cv.width=SHW;cv.height=H;P.H=H;draw(cv.getContext('2d'),P);const bl=await new Promise(r=>cv.toBlob(r,'image/png'));if(!bl)throw 0;return bl}
+async function shMealImgs(ms){const im={};for(const g of ms){if(!g.img)continue;try{const r=await fetch(g.img);if(r.ok)im[g.id]=await createImageBitmap(await r.blob())}catch(e){}}return im}
+/* mode 없음=운동 이미지만, 'day'=요약+운동, 'meal'=식사 요약만 */
+async function shMake(list,day,mode){const D=mode?shDayData(day):null;if(mode==='meal'&&!D.ms.length)return toast('내보낼 식사 기록이 없어요');if(mode==='day'&&!D.ms.length&&!list.length&&!D.w0&&!D.sl)return toast('내보낼 기록이 없어요');if(!mode&&!list.length)return toast('내보낼 운동 기록이 없어요');toast('이미지 만드는 중…');
 try{try{await Promise.all(['400 20px "Jua"','400 20px "Gowun Dodum"','700 20px "Gowun Dodum"'].map(f=>document.fonts.load(f,'가나다0123 kg×')))}catch(e){}
-const imgs=await shLoad(list),ac=shHex(getComputedStyle(document.documentElement).getPropertyValue('--pine').trim()),P={list,day,imgs,ac},sc=document.createElement('canvas');sc.width=SHW;sc.height=100;
-const H=Math.ceil(shDraw(sc.getContext('2d'),P)),cv=document.createElement('canvas');cv.width=SHW;cv.height=H;P.H=H;shDraw(cv.getContext('2d'),P);
-const bl=await new Promise(r=>cv.toBlob(r,'image/png'));if(!bl)throw 0;shOpen(bl,'운동기록_'+day+'.png')}catch(e){toast('이미지를 만들지 못했어요')}}
-function shOpen(bl,nm){if(shUrl)URL.revokeObjectURL(shUrl);shUrl=URL.createObjectURL(bl);shBlob=bl;shName=nm;
-$('#sp').innerHTML=`<h2>운동 기록 이미지</h2><img class="shimg" src="${shUrl}" alt="운동 기록 이미지"><p class="mut" style="font-size:13px;margin:8px 0">이미지를 꾹 눌러서 사진첩에 저장할 수도 있어요</p><button class="save" data-a="shgo">공유하기 (카톡 등)</button><button class="save" data-a="shdl" style="margin-top:8px;background:var(--pt);color:var(--pine)">이미지 저장</button><button class="save" data-a="shut" style="margin-top:8px;background:none;color:var(--mut)">닫기</button>`;$('#sh').hidden=false}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-a=wshare],[data-a=wshare1],[data-a=shgo],[data-a=shdl]');if(!b)return;const a=b.dataset.a;
-if(a==='wshare'){const l=dw(day).slice().sort((p,q)=>(Date.parse(p.st)||p.ts||0)-(Date.parse(q.st)||q.ts||0));shMake(l,day)}
+const ac=shHex(getComputedStyle(document.documentElement).getPropertyValue('--pine').trim()),out=[],two=mode==='day'&&list.length>0;
+if(D)out.push(await shRender(shDrawDay,{D,day,ac,imgs:await shMealImgs(D.ms),title:mode==='meal'?'오늘의 식사':day===baseDay()?'오늘의 기록':'하루 기록',pg:two?'1/2':''}));
+if(!mode||two)out.push(await shRender(shDraw,{list,day,imgs:await shLoad(list),ac,pg:two?'2/2':''}));
+shOpen(out.map((b,i)=>({bl:b,nm:'기록_'+day+(out.length>1?'_'+(i+1):'')+'.png'})))}catch(e){toast('이미지를 만들지 못했어요')}}
+function shOpen(a){shUrls.forEach(u=>URL.revokeObjectURL(u));shFiles=a.map(q=>new File([q.bl],q.nm,{type:'image/png'}));shUrls=shFiles.map(f=>URL.createObjectURL(f));
+$('#sp').innerHTML=`<h2>기록 이미지 ${a.length>1?a.length+'장':''}</h2>${shUrls.map(u=>`<img class="shimg" src="${u}" alt="기록 이미지" style="margin-bottom:10px">`).join('')}<p class="mut" style="font-size:13px;margin:8px 0">이미지를 꾹 눌러서 사진첩에 저장할 수도 있어요</p><button class="save" data-a="shgo">공유하기 (카톡 등)</button><button class="save" data-a="shdl" style="margin-top:8px;background:var(--pt);color:var(--pine)">이미지 저장</button><button class="save" data-a="shut" style="margin-top:8px;background:none;color:var(--mut)">닫기</button>`;$('#sh').hidden=false}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a=wshare],[data-a=wshare1],[data-a=tshare],[data-a=mshare],[data-a=shgo],[data-a=shdl]');if(!b)return;const a=b.dataset.a,srt=l=>l.slice().sort((p,q)=>(Date.parse(p.st)||p.ts||0)-(Date.parse(q.st)||q.ts||0));
+if(a==='wshare')shMake(srt(dw(day)),day);
 else if(a==='wshare1'){const x=S.workouts.find(y=>String(y.id)===String(b.dataset.i));if(x)shMake([x],x.d)}
-else if(!shBlob)return;else if(a==='shgo'){const f=new File([shBlob],shName,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f]}).catch(()=>{});else shSave()}
+else if(a==='tshare')shMake(srt(dw(day)),day,'day');
+else if(a==='mshare')shMake([],day,'meal');
+else if(!shFiles.length)return;else if(a==='shgo'){if(navigator.canShare&&navigator.canShare({files:shFiles}))navigator.share({files:shFiles}).catch(()=>{});else shSave()}
 else shSave()});
-function shSave(){const a=document.createElement('a');a.href=shUrl;a.download=shName;document.body.appendChild(a);a.click();a.remove()}
+function shSave(){shFiles.forEach((f,i)=>setTimeout(()=>{const a=document.createElement('a');a.href=shUrls[i];a.download=f.name;document.body.appendChild(a);a.click();a.remove()},i*400))}
 </script>
 <script type="text/app">
 /* 모든 파일이 불러와진 뒤 첫 화면을 그려요 */
