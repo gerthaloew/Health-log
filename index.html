@@ -248,6 +248,8 @@ body:has(#auth) .sh{z-index:60}
 .wxc h3 span{font-weight:500;color:var(--mut);font-size:12px}
 
 .shimg{width:100%;display:block;border-radius:14px;border:1px solid var(--line)}
+
+.clr{position:relative;display:block}.clr input{padding-right:40px}.clr .x{position:absolute;right:6px;top:50%;margin-top:2px;transform:translateY(-50%)}
 </style>
 </head><body>
 <div id="auth" class="au"><div class="ap"><h1>건강 기록</h1><p class="mut">불러오는 중...</p></div></div>
@@ -1038,8 +1040,9 @@ function mealCalc(items,name){const R=k=>Math.round(items.reduce((t,x)=>t+(+x[k]
 return{name:name||autoName(items),calories:R('k'),carb_g:R('c'),protein_g:R('p'),fat_g:R('f'),amount:multi?null:(items[0].amt||null),items:multi?items.map(x=>({n:x.n,amt:x.amt||'',k:+x.k||0,c:+x.c||0,p:+x.p||0,f:+x.f||0})):null}}
 function mbTot(a,k){return Math.round(a.reduce((t,x)=>t+(+x[k]||0),0)*10)/10}
 function renderMB(){const e=$('#mb');if(!e)return;const keep=($('#f_mname')||{}).value||'';if(!mb.length){e.innerHTML='';mnameTouched=false;return}
-e.innerHTML=`<div class="calc" style="margin:4px 0 10px"><div class="mut">이 끼니에 담은 음식 ${mb.length}가지</div>${mb.map((x,i)=>`<div class="row"><span class="n"><b>${esc(x.n)}</b><small>${x.amt?esc(x.amt)+' · ':''}${Math.round(x.k)} kcal</small></span><button type="button" class="x" data-a="mrm" data-i="${i}" aria-label="빼기">×</button></div>`).join('')}<div style="margin-top:8px"><b>${Math.round(mbTot(mb,'k'))}</b> kcal<div class="mut">탄 ${mbTot(mb,'c')}g · 단 ${mbTot(mb,'p')}g · 지 ${mbTot(mb,'f')}g</div></div><label style="display:block;margin-top:10px">기록 이름 (자동으로 채워져요, 바꾸려면 수정)<input id="f_mname" maxlength="60" autocomplete="off"></label></div>`;const mn=$('#f_mname');if(mn)mn.value=mnameTouched?keep:autoName(mb)}
+e.innerHTML=`<div class="calc" style="margin:4px 0 10px"><div class="mut">이 끼니에 담은 음식 ${mb.length}가지</div>${mb.map((x,i)=>`<div class="row"><span class="n"><b>${esc(x.n)}</b><small>${x.amt?esc(x.amt)+' · ':''}${Math.round(x.k)} kcal</small></span><button type="button" class="x" data-a="mrm" data-i="${i}" aria-label="빼기">×</button></div>`).join('')}<div style="margin-top:8px"><b>${Math.round(mbTot(mb,'k'))}</b> kcal<div class="mut">탄 ${mbTot(mb,'c')}g · 단 ${mbTot(mb,'p')}g · 지 ${mbTot(mb,'f')}g</div></div><label style="display:block;margin-top:10px">기록 이름 (자동으로 채워져요, 바꾸려면 수정)<span class="clr"><input id="f_mname" maxlength="60" autocomplete="off"><button type="button" class="x" data-a="mclr" aria-label="이름 모두 지우기">×</button></span></label></div>`;const mn=$('#f_mname');if(mn)mn.value=mnameTouched?keep:autoName(mb)}
 document.addEventListener('input',e=>{if(e.target.id==='f_mname')mnameTouched=true});
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-a=mclr]');if(!b)return;const i=$('#f_mname');if(i){i.value='';mnameTouched=true;i.focus()}});
 function takeItem(){const n=fv('n');if(!n)return null;return{n,k:nv('k'),c:nv('c'),p:nv('p'),f:nv('f'),amt:mealAmt()}}
 function clearItem(){['n','k','c','p','f'].forEach(i=>{const e=$('#f_'+i);if(e)e.value=''});const g=$('#fg');if(g)g.value='';const q=$('#fqty');if(q)q.hidden=true;const fq=$('#fq');if(fq)fq.value='';const r=$('#fres');if(r)r.innerHTML='';curFood=null}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
@@ -1561,8 +1564,8 @@ y+=44;T('건강 기록 앱',SHW/2,y,22,MUT,'center');y+=30;return y+SHP+SHM}
 /* ---- 오늘 요약 (1장): 통계 + 식사 ---- */
 const shPrev=d=>{const t=new Date(+d.slice(0,4),+d.slice(5,7)-1,+d.slice(8)-1);return fmt(t)};
 const shHM=m=>Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m';
-function shDayData(d){const ms=dm(d),bw=[...S.body].filter(b=>b.w&&b.d<=d).sort((a,b)=>a.d<b.d?1:-1),w0=bw[0],w1=w0&&bw.find(b=>b.d<w0.d),sl=slOf(d),sy=slOf(shPrev(d)),wk=dw(d),tg={};ms.forEach(m=>(tg[m.t]=tg[m.t]||[]).push(m));
-const g=Object.keys(tg).map(t=>({t,a:tg[t],ts:Math.min(...tg[t].map(m=>m.ts||0))})).sort((a,b)=>a.ts-b.ts);
+function shDayData(d){const ms=dm(d),bw=[...S.body].filter(b=>b.w&&b.d<=d).sort((a,b)=>a.d<b.d?1:-1),w0=bw[0],w1=w0&&bw.find(b=>b.d<w0.d),sl=slOf(d),sy=slOf(shPrev(d)),wk=dw(d);
+const RK={'아침':0,'점심':1,'간식':2,'저녁':3},g=ms.map(m=>({t:m.t,m,a:m.it&&m.it.length?m.it:[{n:m.n,amt:m.amt,k:m.k}],ts:m.ts||0})).sort((a,b)=>(RK[a.t]??9)-(RK[b.t]??9)||a.ts-b.ts);
 return{ms,g,w0,w1,sl,sy,burn:sum(wk,'k'),hasW:wk.length>0,eat:sum(ms,'k'),mac:{c:sum(ms,'c'),p:sum(ms,'p'),f:sum(ms,'f')}}}
 function shDrawDay(c,P){const ac=P.ac,bgc=shMix(ac,.07),pt=shMix(ac,.17),ln=shMix(ac,.15),INK='#4A3A40',MUT='#9C8890',X=SHM+SHP,D=P.D,gl=S.goal||{};let y=SHM+SHP;
 if(P.H){c.fillStyle=bgc;c.fillRect(0,0,SHW,P.H);c.fillStyle='#fff';shRR(c,SHM,SHM,SHW-2*SHM,P.H-2*SHM,36);c.fill();c.strokeStyle=ln;c.lineWidth=2;c.stroke()}
@@ -1578,10 +1581,10 @@ if(D.ms.length){shRR(c,X,y+3,12,34,6);c.fillStyle=ac;c.fill();T('식사',X+26,y,
  const mc=[['탄수','c','#FFC15E',gl.c],['단백질','p','#8FA8FF',gl.p],['지방','f','#FF9AA2',gl.f]],tt=D.mac.c+D.mac.p+D.mac.f||1;shRR(c,X,y,SHI,52+mc.length*42,24);c.fillStyle=bgc;c.fill();
  mc.forEach((q,i)=>{const v=Math.round(D.mac[q[1]]),yy=y+20+i*42,bx=X+26+110,bw=SHI-26-110-26-190;T(q[0],X+26,yy-2,24,INK);shRR(c,bx,yy+2,bw,18,9);c.fillStyle=pt;c.fill();const fr=q[3]?Math.min(1,v/q[3]):D.mac[q[1]]/tt;if(fr>0){shRR(c,bx,yy+2,Math.max(18,bw*fr),18,9);c.fillStyle=q[2];c.fill()}
   c.font='400 18px '+SHF;const gt=q[3]?' /'+q[3]+'g':' g',gw=c.measureText(gt).width;T(gt,X+SHI-26,yy+3,18,MUT,'right');T(String(v),X+SHI-26-gw,yy-3,24,INK,'right',SHF,900)});y+=52+mc.length*42+14;
- D.g.forEach(q=>{const it=q.a.slice(0,4),more=q.a.length-it.length,bm=q.a.map(m=>P.imgs[m.id]).find(Boolean),th=bm?168:0,tx=X+16+(th?th+20:0),tw=X+SHI-16-tx,h=Math.max(th,52+(it.length+(more?1:0))*44)+32;
+ D.g.forEach(q=>{const it=q.a.slice(0,4),more=q.a.length-it.length,bm=P.imgs[q.m.id],th=bm?168:0,tx=X+16+(th?th+20:0),tw=X+SHI-16-tx,h=Math.max(th,52+(it.length+(more?1:0))*44)+32;
   shRR(c,X,y,SHI,h,24);c.strokeStyle=ln;c.lineWidth=2;c.stroke();
   if(bm){c.save();shRR(c,X+16,y+16,th,th,18);c.clip();const s=Math.max(th/bm.width,th/bm.height),w=bm.width*s,hh=bm.height*s;c.drawImage(bm,X+16+(th-w)/2,y+16+(th-hh)/2,w,hh);c.restore()}
-  const k=Math.round(sum(q.a,'k'));T(q.t,tx,y+16,32,INK,'left',SHJ);c.font='400 32px '+SHJ;const nw=c.measureText(q.t).width;T(shClock(q.ts),tx+nw+14,y+26,22,MUT);T(' kcal',X+SHI-16,y+26,18,MUT,'right');c.font='400 18px '+SHF;const kw=c.measureText(' kcal').width;T(String(k),X+SHI-16-kw,y+18,28,ac,'right',SHJ);
+  const k=Math.round(q.m.k);T(q.t,tx,y+16,32,INK,'left',SHJ);c.font='400 32px '+SHJ;const nw=c.measureText(q.t).width;T(shClock(q.ts),tx+nw+14,y+26,22,MUT);T(' kcal',X+SHI-16,y+26,18,MUT,'right');c.font='400 18px '+SHF;const kw=c.measureText(' kcal').width;T(String(k),X+SHI-16-kw,y+18,28,ac,'right',SHJ);
   let iy=y+60;it.forEach(m=>{c.fillStyle=ln;c.fillRect(tx,iy-4,tw,2);c.font='400 22px '+SHF;T(shFit(c,m.n+(m.amt?' '+m.amt:''),tw-90),tx,iy+6,22,INK);T(String(Math.round(m.k)),tx+tw,iy+8,20,MUT,'right');iy+=44});
   if(more){c.fillStyle=ln;c.fillRect(tx,iy-4,tw,2);T('외 '+more+'개',tx,iy+8,19,MUT)}y+=h+12})}
 return y+SHP+SHM-12}
@@ -1590,7 +1593,7 @@ async function shRender(draw,P){const sc=document.createElement('canvas');sc.wid
 async function shMealImgs(ms){const im={};for(const g of ms){if(!g.img)continue;try{const r=await fetch(g.img);if(r.ok)im[g.id]=await createImageBitmap(await r.blob())}catch(e){}}return im}
 /* mode 없음=운동 이미지만, 'day'=요약+운동, 'meal'=식사 요약만 */
 async function shMake(list,day,mode){const D=mode?shDayData(day):null;if(mode==='meal'&&!D.ms.length)return toast('내보낼 식사 기록이 없어요');if(mode==='day'&&!D.ms.length&&!list.length&&!D.w0&&!D.sl)return toast('내보낼 기록이 없어요');if(!mode&&!list.length)return toast('내보낼 운동 기록이 없어요');toast('이미지 만드는 중…');
-try{try{await Promise.all(['400 20px "Jua"','400 20px "Gowun Dodum"','700 20px "Gowun Dodum"'].map(f=>document.fonts.load(f,'가나다0123 kg×')))}catch(e){}
+try{try{await Promise.all(['400 20px "Jua"','400 20px "Gowun Dodum"','700 20px "Gowun Dodum"'].map(f=>document.fonts.load(f,'가나다0123 kg×'+(D?D.ms.map(m=>m.n+m.t+(m.it||[]).map(i=>i.n).join('')).join('')+'아침점심저녁간식오전오후외개목표달성어제대비기록하루오늘의식사탄수단백질지방':''))))}catch(e){}
 const ac=shHex(getComputedStyle(document.documentElement).getPropertyValue('--pine').trim()),out=[],two=mode==='day'&&list.length>0;
 if(D)out.push(await shRender(shDrawDay,{D,day,ac,imgs:await shMealImgs(D.ms),title:mode==='meal'?'오늘의 식사':day===baseDay()?'오늘의 기록':'하루 기록',pg:two?'1/2':''}));
 if(!mode||two)out.push(await shRender(shDraw,{list,day,imgs:await shLoad(list),ac,pg:two?'2/2':''}));
