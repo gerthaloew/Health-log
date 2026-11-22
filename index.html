@@ -1581,22 +1581,34 @@ if(D.ms.length){shRR(c,X,y+3,12,34,6);c.fillStyle=ac;c.fill();T('식사',X+26,y,
  const mc=[['탄수','c','#FFC15E',gl.c],['단백질','p','#8FA8FF',gl.p],['지방','f','#FF9AA2',gl.f]],tt=D.mac.c+D.mac.p+D.mac.f||1;shRR(c,X,y,SHI,52+mc.length*42,24);c.fillStyle=bgc;c.fill();
  mc.forEach((q,i)=>{const v=Math.round(D.mac[q[1]]),yy=y+20+i*42,bx=X+26+110,bw=SHI-26-110-26-190;T(q[0],X+26,yy-2,24,INK);shRR(c,bx,yy+2,bw,18,9);c.fillStyle=pt;c.fill();const fr=q[3]?Math.min(1,v/q[3]):D.mac[q[1]]/tt;if(fr>0){shRR(c,bx,yy+2,Math.max(18,bw*fr),18,9);c.fillStyle=q[2];c.fill()}
   c.font='400 18px '+SHF;const gt=q[3]?' /'+q[3]+'g':' g',gw=c.measureText(gt).width;T(gt,X+SHI-26,yy+3,18,MUT,'right');T(String(v),X+SHI-26-gw,yy-3,24,INK,'right',SHF,900)});y+=52+mc.length*42+14;
- D.g.forEach(q=>{const it=q.a.slice(0,4),more=q.a.length-it.length,bm=P.imgs[q.m.id],th=bm?168:0,tx=X+16+(th?th+20:0),tw=X+SHI-16-tx,h=Math.max(th,52+(it.length+(more?1:0))*44)+32;
-  shRR(c,X,y,SHI,h,24);c.strokeStyle=ln;c.lineWidth=2;c.stroke();
-  if(bm){c.save();shRR(c,X+16,y+16,th,th,18);c.clip();const s=Math.max(th/bm.width,th/bm.height),w=bm.width*s,hh=bm.height*s;c.drawImage(bm,X+16+(th-w)/2,y+16+(th-hh)/2,w,hh);c.restore()}
-  const k=Math.round(q.m.k);T(q.t,tx,y+16,32,INK,'left',SHJ);c.font='400 32px '+SHJ;const nw=c.measureText(q.t).width;T(shClock(q.ts),tx+nw+14,y+26,22,MUT);T(' kcal',X+SHI-16,y+26,18,MUT,'right');c.font='400 18px '+SHF;const kw=c.measureText(' kcal').width;T(String(k),X+SHI-16-kw,y+18,28,ac,'right',SHJ);
-  let iy=y+60;it.forEach(m=>{c.fillStyle=ln;c.fillRect(tx,iy-4,tw,2);c.font='400 22px '+SHF;T(shFit(c,m.n+(m.amt?' '+m.amt:''),tw-90),tx,iy+6,22,INK);T(String(Math.round(m.k)),tx+tw,iy+8,20,MUT,'right');iy+=44});
-  if(more){c.fillStyle=ln;c.fillRect(tx,iy-4,tw,2);T('외 '+more+'개',tx,iy+8,19,MUT)}y+=h+12})}
+ const cw=(SHI-14)/2,N=q=>Math.min(3,q.a.length)+(q.a.length>3?1:0),H=q=>76+N(q)*40;
+ const dc=(q,x,yy,h)=>{const it=q.a.slice(0,3),more=q.a.length-it.length;shRR(c,x,yy,cw,h,22);c.strokeStyle=ln;c.lineWidth=2;c.stroke();
+  T(q.t,x+18,yy+14,30,INK,'left',SHJ);c.font='400 30px '+SHJ;const nw=c.measureText(q.t).width;T(shClock(q.ts),x+18+nw+10,yy+23,19,MUT);
+  c.font='400 17px '+SHF;const kw=c.measureText(' kcal').width;T(' kcal',x+cw-18,yy+22,17,MUT,'right');T(String(Math.round(q.m.k)),x+cw-18-kw,yy+15,26,ac,'right',SHJ);
+  let iy=yy+60;it.forEach(m=>{c.fillStyle=ln;c.fillRect(x+18,iy-4,cw-36,2);c.font='400 21px '+SHF;T(shFit(c,m.n+(m.amt?' '+m.amt:''),cw-36-64),x+18,iy+6,21,INK);T(String(Math.round(m.k)),x+cw-18,iy+8,19,MUT,'right');iy+=40});
+  if(more){c.fillStyle=ln;c.fillRect(x+18,iy-4,cw-36,2);T('외 '+more+'개',x+18,iy+8,18,MUT)}};
+ for(let i=0;i<D.g.length;i+=2){const q1=D.g[i],q2=D.g[i+1],h=Math.max(H(q1),q2?H(q2):0);dc(q1,X,y,h);if(q2)dc(q2,X+cw+14,y,h);y+=h+14}}
 return y+SHP+SHM-12}
 
+function shDrawPhotos(c,P){const ac=P.ac,bgc=shMix(ac,.07),ln=shMix(ac,.15),INK='#4A3A40',MUT='#9C8890',X=SHM+SHP;let y=SHM+SHP;
+if(P.H){c.fillStyle=bgc;c.fillRect(0,0,SHW,P.H);c.fillStyle='#fff';shRR(c,SHM,SHM,SHW-2*SHM,P.H-2*SHM,36);c.fill();c.strokeStyle=ln;c.lineWidth=2;c.stroke()}
+c.textBaseline='top';const T=(t,x,yy,sz,col,al,f,w)=>shT(c,t,x,yy,sz,col,al,f,w);
+T('건강 기록 앱'+(P.pg?' · '+P.pg:''),X+SHI,y+8,22,MUT,'right');
+const dt=new Date(P.day+'T00:00:00');T(dt.getFullYear()+'년 '+(dt.getMonth()+1)+'월 '+dt.getDate()+'일 ('+SHD[dt.getDay()]+')',X,y,28,MUT);y+=42;T('식사 사진',X,y,60,INK,'left',SHJ);y+=88;
+const w=(SHI-16)/2;P.ph.forEach((q,i)=>{const x=X+(i%2)*(w+16),yy=y+Math.floor(i/2)*(w+16),bm=P.imgs[q.m.id];
+ c.save();shRR(c,x,yy,w,w,26);c.clip();c.fillStyle=bgc;c.fillRect(x,yy,w,w);if(bm){const s=Math.max(w/bm.width,w/bm.height),dw=bm.width*s,dh=bm.height*s;c.drawImage(bm,x+(w-dw)/2,yy+(w-dh)/2,dw,dh)}c.restore();
+ const lb=q.t+' · '+shClock(q.ts);c.font='400 24px '+SHJ;const lw=c.measureText(lb).width+32;shRR(c,x+14,yy+w-58,lw,44,22);c.fillStyle='rgba(74,58,64,.68)';c.fill();T(lb,x+30,yy+w-50,24,'#fff','left',SHJ)});
+return y+Math.ceil(P.ph.length/2)*(w+16)-16+SHP+SHM}
 async function shRender(draw,P){const sc=document.createElement('canvas');sc.width=SHW;sc.height=100;const H=Math.ceil(draw(sc.getContext('2d'),P)),cv=document.createElement('canvas');cv.width=SHW;cv.height=H;P.H=H;draw(cv.getContext('2d'),P);const bl=await new Promise(r=>cv.toBlob(r,'image/png'));if(!bl)throw 0;return bl}
 async function shMealImgs(ms){const im={};for(const g of ms){if(!g.img)continue;try{const r=await fetch(g.img);if(r.ok)im[g.id]=await createImageBitmap(await r.blob())}catch(e){}}return im}
 /* mode 없음=운동 이미지만, 'day'=요약+운동, 'meal'=식사 요약만 */
 async function shMake(list,day,mode){const D=mode?shDayData(day):null;if(mode==='meal'&&!D.ms.length)return toast('내보낼 식사 기록이 없어요');if(mode==='day'&&!D.ms.length&&!list.length&&!D.w0&&!D.sl)return toast('내보낼 기록이 없어요');if(!mode&&!list.length)return toast('내보낼 운동 기록이 없어요');toast('이미지 만드는 중…');
 try{try{await Promise.all(['400 20px "Jua"','400 20px "Gowun Dodum"','700 20px "Gowun Dodum"'].map(f=>document.fonts.load(f,'가나다0123 kg×'+(D?D.ms.map(m=>m.n+m.t+(m.it||[]).map(i=>i.n).join('')).join('')+'아침점심저녁간식오전오후외개목표달성어제대비기록하루오늘의식사탄수단백질지방':''))))}catch(e){}
-const ac=shHex(getComputedStyle(document.documentElement).getPropertyValue('--pine').trim()),out=[],two=mode==='day'&&list.length>0;
-if(D)out.push(await shRender(shDrawDay,{D,day,ac,imgs:await shMealImgs(D.ms),title:mode==='meal'?'오늘의 식사':day===baseDay()?'오늘의 기록':'하루 기록',pg:two?'1/2':''}));
-if(!mode||two)out.push(await shRender(shDraw,{list,day,imgs:await shLoad(list),ac,pg:two?'2/2':''}));
+const ac=shHex(getComputedStyle(document.documentElement).getPropertyValue('--pine').trim()),out=[],two=mode==='day'&&list.length>0,imgs=D?await shMealImgs(D.ms):{},ph=D?D.g.filter(q=>imgs[q.m.id]):[],ch=[];const np=Math.ceil(ph.length/6),per=Math.ceil(ph.length/(np||1));for(let i=0;i<ph.length;i+=per)ch.push(ph.slice(i,i+per));
+const tot=(D?1:0)+ch.length+(!mode||two?1:0),pl=n=>tot>1?n+'/'+tot:'';let n=0;
+if(D)out.push(await shRender(shDrawDay,{D,day,ac,imgs,title:mode==='meal'?'오늘의 식사':day===baseDay()?'오늘의 기록':'하루 기록',pg:pl(++n)}));
+for(const g of ch)out.push(await shRender(shDrawPhotos,{day,ac,imgs,ph:g,pg:pl(++n)}));
+if(!mode||two)out.push(await shRender(shDraw,{list,day,imgs:await shLoad(list),ac,pg:pl(++n)}));
 shOpen(out.map((b,i)=>({bl:b,nm:'기록_'+day+(out.length>1?'_'+(i+1):'')+'.png'})))}catch(e){toast('이미지를 만들지 못했어요')}}
 function shOpen(a){shUrls.forEach(u=>URL.revokeObjectURL(u));shFiles=a.map(q=>new File([q.bl],q.nm,{type:'image/png'}));shUrls=shFiles.map(f=>URL.createObjectURL(f));
 $('#sp').innerHTML=`<h2>기록 이미지 ${a.length>1?a.length+'장':''}</h2>${shUrls.map(u=>`<img class="shimg" src="${u}" alt="기록 이미지" style="margin-bottom:10px">`).join('')}<p class="mut" style="font-size:13px;margin:8px 0">이미지를 꾹 눌러서 사진첩에 저장할 수도 있어요</p><button class="save" data-a="shgo">공유하기 (카톡 등)</button><button class="save" data-a="shdl" style="margin-top:8px;background:var(--pt);color:var(--pine)">이미지 저장</button><button class="save" data-a="shut" style="margin-top:8px;background:none;color:var(--mut)">닫기</button>`;$('#sh').hidden=false}
