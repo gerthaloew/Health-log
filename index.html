@@ -1631,6 +1631,9 @@ render();
 /* 10초가 지나도 '불러오는 중'이면 멈춘 것이니 안내와 다시 시도 버튼을 보여줘요 */
 setTimeout(()=>{const a=$('#auth');if(!a||me||!/불러오는 중/.test(a.textContent))return;
 a.innerHTML='<div class="ap"><h1>건강 기록</h1><p class="mut">연결이 오래 걸리고 있어요. 인터넷을 확인하고 다시 시도해 주세요.</p><button class="save" onclick="location.reload()">다시 시도</button><button class="save" style="background:none;color:var(--fat)" onclick="try{Object.keys(localStorage).filter(k=>k.indexOf(\'sb-\')===0).forEach(k=>localStorage.removeItem(k))}catch(e){}location.reload()">저장된 로그인 지우고 다시 시작</button></div>'},10000);
+
+/* 앱 파일을 기기에 저장해 두는 서비스 워커 등록 (연결이 불안정해도 앱 화면이 열려요) */
+try{if('serviceWorker' in navigator&&location.protocol==='https:')window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}catch(_){}
 </script>
 <!--SBMOCK--><script>
 /* 앱 시작 도우미: supabase 라이브러리를 여러 주소에서 차례로 받아 오고, 받아지면 앱 코드를 순서대로 실행해요.
