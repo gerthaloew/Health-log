@@ -337,7 +337,7 @@ function mealCardHTML(x,can,cl){const its=x.it&&x.it.length?x.it:[{n:x.n,amt:x.a
 return`<div class="mi">${x.img?`<img class="bimg" src="${x.img}" alt="${esc(x.n)}">`:''}<div class="mut" style="margin:2px 0 4px">${x.t} 구성, ${its.length}가지</div>${its.map(i=>`<div class="row" style="padding:7px 0"><span class="n"><b>${esc(i.n)}</b><small>${i.amt?esc(i.amt)+' · ':''}${macIc(i)}</small></span><b>${Math.round(i.k||0)} kcal</b></div>`).join('')}<div class="calc" style="margin:8px 0 10px"><b>🔥 ${Math.round(x.k)}</b> kcal<div class="mut">${macIc(x)}</div></div>${cl?btnRow(can?`data-a="edit" data-i="${x.id}"`:''):can?`<button type="button" class="save" data-a="edit" data-i="${x.id}" style="margin:0 0 6px">수정</button>`:''}</div>`}
 function mealView(id){const x=S.meals.find(m=>String(m.id)===String(id));if(!x)return;$('#sp').innerHTML=`<h2>${esc(x.n)}</h2>`+mealCardHTML(x,!isRO(),true);$('#sh').hidden=false}
 const photoField=()=>`<label>사진 (선택)<input id="f_img" type="file" accept="image/*"></label>`;
-function mealFields(){return`<input id="f_n" type="hidden"><label>음식 이름 (검색해서 고르거나 직접 입력)<input id="fq" placeholder="예: 닭가슴살, 밥, 라면" autocomplete="off"></label><div id="fres" class="chips" style="margin:0 0 8px"></div><div id="fquick">${quickHTML()}</div><div id="fqty" hidden><label>먹은 양 (g)<input id="fg" inputmode="decimal"></label><div class="mut" id="fcal" style="margin:-4px 0 10px"></div></div><label>열량 (kcal)<input id="f_k" inputmode="decimal"></label><div class="g3"><label>탄수화물 g<input id="f_c" inputmode="decimal"></label><label>단백질 g<input id="f_p" inputmode="decimal"></label><label>지방 g<input id="f_f" inputmode="decimal"></label></div>`}
+function mealFields(){return`<input id="f_n" type="hidden"><label>음식 이름 (검색해서 고르거나 직접 입력)<input id="fq" placeholder="예: 닭가슴살, 밥, 라면" autocomplete="off"></label><div id="fres" class="chips" style="margin:0 0 8px"></div><div id="fquick">${quickHTML()}</div><div id="fqty" hidden><label>먹은 양 (g)<input id="fg" inputmode="decimal"></label><div class="mut" id="fcal" style="margin:-4px 0 10px"></div></div><label>열량 (kcal) <small class="mut">탄·단·지를 넣으면 자동 계산돼요</small><input id="f_k" inputmode="decimal"></label><div class="g3"><label>탄수화물 g<input id="f_c" inputmode="decimal"></label><label>단백질 g<input id="f_p" inputmode="decimal"></label><label>지방 g<input id="f_f" inputmode="decimal"></label></div>`}
 function editSheet(id){const x=S.meals.find(m=>String(m.id)===String(id));if(!x)return;rmImg=false;mnameTouched=true;
 mb=(x.it&&x.it.length?x.it:[{n:x.n,amt:x.amt,k:x.k,c:x.c,p:x.p,f:x.f}]).map(i=>({n:i.n,amt:i.amt||'',k:+i.k||0,c:+i.c||0,p:+i.p||0,f:+i.f||0}));
 $('#sp').innerHTML=`<h2>식사 수정</h2>${x.img?`<img class="bimg" id="pv" src="${x.img}" alt="${esc(x.n)}"><button type="button" class="cp" data-a="rmimg" style="margin:-4px 0 12px">사진 삭제</button>`:''}${photoField()}${chips('mt',TYPES,[x.t])}<div id="mb"></div><div class="mut" style="margin:0 0 8px">음식을 더 넣으려면 아래에 입력하고 "담기"를 눌러 주세요.</div>${mealFields()}<button type="button" class="save" data-a="madd" style="background:var(--pt);color:var(--pine);margin-bottom:8px">+ 이 음식 담기 (다른 음식 더 추가)</button><button class="save" data-a="upd" data-i="${x.id}">저장</button><button class="save" data-a="del2" data-i="${x.id}" style="background:none;color:var(--fat);margin-top:0">삭제</button>`;
@@ -411,6 +411,7 @@ const[m,w,b,c,g,d]=rs;
 S.meals=m.data.map(mapMeal);S.workouts=w.data.map(mapWork);S.body=b.data.map(mapBody);S.cycle=c.data.map(r=>r.start_date);S.cend={};S.cinfo={};S.cid={};c.data.forEach(r=>{S.cid[r.start_date]=r.id;if(r.end_date)S.cend[r.start_date]=r.end_date;S.cinfo[r.start_date]={flow:r.flow,pain:r.pain,pk:r.painkiller,e:r.end_date}});
 const gr=g.data[0];S.goal=gr?{c:+gr.carb_g,p:+gr.protein_g,f:+gr.fat_g,w:num(gr.target_weight),bg:num(gr.burn_goal)}:{c:220,p:90,f:55};S.goal.k=S.goal.c*4+S.goal.p*4+S.goal.f*9;
 S.dday=d.data.map(r=>({id:r.id,n:r.name,d:r.date}));
+S.uf=[];if(!viewAs){try{const r=await sb.from('user_foods').select('name,kcal,carb_g,protein_g,fat_g').order('updated_at',{ascending:false}).limit(500);if(!r.error)S.uf=(r.data||[]).map(x=>({n:x.name,k:+x.kcal,c:+x.carb_g,p:+x.protein_g,f:+x.fat_g}))}catch(_){}}syncUF();
 const ps=S.meals.filter(x=>x.path).map(x=>x.path);
 if(ps.length)await signPhotos(ps)
 /* 전체 불러오기: 기본 데이터 + 날씨 + 수업 + 트레이너 메모 + 수면 */
@@ -832,7 +833,7 @@ const FOODS=`밥(흰쌀밥)|210|150|33|2.7|0.3
 C4 부스터 1스쿱|1|5|1.3|0|0|1
 크레아틴 3g|1|10|0|2.5|0|1`.split('\n').map(l=>{const a=l.split('|');return{n:a[0],g:+a[1],k:+a[2],c:+a[3],p:+a[4],f:+a[5],s:+(a[6]||0)}});
 var curFood=null;
-function foodFill(){const g=+(($('#fg')||{}).value)||0;if(!curFood||!g||!$('#f_k'))return;const r=curFood.s?g:g/100,v=(x,d)=>+(x*r).toFixed(d);$('#f_k').value=Math.round(curFood.k*r);$('#f_c').value=v(curFood.c,1);$('#f_p').value=v(curFood.p,1);$('#f_f').value=v(curFood.f,1)}
+function foodFill(){const g=+(($('#fg')||{}).value)||0;if(!curFood||!g||!$('#f_k'))return;const r=curFood.s?g:g/100,v=(x,d)=>+(x*r).toFixed(d);$('#f_k').value=Math.round(curFood.k*r);delete $('#f_k').dataset.man;$('#f_c').value=v(curFood.c,1);$('#f_p').value=v(curFood.p,1);$('#f_f').value=v(curFood.f,1)}
 
 </script>
 <script type="text/app">
@@ -862,7 +863,7 @@ function fnm(n){return n.replace(/\(\s*\d+(\.\d+)?\s*[가-힣]+\s*,\s*/,'(').rep
 function pickFood(fd,g){curFood=fd;$('#f_n').value=fnm(curFood.n);$('#fg').value=g||curFood.g;$('#fqty').hidden=false;(function(){const l=$('#fg').parentNode;l.firstChild.nodeValue=curFood.s?'먹은 양 (몇 번 분량)':'먹은 양 (g)'})();$('#fres').innerHTML='';$('#fq').value=fnm(curFood.n);$('#fcal').textContent=(curFood.s?'1회분당 ':'100g당 ')+curFood.k+'kcal, 탄 '+curFood.c+' 단 '+curFood.p+' 지 '+curFood.f+' (대략값이에요. 아래 숫자는 고칠 수 있어요)';foodFill()}
 /* ===== 새 기능 클릭/입력 처리 ===== */
 document.addEventListener('input',e=>{const i=e.target.id;
-if(i==='fq'){$('#f_n').value=e.target.value.trim();if(curFood&&e.target.value.trim()!==fnm(curFood.n)){curFood=null;$('#fqty').hidden=true}const q=e.target.value.replace(/\s/g,'');$('#fres').innerHTML=q?FOODS.map((x,k)=>[x,k,x.n.replace(/\s/g,'')]).filter(r=>r[2].includes(q)).sort((a,b)=>(a[2].startsWith(q)?0:1)-(b[2].startsWith(q)?0:1)||a[2].length-b[2].length||a[1]-b[1]).slice(0,10).map(([x,k])=>`<button type="button" class="chip" data-a="fpick" data-i="${k}">${esc(fnm(x.n))}</button>`).join('')||'<span class="mut">목록에 없어요. 이름을 그대로 두고 아래에 열량을 입력해 주세요.</span>':''}
+if(i==='fq'){$('#f_n').value=e.target.value.trim();if(curFood&&e.target.value.trim()!==fnm(curFood.n)){curFood=null;$('#fqty').hidden=true}const q=e.target.value.replace(/\s/g,'');$('#fres').innerHTML=q?FOODS.map((x,k)=>[x,k,x.n.replace(/\s/g,'')]).filter(r=>r[2].includes(q)).sort((a,b)=>(a[2].startsWith(q)?0:1)-(b[2].startsWith(q)?0:1)||a[2].length-b[2].length||a[1]-b[1]).slice(0,10).map(([x,k])=>`<button type="button" class="chip" data-a="fpick" data-i="${k}">${esc(fnm(x.n))}${x.u?' <small class="mut">내 음식</small>':''}</button>`).join('')||'<span class="mut">목록에 없어요. 이름을 그대로 두고 아래에 열량을 입력해 주세요.</span>':''}
 if(i==='fg')foodFill();if(i==='f_ln')e.target.dataset.auto='0'});
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');
 if(e.target.closest('[data-g="lk"] .chip'))setTimeout(()=>{const n=$('#f_ln');if(n&&n.dataset.auto==='1')n.value=nextNo(gv('lk')[0])},0);
@@ -1036,6 +1037,17 @@ function mealBasketUI(){const b=$('#sp [data-a=save][data-k=meal]');if(!b)return
 b.insertAdjacentHTML('beforebegin','<button type="button" class="save" data-a="madd" style="background:var(--pt);color:var(--pine);margin-bottom:8px">+ 이 음식 담기 (다른 음식 더 추가)</button><div id="mb"></div>');
 b.dataset.a='msave';b.textContent='한 끼 저장';
 }
+/* 직접 입력한 음식은 '내 음식'으로 저장해 두었다가 다음부터 검색에 나와요 */
+const ufKey=n=>fnm(n).replace(/\s/g,'');
+function syncUF(){for(let i=FOODS.length-1;i>=0;i--)if(FOODS[i].u)FOODS.splice(i,1);FOODS.unshift(...(S.uf||[]).map(x=>({n:x.n,g:1,k:x.k,c:x.c,p:x.p,f:x.f,s:1,u:1})))}
+async function saveUF(items){try{if(!me||viewAs||OID()!==me.id)return;const have=new Set(FOODS.filter(x=>!x.u).map(x=>ufKey(x.n))),seen=new Set(),rows=[];
+items.forEach(it=>{const n=(it.n||'').trim(),k=ufKey(n);if(!n||have.has(k)||seen.has(k))return;seen.add(k);rows.push({user_id:me.id,name:n,amount:it.amt||null,kcal:+it.k||0,carb_g:+it.c||0,protein_g:+it.p||0,fat_g:+it.f||0,updated_at:new Date().toISOString()})});
+if(!rows.length)return;const r=await sb.from('user_foods').upsert(rows,{onConflict:'user_id,name'});if(r.error)return;
+rows.forEach(x=>{S.uf=(S.uf||[]).filter(y=>ufKey(y.n)!==ufKey(x.name));S.uf.unshift({n:x.name,k:x.kcal,c:x.carb_g,p:x.protein_g,f:x.fat_g})});syncUF()}catch(_){}}
+/* 탄·단·지를 넣으면 열량을 자동 계산 (열량을 직접 고쳐 쓰면 그 값을 그대로 둬요) */
+document.addEventListener('input',e=>{const t=e.target;if(!t||!t.id||!$('#fq'))return;
+if(t.id==='f_k'){t.dataset.man=t.value===''?'':'1';return}
+if(t.id==='f_c'||t.id==='f_p'||t.id==='f_f'){const k=$('#f_k');if(!k||k.dataset.man)return;const c=nv('c'),p=nv('p'),f=nv('f');if(c||p||f)k.value=Math.round(c*4+p*4+f*9)}});
 /* 기록 이름을 따로 안 적으면: 첫 음식 이름 (여러 개면 '… 외 2가지') */
 const autoName=a=>a.length>1?a[0].n+' 외 '+(a.length-1)+'가지':(a[0]?a[0].n:'');
 /* 담은 음식들 -> 저장할 값 (새로 저장, 수정 둘 다 써요) */
@@ -1047,7 +1059,7 @@ e.innerHTML=`<div class="calc" style="margin:4px 0 10px"><div class="mut">이 �
 document.addEventListener('input',e=>{if(e.target.id==='f_mname')mnameTouched=true});
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-a=mclr]');if(!b)return;const i=$('#f_mname');if(i){i.value='';mnameTouched=true;i.focus()}});
 function takeItem(){const n=fv('n');if(!n)return null;return{n,k:nv('k'),c:nv('c'),p:nv('p'),f:nv('f'),amt:mealAmt()}}
-function clearItem(){['n','k','c','p','f'].forEach(i=>{const e=$('#f_'+i);if(e)e.value=''});const g=$('#fg');if(g)g.value='';const q=$('#fqty');if(q)q.hidden=true;const fq=$('#fq');if(fq)fq.value='';const r=$('#fres');if(r)r.innerHTML='';curFood=null}
+function clearItem(){['n','k','c','p','f'].forEach(i=>{const e=$('#f_'+i);if(e)e.value=''});const kk=$('#f_k');if(kk)delete kk.dataset.man;const g=$('#fg');if(g)g.value='';const q=$('#fqty');if(q)q.hidden=true;const fq=$('#fq');if(fq)fq.value='';const r=$('#fres');if(r)r.innerHTML='';curFood=null}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
 if(a==='madd'){const it=takeItem();if(!it)return toast('음식 이름을 입력하거나 검색해서 골라 주세요');mb.push(it);clearItem();renderMB();const q=$('#fq');if(q)q.focus()}
 if(a==='mrm'){mb.splice(+b.dataset.i,1);renderMB()}
@@ -1058,7 +1070,7 @@ if(fl){const blob=await shrinkBlob(fl);path=OID()+'/'+id+'.jpg';const u=await re
 const mname=mnameTouched?(($('#f_mname')||{}).value||'').trim():'',
 row={id,user_id:OID(),log_date:day,meal_type:type,...mealCalc(items,mname),...(path?{photo_path:path}:{})};
 let r=await retryQ(()=>sb.from('meal_logs').insert(row).select().single());if(r.error&&r.error.code==='23505')r={data:{...row,created_at:new Date().toISOString()}};/* 첫 시도가 사실은 저장됐는데 응답만 놓친 경우 */if(r.error)throw r.error;
-S.meals.push({...mapMeal(r.data),img});
+S.meals.push({...mapMeal(r.data),img});saveUF(items);
 mb=[];dayBy.meals=day;closeS();toast(items.length>1?items.length+'가지를 한 끼 1건으로 저장했어요':'저장했어요');if(location.hash==='#meals')render();else location.hash='#meals'}
 catch(err){toast(saveErr(err))}finally{busy=false}}
 });
@@ -1438,7 +1450,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a=qfood],[
 if(b.dataset.a==='qstar'){const f=favs(),k=it.n.replace(/\s/g,''),has=f.some(x=>x.n.replace(/\s/g,'')===k);setFavs(has?f.filter(x=>x.n.replace(/\s/g,'')!==k):[{n:it.n,amt:it.amt,k:it.k,c:it.c,p:it.p,f:it.f},...f]);const q=$('#fquick');if(q)q.innerHTML=quickHTML();return}
 $('#fq').value=fnm(it.n);$('#f_n').value=it.n;$('#fres').innerHTML='';
 const fd=FOODS.find(x=>fnm(x.n).replace(/\s/g,'')===fnm(it.n).replace(/\s/g,'')),un=/회분/.test(it.amt||'')?1:/g$/.test(it.amt||'')?0:-1,g=fd&&un===(fd.s?1:0)?parseFloat(it.amt):0;
-if(fd){pickFood(fd,g>0?g:0)}else{curFood=null;$('#fqty').hidden=true;$('#f_k').value=Math.round(it.k)||'';$('#f_c').value=it.c||'';$('#f_p').value=it.p||'';$('#f_f').value=it.f||''}});
+if(fd){pickFood(fd,g>0?g:0)}else{curFood=null;$('#fqty').hidden=true;$('#f_k').value=Math.round(it.k)||'';delete $('#f_k').dataset.man;$('#f_c').value=it.c||'';$('#f_p').value=it.p||'';$('#f_f').value=it.f||''}});
 
 /* ===== 작성 중 팝업 보호: 팝업 바깥을 눌러도 쓰던 내용을 지키고, '이어쓰기' 버튼으로 다시 열어요 ===== */
 (function(){
