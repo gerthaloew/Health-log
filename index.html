@@ -1241,7 +1241,7 @@ else if(a==='pushtest'){
 </script>
 <script type="text/app">
 /* --- 화면 색상 테마 (이 기기에만 저장): 화이트핑크(기본) / 핑크 / 모노 --- */
-const THEMES={white:'스완 레이크',rain:'레인',market:'파머스 마켓',berry:'스트로베리',mono:'모노',wish:'소원'};
+const THEMES={wish:'소원',white:'스완 레이크',rain:'레인',market:'파머스 마켓',berry:'스트로베리',mono:'모노'};
 const RPT={wish:{bg:'#D9E4EE',line:'#C5D3E3',ink:'#34406F',mut:'#6F7BA0',p:'#A47CCB',h1:'#E6C3F2',h2:'#BEDFF4',fut:'#E6EEF5',futb:'#C5D3E3',ok:'#74B9AF'},white:{bg:'#FBE7E0',line:'#F9D0CD',ink:'#4A3B3A',mut:'#9A8884',p:'#EC9D97',h1:'#F9D0CD',h2:'#EC9D97',fut:'#FDF3EF',futb:'#F9D0CD',ok:'#2f7d57'},rain:{bg:'#E9F3F1',line:'#C7E5EE',ink:'#3A4660',mut:'#7D8AA0',p:'#8294AF',h1:'#C7E5EE',h2:'#A6BAD6',fut:'#F3F9F8',futb:'#C7E5EE',ok:'#8294AF'},market:{bg:'#EEECD6',line:'#D6D2A5',ink:'#3C4A2A',mut:'#7F8466',p:'#699543',h1:'#D6D2A5',h2:'#A2A93E',fut:'#F6F4E6',futb:'#D6D2A5',ok:'#699543'},berry:{bg:'#FFEECB',line:'#FECBCB',ink:'#5A3A2A',mut:'#A0806A',p:'#E63F25',h1:'#FECBCB',h2:'#E63F25',fut:'#FFF6E0',futb:'#FECBCB',ok:'#799E60'},mono:{bg:'#F7F6F5',line:'#E5E3E0',ink:'#22211F',mut:'#7A7874',p:'#22211F',h1:'#E5E3E0',h2:'#A9A6A2',fut:'#F1F0EE',futb:'#E5E3E0',ok:'#5C5B58'}};
 function theme(){try{const t=localStorage.getItem('theme');return THEMES[t]?t:'wish'}catch(e){return'wish'}}
 function applyTheme(t){if(!THEMES[t])t='white';try{localStorage.setItem('theme',t)}catch(e){}
