@@ -13,7 +13,7 @@ const put=async(name,req,res)=>{try{if(res&&(res.ok||res.type==='opaque')){const
 self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);
   if(r.mode==='navigate'&&u.origin===location.origin){
     e.respondWith((async()=>{const ac=new AbortController(),t=setTimeout(()=>ac.abort(),4500);
-      try{const res=await fetch(r,{signal:ac.signal});clearTimeout(t);return put(SHELL,new Request(u.pathname.endsWith('/')?'./':u.pathname.split('/').pop()||'./'),res)}
+      try{const res=await fetch(r,{signal:ac.signal,cache:"no-cache"});clearTimeout(t);return put(SHELL,new Request(u.pathname.endsWith('/')?'./':u.pathname.split('/').pop()||'./'),res)}
       catch(_){clearTimeout(t);return (await caches.match(r,{ignoreSearch:true}))||(await caches.match('index.html'))||(await caches.match('./'))||Response.error()}})());return}
   if(u.origin===location.origin||EXT.includes(u.hostname)){
     e.respondWith((async()=>{const hit=await caches.match(r);
